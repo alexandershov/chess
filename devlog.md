@@ -4,11 +4,11 @@
 **What to use for tests?**
 
 * ❌assert
-    * 🙂simple, nothing to install
-    * 😡bad error messages
-* ✅third-party test framework
-    * 🙂good error messages
-    * 😡adding some complexity
+    * 🙂Simple, nothing to install
+    * 😡Bad error messages
+* ✅Third-party test framework
+    * 🙂Good error messages
+    * 😡Adding some complexity
 
 **Which framework to use?**
 
@@ -18,7 +18,7 @@
 * ❌[HUnit](https://github.com/hspec/HUnit)
     * 🙂Familiar interface
     * 😡77 stars on github
-    * 😡last commit 3 years ago
+    * 😡Last commit 3 years ago
 * ✅[hspec](https://github.com/hspec/hspec)
     * 🙂Active & popular
     * 🙂Familiar interface
@@ -27,3 +27,11 @@
 * ❌[quickcheck](https://github.com/nick8325/quickcheck)
     * 🙂Cool idea
     * 😡Looks like overkill
+
+**Should I use Haskell Stack?**
+
+* ✅Yes
+    * 🙂Using the wheel 
+    * 😡Adding some complexity
+* ❌No
+    * 😡Reinventing the wheel
