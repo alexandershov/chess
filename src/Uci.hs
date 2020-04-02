@@ -1,6 +1,8 @@
 module Uci where
 
-data Input = Uci | ReadyOk deriving (Eq, Show)
+data Input = Uci | IsReady | Unknown String deriving (Eq, Show)
 
 parse :: String -> Input
 parse "uci" = Uci
+parse "isready" = IsReady
+parse s = Unknown s
