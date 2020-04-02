@@ -1,4 +1,4 @@
-module Uci where
+module Uci.Input where
 
 data Input = Uci | IsReady | Unknown String deriving (Eq, Show)
 
