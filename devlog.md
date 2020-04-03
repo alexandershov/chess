@@ -1,5 +1,14 @@
 ### 2020-04-03
 
+**Uci.parse or Uci.parseCommand?**
+
+* ✅Uci.parse
+    * 🙂Looks nice
+    * 😡Parse what exactly?
+* ❌Uci.parseCommand
+    * 🙂Specific
+    * 😡Type in name
+
 **What are UCI types?**
 
 * ❌Uci.Input & Uci.Output
