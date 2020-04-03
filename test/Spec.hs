@@ -16,5 +16,8 @@ main = hspec do
         it "parses `ucinewgame` command" do
             Uci.parse "ucinewgame" `shouldBe` Uci.UciNewGame
 
+        it "parses `position` command" do
+            Uci.parse "position startpos moves e2e4" `shouldBe` Uci.Position
+
         it "returns Unknown on unknown commands" do
             Uci.parse "parse this" `shouldBe` Uci.Unknown "parse this"

@@ -1,5 +1,24 @@
 ### 2020-04-03
 
+**How to parse UCI commands with arguments?**
+* ❌Data.List.isPrefixOf with guards on the whole string
+    * 😡Harder to parse commands with optional arguments
+* ❌Data.List.isPrefixOf with guards on words of the string
+    * 😡Looks less elegant than pattern match
+* ✅Pattern match on words
+    * 🙂Looks clean
+* ❌'p':'r':'e':'f':'i':'x'
+    * 😡Come on! You're better than this!
+
+**How to represent UCI commands with arguments?**
+
+* ❌Position [String]
+    * 😡Right now you don't need arguments
+* ❌Position String
+    * 😡Right now you don't need arguments
+* ✅Position
+    * 🙂Right now you don't need arguments
+
 **Uci.parse or Uci.parseCommand?**
 
 * ✅Uci.parse
