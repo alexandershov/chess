@@ -13,7 +13,7 @@ main = hspec do
         it "parses `isready` command" do
             Uci.parse "isready" `shouldBe` Uci.IsReady
 
-        it "parsed `ucinewgame` command" do
+        it "parses `ucinewgame` command" do
             Uci.parse "ucinewgame" `shouldBe` Uci.UciNewGame
 
         it "returns Unknown on unknown commands" do
