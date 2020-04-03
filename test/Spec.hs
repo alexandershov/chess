@@ -2,16 +2,16 @@
 
 import Test.Hspec
 
-import Uci.Input
+import Uci
 
 main :: IO ()
 main = hspec do
-    describe "Uci.Input.parse" do
+    describe "Uci.parse" do
         it "parses `uci` command" do
-            Uci.Input.parse "uci" `shouldBe` Uci.Input.Uci
+            Uci.parse "uci" `shouldBe` Uci.Uci
 
         it "parses `isready` command" do
-            Uci.Input.parse "isready" `shouldBe` Uci.Input.IsReady
+            Uci.parse "isready" `shouldBe` Uci.IsReady
 
         it "returns Unknown on unknown commands" do
-            Uci.Input.parse "parse this" `shouldBe` Uci.Input.Unknown "parse this"
+            Uci.parse "parse this" `shouldBe` Uci.Unknown "parse this"
