@@ -1,6 +1,17 @@
 ### 2020-04-03
 
-****
+**What are UCI types?**
+
+* ❌Uci.Input & Uci.Output
+    * 😡Uci.Command & Uci.Response are more specific
+* ✅Uci.Command & Uci.Response
+    * 🙂Clear names
+    * 🙂Extra type checking: we can't return Uci.Command in response
+* ❌Uci.Command for everything
+    * 🙂Simple
+    * 😡No type checking, we can return illegal Uci.Command (like go) in response
+* ❌Uci.Line for everything
+    * 😡Uci.Command is more specific name
 
 ### 2020-04-02
 
