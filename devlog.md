@@ -1,5 +1,14 @@
 ### 2020-04-03
 
+**What's the interface for one game cycle?**
+* ❌Uci.Command -> Player -> IO Uci.Response
+    * 🙂Player is more explicit than a function
+    * 😡We'll have some useless serialization code compared to [String]
+* ❌Uci.Command -> (Uci.Command -> IO Uci.Response) -> IO Uci.Response
+    * 😡Passing function looks less elegant
+* ✅[String] instead of Uci.Response
+    * 🙂Simplest way!
+
 **How to parse UCI commands with arguments?**
 * ❌Data.List.isPrefixOf with guards on the whole string
     * 😡Harder to parse commands with optional arguments
