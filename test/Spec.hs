@@ -53,8 +53,8 @@ describeUciGetResponse =
         it "asks player on `go` command" do
             Uci.Go `responseShouldBe` ["bestmove e2e4"]
 
-        it "returns nothing on unknown command" do
-            Uci.Unknown "garbage" `responseShouldBe` []
+        it "returns error on unknown command" do
+            Uci.Unknown "garbage" `responseShouldBe` ["unknown command garbage"]
 
         it "returns nothing on `quit` command" do
             Uci.Quit `responseShouldBe` []

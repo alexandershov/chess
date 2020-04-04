@@ -76,7 +76,7 @@ getResponse Uci.Go player = do
     move <- player
     return $ bestMoveResponse move
 
-getResponse (Uci.Unknown _) _ = return emptyResponse
+getResponse (Uci.Unknown s) _ = return $ unknownResponse s
 
 getResponse Uci.Quit _ = return emptyResponse
 
@@ -92,6 +92,9 @@ emptyResponse = Response []
 
 bestMoveResponse :: String -> Response
 bestMoveResponse move = Response ["bestmove " ++ move]
+
+unknownResponse :: String -> Response
+unknownResponse s = Response ["unknown command " ++ s]
 
 
 parse :: String -> Command
