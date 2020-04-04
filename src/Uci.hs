@@ -2,6 +2,7 @@
 
 module Uci where
 
+import Data.List
 import Data.Time (getCurrentTime)
 import System.IO
 
@@ -51,8 +52,8 @@ readCommandWithLog logPath = do
 
 writeResponseWithLog :: FilePath -> Response -> IO ()
 writeResponseWithLog logPath (Response responseLines) = do
-    logLine <- makeLogLine "response" $ unlines responseLines
-    appendFile logPath logLine
+    logLines <- mapM (makeLogLine "response") responseLines
+    mapM_ (appendFile logPath) logLines
     putStr $ unlines responseLines
     hFlush stdout
 
@@ -60,12 +61,13 @@ writeResponseWithLog logPath (Response responseLines) = do
 makeLogLine :: String -> String -> IO String
 makeLogLine kind line = do
     currentTime <- getCurrentTime
-    return $ (show currentTime) ++ "\t" ++ kind ++ "\t" ++ line
+    let entries = [(show currentTime),  kind, line] in
+        return $ (intercalate "\t" entries) ++ "\n"
 
 
 getResponse :: Player -> Command -> IO Response
 
-getResponse _ Uci.Uci = return idResponse
+getResponse _ Uci.Uci = return uciResponse
 
 getResponse _ Uci.IsReady = return readyOkResponse
 
@@ -80,8 +82,8 @@ getResponse player Uci.Go = do
 getResponse _ _ = error "TODO: remove this"
 
 
-idResponse :: Response
-idResponse = Response ["id name chess", "id author Alexander Ershov"]
+uciResponse :: Response
+uciResponse = Response ["id name chess", "id author Alexander Ershov", "uciok"]
 
 readyOkResponse :: Response
 readyOkResponse = Response ["readyok"]

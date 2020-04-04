@@ -39,7 +39,7 @@ describeUciGetResponse :: SpecWith ()
 describeUciGetResponse =
     describe "Uci.getResponse" do
         it "returns name and author on `uci` command" do
-            Uci.Uci `responseShouldBe` ["id name chess", "id author Alexander Ershov"]
+            Uci.Uci `responseShouldBe` ["id name chess", "id author Alexander Ershov", "uciok"]
 
         it "returns readyok on `isready` command" do
             Uci.IsReady `responseShouldBe` ["readyok"]
