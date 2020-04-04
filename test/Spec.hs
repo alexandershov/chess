@@ -4,7 +4,7 @@ import Data.IORef
 
 import Test.Hspec
 
-import qualified Uci
+import Uci
 
 
 main :: IO ()
@@ -67,10 +67,10 @@ describePlay =
     describe "Uci.Play" do
         it "plays a game" do
             responsesRef <- newIORef []
-            commandsRef <- newIORef [Uci.Quit]
+            commandsRef <- newIORef [Uci, IsReady, UciNewGame, Position, Go, Quit]
             Uci.play (commands commandsRef) morphy (refWriter responsesRef)
             responses <- readIORef responsesRef
-            responses `shouldBe` []
+            responses `shouldBe` [uciResponse, readyOkResponse, emptyResponse, emptyResponse, bestMoveResponse "e2e4"]
 
 
 responseShouldBe :: Uci.Command -> [String] -> IO ()
@@ -92,6 +92,7 @@ commands ref = do
             return x
         [] -> do
             error "Impossible"
+
     
 refWriter :: IORef [Uci.Response] -> Uci.Response -> IO ()
 refWriter ref response = do
