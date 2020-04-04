@@ -14,18 +14,38 @@ data Command =
     Go |
     Unknown String deriving (Eq, Show)
 
-
 data Response = Response [String] deriving (Eq, Show)
 
+
 getResponse :: (Player a) => a -> Command -> IO Response
-getResponse _ Uci.Uci = return $ Response ["id name chess", "id author Alexander Ershov"]
-getResponse _ Uci.IsReady = return $ Response ["readyok"]
-getResponse _ Uci.UciNewGame = return $ Response []
-getResponse _ Uci.Position = return $ Response []
+
+getResponse _ Uci.Uci = return uciResponse
+
+getResponse _ Uci.IsReady = return readyOkResponse
+
+getResponse _ Uci.UciNewGame = return emptyResponse
+
+getResponse _ Uci.Position = return emptyResponse
+
 getResponse player Uci.Go = do
     move <- findBestMove player
-    return $ Response ["bestmove " ++ move]
+    return $ bestMoveResponse move
+
 getResponse _ _ = error "TODO: remove this"
+
+
+uciResponse :: Response
+uciResponse = Response ["id name chess", "id author Alexander Ershov"]
+
+readyOkResponse :: Response
+readyOkResponse = Response ["readyok"]
+
+emptyResponse :: Response
+emptyResponse = Response []
+
+bestMoveResponse :: String -> Response
+bestMoveResponse move = Response ["bestmove " ++ move]
+
 
 parse :: String -> Command
 parse "uci" = Uci
