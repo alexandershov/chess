@@ -1,15 +1,9 @@
 {-# LANGUAGE BlockArguments #-}
 
-module Uci (
-    Command(..),
-    Response(..),
-    play,
-    parse,
-    getResponse,
-    Player,
-    CommandReader,
-    ResponseWriter
-) where
+module Uci where
+
+import Data.Time (getCurrentTime)
+import System.IO
 
 data Command = 
     Uci |
@@ -39,6 +33,34 @@ play readCommand player writeResponse = do
             response <- getResponse player command
             writeResponse response
             play readCommand player writeResponse
+
+
+turk :: FilePath -> Player
+turk path = do
+    handle <- openFile path ReadMode
+    hGetLine handle
+
+
+readCommandWithLog :: FilePath -> CommandReader
+readCommandWithLog logPath = do
+    line <- getLine
+    logLine <- makeLogLine "command" line
+    appendFile logPath logLine
+    return $ parse line
+
+
+writeResponseWithLog :: FilePath -> Response -> IO ()
+writeResponseWithLog logPath (Response responseLines) = do
+    logLine <- makeLogLine "response" $ unlines responseLines
+    appendFile logPath logLine
+    putStr $ unlines responseLines
+    hFlush stdout
+
+
+makeLogLine :: String -> String -> IO String
+makeLogLine kind line = do
+    currentTime <- getCurrentTime
+    return $ (show currentTime) ++ "\t" ++ kind ++ "\t" ++ line
 
 
 getResponse :: Player -> Command -> IO Response
