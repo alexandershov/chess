@@ -70,7 +70,12 @@ describePlay =
             commandsRef <- newIORef [Uci, IsReady, UciNewGame, Position, Go, Quit]
             play (commands commandsRef) morphy (refWriter responsesRef)
             responses <- readIORef responsesRef
-            responses `shouldBe` [uciResponse, readyOkResponse, emptyResponse, emptyResponse, bestMoveResponse "e2e4"]
+            responses `shouldBe` 
+                [uciResponse, 
+                 readyOkResponse, 
+                 emptyResponse, 
+                 emptyResponse, 
+                 bestMoveResponse "e2e4"]
 
 
 responseShouldBe :: Command -> [String] -> IO ()
