@@ -1,7 +1,5 @@
 module Uci where
 
-import Player (Player)
-
 data Command = 
     Uci |
     IsReady |
@@ -9,6 +7,9 @@ data Command =
     Position |
     Go |
     Unknown String deriving (Eq, Show)
+
+
+data Response = Response [String]
 
 parse :: String -> Command
 parse "uci" = Uci
@@ -19,3 +20,10 @@ parse s =
         "position":_ -> Position
         "go":_ -> Go
         _ -> Unknown s
+
+
+class CommandReader a where
+    read :: a -> IO Command
+
+class ResponseWriter a where
+    write :: a -> Response -> IO ()
