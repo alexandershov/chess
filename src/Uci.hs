@@ -1,4 +1,10 @@
-module Uci where
+module Uci (
+    Command(..),
+    Response(..),
+    parse,
+    getResponse,
+    Player(..)
+) where
 
 data Command = 
     Uci |
@@ -31,12 +37,6 @@ parse s =
         "go":_ -> Go
         _ -> Unknown s
 
-
-class CommandReader a where
-    read :: a -> IO Command
-
-class ResponseWriter a where
-    write :: a -> Response -> IO ()
 
 class Player a where
     findBestMove :: a -> IO String
