@@ -26,14 +26,14 @@ type ResponseWriter = Response -> IO ()
 
 
 play :: CommandReader -> Player -> ResponseWriter -> IO ()
-play readCommand player writeResponse = do
-    command <- readCommand
+play readCommand' player writeResponse' = do
+    command <- readCommand'
     case command of
         Quit -> return ()
         _ -> do
             response <- getResponse player command
-            writeResponse response
-            play readCommand player writeResponse
+            writeResponse' response
+            play readCommand' player writeResponse'
 
 
 turk :: FilePath -> Player
@@ -42,16 +42,16 @@ turk path = do
     hGetLine handle
 
 
-readCommandWithLog :: FilePath -> CommandReader
-readCommandWithLog logPath = do
+readCommand :: FilePath -> CommandReader
+readCommand logPath = do
     line <- getLine
     logLine <- makeLogLine "command" line
     appendFile logPath logLine
     return $ parse line
 
 
-writeResponseWithLog :: FilePath -> Response -> IO ()
-writeResponseWithLog logPath (Response responseLines) = do
+writeResponse :: FilePath -> Response -> IO ()
+writeResponse logPath (Response responseLines) = do
     logLines <- mapM (makeLogLine "response") responseLines
     mapM_ (appendFile logPath) logLines
     putStr $ unlines responseLines

@@ -7,5 +7,5 @@ main :: IO ()
 main = do
     args <- getArgs
     case args of
-        [logPath, turkPath] -> play (readCommandWithLog logPath) (turk turkPath) (writeResponseWithLog logPath)
-        _ -> error "Usage: chess-exe turk-path log-path"
+        [logPath, turkPath] -> play (readCommand logPath) (turk turkPath) (writeResponse logPath)
+        _ -> error "Usage: chess-exe log-path turk-path"
