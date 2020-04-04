@@ -18,9 +18,6 @@ data Command =
 data Response = Response [String] deriving (Eq, Show)
 type Player = IO String
 
-findBestMove :: Player -> Player
-findBestMove = id
-
 type CommandReader = IO Command
 type ResponseWriter = Response -> IO ()
 
@@ -76,7 +73,7 @@ getResponse Uci.UciNewGame _ = return emptyResponse
 getResponse Uci.Position _ = return emptyResponse
 
 getResponse Uci.Go player = do
-    move <- findBestMove player
+    move <- player
     return $ bestMoveResponse move
 
 getResponse _ _ = error "TODO: remove this"
