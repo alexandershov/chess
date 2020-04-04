@@ -7,8 +7,8 @@ module Uci (
     parse,
     getResponse,
     Player,
-    CommandReader(..),
-    ResponseWriter(..)
+    CommandReader,
+    ResponseWriter
 ) where
 
 data Command = 
@@ -21,17 +21,24 @@ data Command =
     Unknown String deriving (Eq, Show)
 
 data Response = Response [String] deriving (Eq, Show)
+type Player = IO String
+
+findBestMove :: Player -> Player
+findBestMove = id
+
+type CommandReader = IO Command
+type ResponseWriter = Response -> IO ()
 
 
-play :: (CommandReader a) => (ResponseWriter c) => a -> Player -> c -> IO ()
-play reader player writer = do
-    command <- Uci.read reader
+play :: CommandReader -> Player -> ResponseWriter -> IO ()
+play readCommand player writeResponse = do
+    command <- readCommand
     case command of
         Quit -> return ()
         _ -> do
             response <- getResponse player command
-            write writer response
-            play reader player writer
+            writeResponse response
+            play readCommand player writeResponse
 
 
 getResponse :: Player -> Command -> IO Response
@@ -74,16 +81,3 @@ parse s =
         "position":_ -> Position
         "go":_ -> Go
         _ -> Unknown s
-
-
-type Player = IO String
-
-findBestMove :: Player -> Player
-findBestMove = id
-
-class CommandReader a where
-    read :: a -> IO Command
-
-
-class ResponseWriter a where
-    write :: a -> Response -> IO ()

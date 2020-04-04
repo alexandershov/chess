@@ -58,7 +58,7 @@ describePlay :: SpecWith ()
 describePlay = 
     describe "Uci.Play" do
         it "plays a game" do
-            Uci.play TestCommandReader morphy TestResponseWriter
+            Uci.play quitter morphy nullWriter
 
 
 responseShouldBe :: Uci.Command -> [String] -> IO ()
@@ -67,16 +67,11 @@ command `responseShouldBe` expectedLines = do
     response `shouldBe` Uci.Response expectedLines
 
 
-data TestCommandReader = TestCommandReader
-data TestResponseWriter = TestResponseWriter
-
 morphy :: IO String
 morphy = return "e2e4"
 
+quitter :: IO Uci.Command
+quitter = return Uci.Quit
 
-instance Uci.CommandReader TestCommandReader where
-    read _ = return Uci.Quit
-
-
-instance Uci.ResponseWriter TestResponseWriter where
-    write _ _ = return ()
+nullWriter :: Uci.Response -> IO ()
+nullWriter _ = return ()
