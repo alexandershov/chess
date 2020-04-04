@@ -42,16 +42,16 @@ turk path = do
     hGetLine handle
 
 
-readCommand :: FilePath -> CommandReader
-readCommand logPath = do
+stdinReader :: FilePath -> CommandReader
+stdinReader logPath = do
     line <- getLine
     logLine <- makeLogLine "command" line
     appendFile logPath logLine
     return $ parse line
 
 
-writeResponse :: FilePath -> Response -> IO ()
-writeResponse logPath (Response responseLines) = do
+stdoutWriter :: FilePath -> Response -> IO ()
+stdoutWriter logPath (Response responseLines) = do
     logLines <- mapM (makeLogLine "response") responseLines
     mapM_ (appendFile logPath) logLines
     putStr $ unlines responseLines
