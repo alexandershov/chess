@@ -19,7 +19,3 @@ parse s =
         "position":_ -> Position
         "go":_ -> Go
         _ -> Unknown s
-
-
-play :: Player -> IO ()
-play 
