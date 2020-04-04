@@ -76,8 +76,10 @@ command `responseShouldBe` expectedLines = do
 morphy :: IO String
 morphy = return "e2e4"
 
+
 quitter :: IO Uci.Command
 quitter = return Uci.Quit
+
 
 nullWriter :: Uci.Response -> IO ()
 nullWriter _ = return ()
