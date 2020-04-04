@@ -38,6 +38,14 @@ describeUciGetResponse =
             response <- Uci.getResponse Morphy Uci.Uci
             response `shouldBe` Uci.Response ["id name chess", "id author Alexander Ershov"]
 
+        it "returns readyok on `isready` command" do
+            response <- Uci.getResponse Morphy Uci.IsReady
+            response `shouldBe` Uci.Response ["readyok"]
+
+        it "returns nothing on `ucinewgame` command" do
+            response <- Uci.getResponse Morphy Uci.UciNewGame
+            response `shouldBe` Uci.Response []
+
 
 data TestPlayer = Morphy
 instance Player TestPlayer where

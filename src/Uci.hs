@@ -13,7 +13,9 @@ data Response = Response [String] deriving (Eq, Show)
 
 getResponse :: (Player a) => a -> Command -> IO Response
 getResponse _ Uci.Uci = return $ Response ["id name chess", "id author Alexander Ershov"]
-getResponse _ _ = error "whoops" -- TODO: remove this
+getResponse _ Uci.IsReady = return $ Response ["readyok"]
+getResponse _ Uci.UciNewGame = return $ Response []
+getResponse _ _ = error "TODO: remove this"
 
 parse :: String -> Command
 parse "uci" = Uci
