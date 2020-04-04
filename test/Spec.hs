@@ -6,6 +6,10 @@ import Uci
 
 main :: IO ()
 main = hspec do
+    describeUciParse
+
+describeUciParse :: SpecWith ()
+describeUciParse =
     describe "Uci.parse" do
         it "parses `uci` command" do
             Uci.parse "uci" `shouldBe` Uci.Uci
