@@ -35,25 +35,25 @@ describeUciGetResponse :: SpecWith ()
 describeUciGetResponse =
     describe "Uci.getResponse" do
         it "returns name and author on `uci` command" do
-            Uci.Uci `responseShouldBe` Uci.Response ["id name chess", "id author Alexander Ershov"]
+            Uci.Uci `responseShouldBe` ["id name chess", "id author Alexander Ershov"]
 
         it "returns readyok on `isready` command" do
-            Uci.IsReady `responseShouldBe` Uci.Response ["readyok"]
+            Uci.IsReady `responseShouldBe` ["readyok"]
 
         it "returns nothing on `ucinewgame` command" do
-            Uci.UciNewGame `responseShouldBe` Uci.Response []
+            Uci.UciNewGame `responseShouldBe` []
 
         it "returns nothing on `position` command (for now)" do
-            Uci.Position `responseShouldBe` Uci.Response []
+            Uci.Position `responseShouldBe` []
 
         it "asks player on `go` command" do
-            Uci.Go `responseShouldBe` Uci.Response ["bestmove e2e4"]
+            Uci.Go `responseShouldBe` ["bestmove e2e4"]
 
 
-responseShouldBe :: Uci.Command -> Uci.Response -> IO ()
-command `responseShouldBe` expected = do
+responseShouldBe :: Uci.Command -> [String] -> IO ()
+command `responseShouldBe` expectedLines = do
     response <- Uci.getResponse Morphy command
-    response `shouldBe` expected
+    response `shouldBe` Response expectedLines
 
 
 data TestPlayer = Morphy
