@@ -68,7 +68,9 @@ describePlay =
         it "plays a game" do
             responsesRef <- newIORef []
             commandsRef <- newIORef [Uci, IsReady, UciNewGame, Position, Go, Quit]
+
             play (commands commandsRef) morphy (refWriter responsesRef)
+            
             responses <- readIORef responsesRef
             responses `shouldBe` 
                 [uciResponse, 
