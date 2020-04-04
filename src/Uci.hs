@@ -15,6 +15,7 @@ getResponse :: (Player a) => a -> Command -> IO Response
 getResponse _ Uci.Uci = return $ Response ["id name chess", "id author Alexander Ershov"]
 getResponse _ Uci.IsReady = return $ Response ["readyok"]
 getResponse _ Uci.UciNewGame = return $ Response []
+getResponse _ Uci.Position = return $ Response []
 getResponse _ _ = error "TODO: remove this"
 
 parse :: String -> Command

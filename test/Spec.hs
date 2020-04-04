@@ -46,6 +46,10 @@ describeUciGetResponse =
             response <- Uci.getResponse Morphy Uci.UciNewGame
             response `shouldBe` Uci.Response []
 
+        it "returns nothing on `position` command (for now)" do
+            response <- Uci.getResponse Morphy Uci.Position
+            response `shouldBe` Uci.Response []
+
 
 data TestPlayer = Morphy
 instance Player TestPlayer where
