@@ -91,12 +91,8 @@ morphy = return "e2e4"
 commands :: IORef [Command] -> IO Command
 commands ref = do
     curCommands <- readIORef ref
-    case curCommands of
-        x:_ -> do
-            modifyIORef ref tail
-            return x
-        [] -> do
-            error "Impossible"
+    modifyIORef ref tail
+    return $ head curCommands
 
     
 refWriter :: IORef [Response] -> Response -> IO ()
