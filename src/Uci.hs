@@ -1,12 +1,14 @@
 module Uci where
 
+import Player (Player)
+
 data Command = 
-    Uci 
-    | IsReady 
-    | UciNewGame 
-    | Position
-    | Go
-    | Unknown String deriving (Eq, Show)
+    Uci |
+    IsReady |
+    UciNewGame |
+    Position |
+    Go |
+    Unknown String deriving (Eq, Show)
 
 parse :: String -> Command
 parse "uci" = Uci
@@ -17,3 +19,7 @@ parse s =
         "position":_ -> Position
         "go":_ -> Go
         _ -> Unknown s
+
+
+play :: Player -> IO ()
+play 
