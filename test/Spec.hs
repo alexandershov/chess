@@ -11,7 +11,7 @@ main = hspec do
     describeUciGetResponse
     describePlay
 
-describeUciParse :: SpecWith ()
+describeUciParse :: Spec
 describeUciParse =
     describe "Uci.parse" do
         it "parses `uci` command" do
@@ -35,7 +35,7 @@ describeUciParse =
         it "returns Unknown on unknown commands" do
             Uci.parse "parse this" `shouldBe` Uci.Unknown "parse this"
 
-describeUciGetResponse :: SpecWith ()
+describeUciGetResponse :: Spec
 describeUciGetResponse =
     describe "Uci.getResponse" do
         it "returns name and author on `uci` command" do
@@ -54,7 +54,7 @@ describeUciGetResponse =
             Uci.Go `responseShouldBe` ["bestmove e2e4"]
 
 
-describePlay :: SpecWith ()
+describePlay :: Spec
 describePlay = 
     describe "Uci.Play" do
         it "plays a game" do
