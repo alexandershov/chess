@@ -2,13 +2,14 @@
 
 import Test.Hspec
 
-import Uci
+import qualified Uci
 
 
 main :: IO ()
 main = hspec do
     describeUciParse
     describeUciGetResponse
+    describePlay
 
 describeUciParse :: SpecWith ()
 describeUciParse =
@@ -50,12 +51,30 @@ describeUciGetResponse =
             Uci.Go `responseShouldBe` ["bestmove e2e4"]
 
 
+describePlay :: SpecWith ()
+describePlay = 
+    describe "Uci.Play" do
+        it "plays a game" do
+            Uci.play TestCommandReader Morphy TestResponseWriter
+
+
 responseShouldBe :: Uci.Command -> [String] -> IO ()
 command `responseShouldBe` expectedLines = do
     response <- Uci.getResponse Morphy command
-    response `shouldBe` Response expectedLines
+    response `shouldBe` Uci.Response expectedLines
 
 
 data TestPlayer = Morphy
-instance Player TestPlayer where
+data TestCommandReader = TestCommandReader
+data TestResponseWriter = TestResponseWriter
+
+instance Uci.Player TestPlayer where
     findBestMove Morphy = return "e2e4"
+
+
+instance Uci.CommandReader TestCommandReader where
+    read _ = return Uci.Quit
+
+
+instance Uci.ResponseWriter TestResponseWriter where
+    write _ _ = return ()

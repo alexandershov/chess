@@ -1,9 +1,14 @@
+{-# LANGUAGE BlockArguments #-}
+
 module Uci (
     Command(..),
     Response(..),
+    play,
     parse,
     getResponse,
-    Player(..)
+    Player(..),
+    CommandReader(..),
+    ResponseWriter(..)
 ) where
 
 data Command = 
@@ -12,14 +17,26 @@ data Command =
     UciNewGame |
     Position |
     Go |
+    Quit |
     Unknown String deriving (Eq, Show)
 
 data Response = Response [String] deriving (Eq, Show)
 
 
+play :: (CommandReader a) => (Player b) => (ResponseWriter c) => a -> b -> c -> IO ()
+play reader player writer = do
+    command <- Uci.read reader
+    case command of
+        Quit -> return ()
+        _ -> do
+            response <- getResponse player command
+            write writer response
+            play reader player writer
+
+
 getResponse :: (Player a) => a -> Command -> IO Response
 
-getResponse _ Uci.Uci = return uciResponse
+getResponse _ Uci.Uci = return idResponse
 
 getResponse _ Uci.IsReady = return readyOkResponse
 
@@ -34,8 +51,8 @@ getResponse player Uci.Go = do
 getResponse _ _ = error "TODO: remove this"
 
 
-uciResponse :: Response
-uciResponse = Response ["id name chess", "id author Alexander Ershov"]
+idResponse :: Response
+idResponse = Response ["id name chess", "id author Alexander Ershov"]
 
 readyOkResponse :: Response
 readyOkResponse = Response ["readyok"]
@@ -60,3 +77,11 @@ parse s =
 
 class Player a where
     findBestMove :: a -> IO String
+
+
+class CommandReader a where
+    read :: a -> IO Command
+
+
+class ResponseWriter a where
+    write :: a -> Response -> IO ()
