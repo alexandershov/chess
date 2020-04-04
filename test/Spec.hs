@@ -1,5 +1,7 @@
 {-# LANGUAGE BlockArguments #-}
 
+import Data.IORef
+
 import Test.Hspec
 
 import qualified Uci
@@ -64,7 +66,10 @@ describePlay :: Spec
 describePlay = 
     describe "Uci.Play" do
         it "plays a game" do
-            Uci.play quitter morphy nullWriter
+            commandsRef <- newIORef []
+            Uci.play quitter morphy (refWriter commandsRef)
+            commands <- readIORef commandsRef
+            commands `shouldBe` []
 
 
 responseShouldBe :: Uci.Command -> [String] -> IO ()
@@ -81,5 +86,6 @@ quitter :: IO Uci.Command
 quitter = return Uci.Quit
 
 
-nullWriter :: Uci.Response -> IO ()
-nullWriter _ = return ()
+refWriter :: IORef [Uci.Response] -> Uci.Response -> IO ()
+refWriter ref response = do
+    modifyIORef ref (++ [response])
