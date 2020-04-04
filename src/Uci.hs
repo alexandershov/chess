@@ -26,14 +26,14 @@ type ResponseWriter = Response -> IO ()
 
 
 play :: CommandReader -> Player -> ResponseWriter -> IO ()
-play readCommand' player writeResponse' = do
-    command <- readCommand'
+play reader player writer = do
+    command <- reader
     case command of
         Quit -> return ()
         _ -> do
             response <- getResponse command player
-            writeResponse' response
-            play readCommand' player writeResponse'
+            writer response
+            play reader player writer
 
 
 turk :: FilePath -> Player
