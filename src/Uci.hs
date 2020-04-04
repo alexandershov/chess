@@ -76,7 +76,9 @@ getResponse Uci.Go player = do
     move <- player
     return $ bestMoveResponse move
 
-getResponse _ _ = error "TODO: remove this"
+getResponse (Uci.Unknown _) _ = return emptyResponse
+
+getResponse Uci.Quit _ = return emptyResponse
 
 
 uciResponse :: Response
