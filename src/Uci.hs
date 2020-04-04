@@ -9,7 +9,11 @@ data Command =
     Unknown String deriving (Eq, Show)
 
 
-data Response = Response [String]
+data Response = Response [String] deriving (Eq, Show)
+
+getResponse :: (Player a) => a -> Command -> IO Response
+getResponse _ Uci.Uci = return $ Response ["id name chess", "id author Alexander Ershov"]
+getResponse _ _ = error "whoops" -- TODO: remove this
 
 parse :: String -> Command
 parse "uci" = Uci

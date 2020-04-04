@@ -4,9 +4,11 @@ import Test.Hspec
 
 import Uci
 
+
 main :: IO ()
 main = hspec do
     describeUciParse
+    describeUciGetResponse
 
 describeUciParse :: SpecWith ()
 describeUciParse =
@@ -28,3 +30,16 @@ describeUciParse =
 
         it "returns Unknown on unknown commands" do
             Uci.parse "parse this" `shouldBe` Uci.Unknown "parse this"
+
+describeUciGetResponse :: SpecWith ()
+describeUciGetResponse =
+    describe "Uci.getResponse" do
+        it "returns name and author on `uci` command" do
+            response <- Uci.getResponse Morphy Uci.Uci
+            response `shouldBe` Uci.Response ["id name chess", "id author Alexander Ershov"]
+
+
+data TestPlayer = Morphy
+instance Player TestPlayer where
+    findBestMove Morphy = do
+        return "e2e4"
