@@ -29,6 +29,9 @@ describeUciParse =
         it "parses `go` command" do
             Uci.parse "go" `shouldBe` Uci.Go
 
+        it "parses `quit` command" do
+            Uci.parse "quit" `shouldBe` Uci.Quit
+
         it "returns Unknown on unknown commands" do
             Uci.parse "parse this" `shouldBe` Uci.Unknown "parse this"
 

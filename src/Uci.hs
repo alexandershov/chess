@@ -68,6 +68,7 @@ parse :: String -> Command
 parse "uci" = Uci
 parse "isready" = IsReady
 parse "ucinewgame" = UciNewGame
+parse "quit" = Quit
 parse s =
     case words s of
         "position":_ -> Position
