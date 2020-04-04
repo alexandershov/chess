@@ -31,7 +31,7 @@ play readCommand' player writeResponse' = do
     case command of
         Quit -> return ()
         _ -> do
-            response <- getResponse player command
+            response <- getResponse command player
             writeResponse' response
             play readCommand' player writeResponse'
 
@@ -65,17 +65,17 @@ makeLogLine kind line = do
         return $ (intercalate "\t" entries) ++ "\n"
 
 
-getResponse :: Player -> Command -> IO Response
+getResponse :: Command -> Player -> IO Response
 
-getResponse _ Uci.Uci = return uciResponse
+getResponse Uci.Uci _ = return uciResponse
 
-getResponse _ Uci.IsReady = return readyOkResponse
+getResponse Uci.IsReady _ = return readyOkResponse
 
-getResponse _ Uci.UciNewGame = return emptyResponse
+getResponse Uci.UciNewGame _ = return emptyResponse
 
-getResponse _ Uci.Position = return emptyResponse
+getResponse Uci.Position _ = return emptyResponse
 
-getResponse player Uci.Go = do
+getResponse Uci.Go player = do
     move <- findBestMove player
     return $ bestMoveResponse move
 

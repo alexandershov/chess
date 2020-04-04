@@ -63,7 +63,7 @@ describePlay =
 
 responseShouldBe :: Uci.Command -> [String] -> IO ()
 command `responseShouldBe` expectedLines = do
-    response <- Uci.getResponse morphy command
+    response <- Uci.getResponse command morphy
     response `shouldBe` Uci.Response expectedLines
 
 
