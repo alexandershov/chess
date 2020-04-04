@@ -16,6 +16,9 @@ getResponse _ Uci.Uci = return $ Response ["id name chess", "id author Alexander
 getResponse _ Uci.IsReady = return $ Response ["readyok"]
 getResponse _ Uci.UciNewGame = return $ Response []
 getResponse _ Uci.Position = return $ Response []
+getResponse player Uci.Go = do
+    move <- findBestMove player
+    return $ Response ["bestmove " ++ move]
 getResponse _ _ = error "TODO: remove this"
 
 parse :: String -> Command

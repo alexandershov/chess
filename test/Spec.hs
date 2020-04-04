@@ -50,8 +50,11 @@ describeUciGetResponse =
             response <- Uci.getResponse Morphy Uci.Position
             response `shouldBe` Uci.Response []
 
+        it "asks player on `go` command" do
+            response <- Uci.getResponse Morphy Uci.Go
+            response `shouldBe` Uci.Response ["bestmove e2e4"]
+
 
 data TestPlayer = Morphy
 instance Player TestPlayer where
-    findBestMove Morphy = do
-        return "e2e4"
+    findBestMove Morphy = return "e2e4"
