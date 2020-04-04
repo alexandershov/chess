@@ -58,21 +58,20 @@ describePlay :: SpecWith ()
 describePlay = 
     describe "Uci.Play" do
         it "plays a game" do
-            Uci.play TestCommandReader Morphy TestResponseWriter
+            Uci.play TestCommandReader morphy TestResponseWriter
 
 
 responseShouldBe :: Uci.Command -> [String] -> IO ()
 command `responseShouldBe` expectedLines = do
-    response <- Uci.getResponse Morphy command
+    response <- Uci.getResponse morphy command
     response `shouldBe` Uci.Response expectedLines
 
 
-data TestPlayer = Morphy
 data TestCommandReader = TestCommandReader
 data TestResponseWriter = TestResponseWriter
 
-instance Uci.Player TestPlayer where
-    findBestMove Morphy = return "e2e4"
+morphy :: IO String
+morphy = return "e2e4"
 
 
 instance Uci.CommandReader TestCommandReader where
