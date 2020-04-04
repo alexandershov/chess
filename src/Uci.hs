@@ -29,4 +29,4 @@ class ResponseWriter a where
     write :: a -> Response -> IO ()
 
 class Player a where
-    findBestMove :: a -> IO Response
+    findBestMove :: a -> IO String
