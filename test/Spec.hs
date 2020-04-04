@@ -66,10 +66,11 @@ describePlay :: Spec
 describePlay = 
     describe "Uci.Play" do
         it "plays a game" do
-            commandsRef <- newIORef []
-            Uci.play quitter morphy (refWriter commandsRef)
-            commands <- readIORef commandsRef
-            commands `shouldBe` []
+            responsesRef <- newIORef []
+            commandsRef <- newIORef [Uci.Quit]
+            Uci.play (commands commandsRef) morphy (refWriter responsesRef)
+            responses <- readIORef responsesRef
+            responses `shouldBe` []
 
 
 responseShouldBe :: Uci.Command -> [String] -> IO ()
@@ -82,10 +83,16 @@ morphy :: IO String
 morphy = return "e2e4"
 
 
-quitter :: IO Uci.Command
-quitter = return Uci.Quit
-
-
+commands :: IORef [Uci.Command] -> IO Uci.Command
+commands ref = do
+    curCommands <- readIORef ref
+    case curCommands of
+        x:_ -> do
+            modifyIORef ref tail
+            return x
+        [] -> do
+            error "Impossible"
+    
 refWriter :: IORef [Uci.Response] -> Uci.Response -> IO ()
 refWriter ref response = do
     modifyIORef ref (++ [response])
