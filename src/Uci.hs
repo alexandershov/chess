@@ -33,10 +33,8 @@ play reader player writer = do
             play reader player writer
 
 
-turk :: FilePath -> Player
-turk path = do
-    handle <- openFile path ReadMode
-    hGetLine handle
+turk :: Handle -> Player
+turk handle = hGetLine handle
 
 
 stdinReader :: FilePath -> CommandReader
