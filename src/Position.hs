@@ -17,3 +17,4 @@ type Board = Array Square (Maybe Piece)
 data Position = Position { board :: Board, sideToMove :: Color }
 data Move = Move { from :: Square, to :: Square }
 
+generateMoves :: Position -> [Move]
