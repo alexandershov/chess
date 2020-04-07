@@ -10,4 +10,6 @@ data Piece =
     King Color
 
 type Square = (Int, Int)
-data Board = Board Array Square (Maybe Piece)
+type Board = Array Square (Maybe Piece)
+
+data Position = Position { board::Board, }
