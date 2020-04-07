@@ -1,5 +1,7 @@
 import qualified Data.Array as Array
 
+boardSize :: Int = 8
+
 data Color = Black | White
 data Piece = 
     Pawn Color | 
