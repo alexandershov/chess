@@ -16,11 +16,17 @@ data Piece =
     King Color
 
 type Square = (Int, Int)
+showSquare :: Square -> String
+showSquare (x, y) = 
+    ("abcdefgh" !! (x - 1)):(show y)
 
 type Board = Array Square (Maybe Piece)
 
 data Position = Position { getBoard :: Board, getSideToMove :: Color }
-data Move = Move { from :: Square, to :: Square } deriving (Eq, Show)
+data Move = Move { from :: Square, to :: Square } deriving (Eq)
+
+instance Show Move where
+    show move = showSquare (from move) ++ showSquare (to move)
 
 emptyBoard :: Board
 emptyBoard = listArray ((1, 1), (8, 8)) $ replicate (boardSize * boardSize) Nothing
