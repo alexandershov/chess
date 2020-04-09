@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 721f46eb7b43303f32344528373eff2d0d3d70d38473ca6ae92b1515fb4276a7
+-- hash: 03a116e5aee9e7607619e4453177161356f3aaa790dc769522a6854cb61bcbd6
 
 name:           chess
 version:        0.1.0.0
@@ -61,6 +61,7 @@ test-suite chess-test
   other-modules:
       PositionSpec
       Squares
+      UciSpec
       Paths_chess
   hs-source-dirs:
       test
