@@ -43,4 +43,22 @@ allMoves position =
 
 
 piecesInSquares :: Position -> [(Piece, Squares)]
-piecesInSquares 
+piecesInSquares Position board _ =
+    [ (piece, square) | (square, Just piece) <- assocs board ]
+
+
+pieceMoves :: Position -> Piece -> Square -> [Move]
+pieceMoves (Position board _) piece square = []
+
+type Direction = (Int, Int)
+type Range = Int
+
+data Movement = Movement [Direction] Range
+
+getMovement :: Piece -> Movement
+getMovement (Pawn _) = error "TODO: implement pawn movement"
+getMovement (Knight _) = Movement jumps 1
+getMovement (Bishop _) = Movement diagonals boardSize
+getMovement (Rook _) = Movement straightLines boardSize
+getMovement (Queen _) = Movement (diagonals ++ straightLines) boardSize
+getMovement (King _) = Movement (diagonals ++ straightLines) 1
