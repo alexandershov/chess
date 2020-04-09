@@ -35,4 +35,12 @@ isOccupied :: Square -> Board -> Bool
 square `isOccupied` board = isJust $ board ! square
 
 allMoves :: Position -> [Move]
-allMoves _ = []
+allMoves position = 
+    [ move | 
+     (piece, square) <- piecesInSquares position,
+     move <- pieceMoves position piece square
+    ]
+
+
+piecesInSquares :: Position -> [(Piece, Squares)]
+piecesInSquares 
