@@ -11,7 +11,7 @@ import Squares
 
 describeRookMoves :: Spec
 describeRookMoves = do
-    describe "rookMoves" do
+    describe "Rook" do
             it "moves horizontally" do
                 allMoves rookTestPosition `shouldContain` [Move a1 d1]
             it "moves vertically" do

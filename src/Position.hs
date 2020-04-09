@@ -15,6 +15,15 @@ data Piece =
     Queen Color | 
     King Color
 
+
+instance Show Piece where
+    show (Pawn _) = "p"
+    show (Knight _) = "N"
+    show (Bishop _) = "B"
+    show (Rook _) = "R"
+    show (Queen _) = "Q"
+    show (King _) = "K"
+
 type Square = (Int, Int)
 showSquare :: Square -> String
 showSquare (x, y) = 
@@ -64,7 +73,7 @@ pieceMoves :: Position -> Piece -> Square -> [Move]
 pieceMoves (Position board sideToMove) piece square = 
     let destinations = getDestinations square (getMovement piece)
         candidates = takeWhileAndNext (isEmpty board) destinations
-        tos = takeWhile (notColoredAs board sideToMove) candidates in
+        tos = filter (notColoredAs board sideToMove) candidates in
            map (Move square) tos
 
 
