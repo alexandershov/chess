@@ -62,3 +62,12 @@ getMovement (Bishop _) = Movement diagonals boardSize
 getMovement (Rook _) = Movement straightLines boardSize
 getMovement (Queen _) = Movement (diagonals ++ straightLines) boardSize
 getMovement (King _) = Movement (diagonals ++ straightLines) 1
+
+jumps :: [Direction]
+jumps = [(1, 2), (2, 1), (2, -1), (1, -2), (-1, -2), (-2, -1), (-2, 1), (-1, 2)]
+
+diagonals :: [Direction]
+diagonals = [(1, 1), (1, -1), (-1, -1), (-1, 1)]
+
+straightLines :: [Direction]
+straightLines = [(1, 0), (0, 1), (-1, 0), (0, -1)]
