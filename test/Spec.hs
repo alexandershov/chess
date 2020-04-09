@@ -12,6 +12,7 @@ main = hspec do
     describeUciParse
     describeUciGetResponse
     describePlay
+    describeRookMoves
 
 describeUciParse :: Spec
 describeUciParse =
@@ -70,7 +71,7 @@ describePlay =
             commandsRef <- newIORef [Uci, IsReady, UciNewGame, Position, Go, Quit]
 
             play (commands commandsRef) morphy (refWriter responsesRef)
-            
+
             responses <- readIORef responsesRef
             responses `shouldBe` 
                 [uciResponse, 
@@ -100,3 +101,24 @@ commands ref = do
 refWriter :: IORef [Response] -> Response -> IO ()
 refWriter ref response = do
     modifyIORef ref (++ [response])
+
+
+describeRookMoves :: Spec
+describeRookMoves = do
+    describe "rookMoves" do
+        let position = put [whiteRook `on` a1, 
+                            whiteKing `on` e1, 
+                            blackKnight `on` a5,
+                            blackKing `on` e8] in
+            it "moves horizontally" do
+                allMoves position `shouldContain` [Move a1 d1]
+            it "moves vertically" do
+                allMoves position `shouldContain` [Move a1 a4]
+            it "takes enemy piece" do
+                allMoves position `shouldContain` [Move a1 a5]
+            it "doesn't take own piece" do
+                allMoves position `shouldNotContain` [Move a1 e1]
+            it "can't move past enemy piece" do
+                allMoves position `shouldNotContain` [Move a1 a6]
+            it "can't move past own piece" do
+                allMoves position `shouldNotContain` [Move a1 f1]
