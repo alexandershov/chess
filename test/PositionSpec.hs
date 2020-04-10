@@ -13,9 +13,16 @@ describeRookMoves :: Spec
 describeRookMoves = do
     describe "Rook" do
             it "moves horizontally" do
-                allMoves rookTestPosition `shouldContain` [Move a1 d1]
+                allMoves rookTestPosition `shouldContain` [
+                    Move a1 b1,
+                    Move a1 c1,
+                    Move a1 d1]
             it "moves vertically" do
-                allMoves rookTestPosition `shouldContain` [Move a1 a4]
+                allMoves rookTestPosition `shouldContain` [
+                    Move a1 a2,
+                    Move a1 a3,
+                    Move a1 a4,
+                    Move a1 a5]
             it "takes enemy piece" do
                 allMoves rookTestPosition `shouldContain` [Move a1 a5]
             it "doesn't take own piece" do
