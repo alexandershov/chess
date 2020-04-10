@@ -70,11 +70,16 @@ piecesInSquares (Position board sideToMove) =
 
 
 pieceMoves :: Position -> Piece -> Square -> [Move]
-pieceMoves (Position board sideToMove) piece square = 
-    let destinations = getDestinations square (getMovement piece)
-        candidates = takeWhileAndNext (isEmpty board) destinations
-        tos = filter (notColoredAs board sideToMove) candidates in
-           map (Move square) tos
+pieceMoves position piece square = 
+    map (Move square) tos
+    where allLines = getLines square (getMovement piece)
+          tos = concat (map (cutLine position) allLines)
+
+
+cutLine :: Position -> [Square] -> [Square]
+cutLine (Position board sideToMove) line =
+        let candidates = takeWhileAndNext (isEmpty board) line in
+            filter (notColoredAs board sideToMove) candidates
 
 
 notColoredAs :: Board -> Color -> Square -> Bool
@@ -90,9 +95,9 @@ takeWhileAndNext p xs =
     where (good, bad) = span p xs
 
 
-getDestinations :: Square -> Movement -> [Square]
-getDestinations square (Movement directions range) =
-    filter isOnBoard [ squareInDirection square d i | d <- directions, i <- [1..range] ]
+getLines :: Square -> Movement -> [[Square]]
+getLines square (Movement directions range) =
+    [ filter isOnBoard [squareInDirection square d i | i <- [1..range]] | d <- directions ]
 
 
 mulDirection :: Direction -> Int -> Direction
