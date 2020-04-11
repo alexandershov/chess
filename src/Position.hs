@@ -90,10 +90,10 @@ exclude p xs = [ x | x <- xs, not $ p x ]
 
 
 isOccupiedBySideToMove :: Position -> Square -> Bool
-isOccupiedBySideToMove (Position board color) square =
+isOccupiedBySideToMove (Position board sideToMove) square =
     case board ! square of
         Nothing -> False
-        Just piece -> (getColor piece) == color
+        Just piece -> (getColor piece) == sideToMove
 
 
 takeWhileWithBreaker :: (a -> Bool) -> [a] -> [a]
