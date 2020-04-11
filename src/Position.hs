@@ -20,7 +20,9 @@ data Piece =
 type Square = (Int, Int)
 showSquare :: Square -> String
 showSquare (x, y) = 
-    ("abcdefgh" !! (x - 1)):(show y)
+    file ++ rank
+    where file = [("abcdefgh" !! (x - 1))]
+          rank = show y
 
 type Board = Array Square (Maybe Piece)
 
@@ -33,7 +35,9 @@ type Range = Int
 data Movement = Movement [Direction] Range
 
 instance Show Move where
-    show (Move from to) = showSquare from ++ showSquare to
+    show (Move from to) 
+        | isOnBoard from && isOnBoard to = showSquare from ++ showSquare to
+        | otherwise = "MoveOutsideTheBoard " ++ (show from) ++ " -> " ++ (show to)
 
 emptyBoard :: Board
 emptyBoard = listArray ((1, 1), (8, 8)) $ repeat Nothing
