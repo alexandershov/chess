@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedLabels #-}
-
 module Position where
 
 import Data.Array (assocs, Array, (!), listArray)
@@ -10,12 +8,12 @@ boardSize = 8
 
 data Color = Black | White deriving (Eq, Show)
 data Piece = 
-    Pawn Color | 
-    Knight Color | 
-    Bishop Color |
-    Rook Color | 
-    Queen Color | 
-    King Color
+    Pawn { getColor :: Color } | 
+    Knight { getColor :: Color } | 
+    Bishop { getColor :: Color } |
+    Rook { getColor :: Color } | 
+    Queen { getColor :: Color } | 
+    King { getColor :: Color }
 
 type Square = (Int, Int)
 type Line = [Square]
@@ -128,14 +126,6 @@ getMovement (Bishop _) = Movement diagonals boardSize
 getMovement (Rook _) = Movement straightLines boardSize
 getMovement (Queen _) = Movement (diagonals ++ straightLines) boardSize
 getMovement (King _) = Movement (diagonals ++ straightLines) 1
-
-getColor :: Piece -> Color
-getColor (Pawn color) = color
-getColor (Knight color) = color
-getColor (Bishop color) = color
-getColor (Rook color) = color
-getColor (Queen color) = color
-getColor (King color) = color
 
 jumps :: [Direction]
 jumps = [(1, 2), (2, 1), (2, -1), (1, -2), (-1, -2), (-2, -1), (-2, 1), (-1, 2)]
