@@ -13,24 +13,24 @@ describeRookMoves :: Spec
 describeRookMoves = do
     describe "Rook" do
             it "moves horizontally" do
-                allMoves rookTestPosition `shouldContain` [
+                allMoves positionWithRook `shouldContain` [
                     Move a1 b1,
                     Move a1 c1,
                     Move a1 d1]
             it "moves vertically" do
-                allMoves rookTestPosition `shouldContain` [
+                allMoves positionWithRook `shouldContain` [
                     Move a1 a2,
                     Move a1 a3,
                     Move a1 a4,
                     Move a1 a5]
             it "takes enemy piece" do
-                allMoves rookTestPosition `shouldContain` [Move a1 a5]
+                allMoves positionWithRook `shouldContain` [Move a1 a5]
             it "doesn't take own piece" do
-                allMoves rookTestPosition `shouldNotContain` [Move a1 e1]
+                allMoves positionWithRook `shouldNotContain` [Move a1 e1]
             it "can't move past enemy piece" do
-                allMoves rookTestPosition `shouldNotContain` [Move a1 a6]
+                allMoves positionWithRook `shouldNotContain` [Move a1 a6]
             it "can't move past own piece" do
-                allMoves rookTestPosition `shouldNotContain` [Move a1 f1]
+                allMoves positionWithRook `shouldNotContain` [Move a1 f1]
 
 
 on :: Piece -> Square -> (Piece, Square)
@@ -41,8 +41,8 @@ put piecesOnSquares =
     emptyBoard // [(square, Just piece) | (piece, square) <- piecesOnSquares]
 
 
-rookTestPosition :: Position
-rookTestPosition =
+positionWithRook :: Position
+positionWithRook =
     let board = put [whiteRook `on` a1, 
                      whiteKing `on` e1, 
                      blackKnight `on` a5,
