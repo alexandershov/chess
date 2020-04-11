@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedLabels #-}
+
 module Position where
 
 import Data.Array (assocs, Array, (!), listArray)
@@ -22,7 +24,7 @@ showSquare (x, y) =
 
 type Board = Array Square (Maybe Piece)
 
-data Position = Position { getBoard :: Board, getSideToMove :: Color }
+data Position = Position Board Color
 data Move = Move { from :: Square, to :: Square } deriving (Eq)
 
 type Direction = (Int, Int)
