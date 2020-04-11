@@ -13,11 +13,7 @@ describeRook :: Spec
 describeRook = do
     describe "Rook" do
             it "moves horizontally" do
-                allMoves positionWithRook `shouldContain` [
-                    Move a1 b1,
-                    Move a1 c1,
-                    Move a1 d1]
-            it "moves vertically" do
+                allMoves positionWithRook `shouldContain` rookMovesFromA1ToD1
                 allMoves positionWithRook `shouldContain` [
                     Move a1 a2,
                     Move a1 a3,
@@ -48,6 +44,10 @@ positionWithRook =
                      blackKnight `on` a5,
                      blackKing `on` e8] in
             Position board White
+
+
+rookMovesFromA1ToD1 :: [Move]
+rookMovesFromA1ToD1 = [Move a1 b1, Move a1 c1, Move a1 d1]
 
 whiteRook :: Piece
 whiteRook = Rook White
