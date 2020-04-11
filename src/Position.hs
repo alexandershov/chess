@@ -60,23 +60,24 @@ isEmpty board square = isNothing $ board ! square
 allMoves :: Position -> [Move]
 allMoves position = 
     [ move | 
-     (piece, square) <- piecesInSquares position,
+     (piece, square) <- piecesToMoveInSquares position,
      move <- pieceMoves position piece square
     ]
 
 
-piecesInSquares :: Position -> [(Piece, Square)]
-piecesInSquares (Position board sideToMove) =
+piecesToMoveInSquares :: Position -> [(Piece, Square)]
+piecesToMoveInSquares (Position board sideToMove) =
     [ (piece, square) | 
       (square, Just piece) <- assocs board, 
       getColor piece == sideToMove ]
 
 
 pieceMoves :: Position -> Piece -> Square -> [Move]
-pieceMoves position piece square = 
-    map (Move square) tos
-    where allLines = getLines square (getMovement piece)
-          tos = concat (map (cutLine position) allLines)
+pieceMoves position piece from = 
+    [ Move from to | to <- tos ]
+    where allLines = getLines from (getMovement piece)
+          linesTos = [ cutLine position line | line <- allLines ]
+          tos = concat linesTos
 
 
 cutLine :: Position -> [Square] -> [Square]
