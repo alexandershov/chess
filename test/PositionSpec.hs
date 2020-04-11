@@ -9,8 +9,8 @@ import Test.Hspec
 import Position
 import Squares
 
-describeRookMoves :: Spec
-describeRookMoves = do
+describeRook :: Spec
+describeRook = do
     describe "Rook" do
             it "moves horizontally" do
                 allMoves positionWithRook `shouldContain` [

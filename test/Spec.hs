@@ -11,4 +11,4 @@ main = hspec do
     describeUciParse
     describeUciGetResponse
     describePlay
-    describeRookMoves
+    describeRook
