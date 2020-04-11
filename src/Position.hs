@@ -49,10 +49,10 @@ h8 :: Square
 h8 = (boardSize, boardSize)
 
 isOnBoard :: Square -> Bool
-isOnBoard (x, y) = and $ map coordinateIsOnBoard [x, y]
+isOnBoard (x, y) = all fileOrRankIsOnBoard [x, y]
 
-coordinateIsOnBoard :: Int -> Bool
-coordinateIsOnBoard x = (x >= 1) && (x <= boardSize)
+fileOrRankIsOnBoard :: Int -> Bool
+fileOrRankIsOnBoard x = (x >= 1) && (x <= boardSize)
 
 isEmpty :: Board -> Square -> Bool
 isEmpty board square = isNothing $ board ! square
