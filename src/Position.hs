@@ -82,8 +82,8 @@ pieceMoves position piece from =
 
 cutLine :: Position -> [Square] -> [Square]
 cutLine (Position board sideToMove) line =
-        let candidates = takeWhileAndNext (isEmpty board) line in
-            filter (notColoredAs board sideToMove) candidates
+    filter (notColoredAs board sideToMove) candidates
+    where candidates = takeWhileAndNext (isEmpty board) line
 
 
 notColoredAs :: Board -> Color -> Square -> Bool
