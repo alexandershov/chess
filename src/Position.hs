@@ -40,7 +40,13 @@ instance Show Move where
         | otherwise = "MoveOutsideTheBoard " ++ (show from) ++ " -> " ++ (show to)
 
 emptyBoard :: Board
-emptyBoard = listArray ((1, 1), (8, 8)) $ repeat Nothing
+emptyBoard = listArray (a1, h8) $ repeat Nothing
+
+a1 :: Square
+a1 = (1, 1)
+
+h8 :: Square
+h8 = (boardSize, boardSize)
 
 isOnBoard :: Square -> Bool
 isOnBoard (x, y) = and $ map coordinateIsOnBoard [x, y]

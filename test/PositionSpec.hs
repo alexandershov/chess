@@ -6,7 +6,7 @@ import Data.Array ((//))
 
 import Test.Hspec
 
-import Position
+import Position hiding (a1, h8)
 import Squares
 
 describeRook :: Spec
