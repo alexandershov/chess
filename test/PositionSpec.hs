@@ -36,12 +36,11 @@ put piecesOnSquares =
 
 positionWithRook :: Position
 positionWithRook =
-    let board = put [whiteRook `on` a1, 
-                     whiteKing `on` e1, 
-                     blackKnight `on` a5,
-                     blackKing `on` e8] in
-            Position board White
-
+    Position board White
+    where board = put [whiteRook `on` a1, 
+                       whiteKing `on` e1, 
+                       blackKnight `on` a5, 
+                       blackKing `on` e8]
 
 lineA1D1 :: [Move]
 lineA1D1 = [Move a1 b1, Move a1 c1, Move a1 d1]
