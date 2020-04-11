@@ -82,16 +82,19 @@ pieceMoves position piece from =
 
 cutLine :: Position -> [Square] -> [Square]
 cutLine (Position board sideToMove) line =
-    filter (notColoredAs board sideToMove) candidates
+    exclude (coloredAs board sideToMove) candidates
     where candidates = takeWhileAndNext (isEmpty board) line
 
 
-notColoredAs :: Board -> Color -> Square -> Bool
-notColoredAs board color square =
-    case maybePiece of
-        Nothing -> True
-        Just piece -> (getColor piece) /= color
-    where maybePiece = board ! square
+exclude :: (a -> Bool) -> [a] -> [a]
+exclude p xs = [ x | x <- xs, not $ p x ]
+
+
+coloredAs :: Board -> Color -> Square -> Bool
+coloredAs board color square =
+    case board ! square of
+        Nothing -> False
+        Just piece -> (getColor piece) == color
 
 takeWhileAndNext :: (a -> Bool) -> [a] -> [a]
 takeWhileAndNext p xs = 
