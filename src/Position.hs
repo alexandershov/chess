@@ -36,7 +36,7 @@ instance Show Move where
     show (Move from to) = showSquare from ++ showSquare to
 
 emptyBoard :: Board
-emptyBoard = listArray ((1, 1), (8, 8)) $ replicate (boardSize * boardSize) Nothing
+emptyBoard = listArray ((1, 1), (8, 8)) $ repeat Nothing
 
 isOnBoard :: Square -> Bool
 isOnBoard (x, y) = and $ map coordinateIsOnBoard [x, y]
