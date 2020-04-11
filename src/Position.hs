@@ -15,15 +15,6 @@ data Piece =
     Queen Color | 
     King Color
 
-
-instance Show Piece where
-    show (Pawn _) = "p"
-    show (Knight _) = "N"
-    show (Bishop _) = "B"
-    show (Rook _) = "R"
-    show (Queen _) = "Q"
-    show (King _) = "K"
-
 type Square = (Int, Int)
 showSquare :: Square -> String
 showSquare (x, y) = 
