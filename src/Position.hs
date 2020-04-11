@@ -25,7 +25,7 @@ showSquare (x, y) =
 type Board = Array Square (Maybe Piece)
 
 data Position = Position Board Color
-data Move = Move { from :: Square, to :: Square } deriving (Eq)
+data Move = Move Square Square deriving (Eq)
 
 type Direction = (Int, Int)
 type Range = Int
@@ -33,7 +33,7 @@ type Range = Int
 data Movement = Movement [Direction] Range
 
 instance Show Move where
-    show move = showSquare (from move) ++ showSquare (to move)
+    show (Move from to) = showSquare from ++ showSquare to
 
 emptyBoard :: Board
 emptyBoard = listArray ((1, 1), (8, 8)) $ replicate (boardSize * boardSize) Nothing
