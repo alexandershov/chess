@@ -13,12 +13,9 @@ describeRook :: Spec
 describeRook = do
     describe "Rook" do
             it "moves horizontally" do
-                allMoves positionWithRook `shouldContain` rookMovesFromA1ToD1
-                allMoves positionWithRook `shouldContain` [
-                    Move a1 a2,
-                    Move a1 a3,
-                    Move a1 a4,
-                    Move a1 a5]
+                allMoves positionWithRook `shouldContain` lineA1D1
+            it "moves vertically" do
+                allMoves positionWithRook `shouldContain` lineA1A5
             it "takes enemy piece" do
                 allMoves positionWithRook `shouldContain` [Move a1 a5]
             it "doesn't take own piece" do
@@ -46,8 +43,11 @@ positionWithRook =
             Position board White
 
 
-rookMovesFromA1ToD1 :: [Move]
-rookMovesFromA1ToD1 = [Move a1 b1, Move a1 c1, Move a1 d1]
+lineA1D1 :: [Move]
+lineA1D1 = [Move a1 b1, Move a1 c1, Move a1 d1]
+
+lineA1A5 :: [Move]
+lineA1A5 = [Move a1 a2, Move a1 a3, Move a1 a4, Move a1 a5]
 
 whiteRook :: Piece
 whiteRook = Rook White
