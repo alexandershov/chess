@@ -18,6 +18,7 @@ data Piece =
     King Color
 
 type Square = (Int, Int)
+type Line = [Square]
 showSquare :: Square -> String
 showSquare (x, y) = 
     file ++ rank
@@ -80,10 +81,10 @@ pieceMoves position piece from =
           tos = concat linesTos
 
 
-cutLine :: Position -> [Square] -> [Square]
+cutLine :: Position -> Line -> Line
 cutLine position@(Position board _) line =
     exclude (isOccupiedBySideToMove position) squares
-    where squares = takeWhileAndNext (isEmpty board) line
+    where squares = takeWhileWithBreaker (isEmpty board) line
 
 
 exclude :: (a -> Bool) -> [a] -> [a]
@@ -96,13 +97,14 @@ isOccupiedBySideToMove (Position board color) square =
         Nothing -> False
         Just piece -> (getColor piece) == color
 
-takeWhileAndNext :: (a -> Bool) -> [a] -> [a]
-takeWhileAndNext p xs = 
+
+takeWhileWithBreaker :: (a -> Bool) -> [a] -> [a]
+takeWhileWithBreaker p xs = 
     good ++ take 1 bad
     where (good, bad) = span p xs
 
 
-getLines :: Square -> Movement -> [[Square]]
+getLines :: Square -> Movement -> [Line]
 getLines square (Movement directions range) =
     [ filter isOnBoard [squareInDirection square d i | i <- [1..range]] | d <- directions ]
 
