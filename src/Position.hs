@@ -74,9 +74,9 @@ piecesToMoveInSquares (Position board sideToMove) =
 pieceMoves :: Position -> Piece -> Square -> [Move]
 pieceMoves position piece from = 
     [ Move from to | to <- tos ]
-    where allLines = getLines from (getMovement piece)
-          linesTos = [ cutLine position line | line <- allLines ]
-          tos = concat linesTos
+    where slightlyLongLines = getLines from (getMovement piece)
+          legalLines = [ cutLine position line | line <- slightlyLongLines ]
+          tos = concat legalLines
 
 
 cutLine :: Position -> Line -> Line
@@ -103,8 +103,13 @@ takeWhileWithBreaker p xs =
 
 
 getLines :: Square -> Movement -> [Line]
-getLines square (Movement directions range) =
-    [ filter isOnBoard [squareInDirection square d i | i <- [1..range]] | d <- directions ]
+getLines from (Movement directions range) =
+    [ lineInDirection from d range | d <- directions ]
+
+
+lineInDirection :: Square -> Direction -> Range -> Line
+lineInDirection from direction range =
+    filter isOnBoard [squareInDirection from direction i | i <- [1..range]]
 
 
 mulDirection :: Direction -> Int -> Direction
