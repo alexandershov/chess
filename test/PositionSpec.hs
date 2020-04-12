@@ -2,13 +2,12 @@
 
 module PositionSpec where
 
-import Data.Array ((//))
+import Data.Array (elems)
 
 import Test.Hspec
 
-import Position hiding (a1, h8)
-
 import Pieces
+import Position
 import Squares
 
 
@@ -43,16 +42,19 @@ describeKing = do
             allMovesFrom e1 positionWithKing `shouldMatchList` kingE1Moves
 
 
+describeInitialPosition :: Spec
+describeInitialPosition = do
+    describe "initialPosition" do
+            it "has 32 pieces" do
+                sum [ 1 | Just _ <- elems board ] `shouldBe` (32::Int)
+            it "has white as side to move" do
+                sideToMove `shouldBe` White
+            where Position board sideToMove = initialPosition
+
 allMovesFrom :: Square -> Position -> [Move]
 allMovesFrom square position =
     [ move | move@(Move from _) <- allMoves position, from == square ]
 
-on :: Piece -> Square -> (Piece, Square)
-piece `on` square = (piece, square)
-
-put :: [(Piece, Square)] -> Board
-put piecesOnSquares = 
-    emptyBoard // [(square, Just piece) | (piece, square) <- piecesOnSquares]
 
 positionWithKnight :: Position
 positionWithKnight = 

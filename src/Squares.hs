@@ -1,5 +1,6 @@
 module Squares where
-import Position
+
+type Square = (Int, Int)
 
 a1 :: Square
 a2 :: Square

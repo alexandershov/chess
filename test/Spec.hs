@@ -16,3 +16,4 @@ main = hspec do
     describeRook
     describeQueen
     describeKing
+    describeInitialPosition

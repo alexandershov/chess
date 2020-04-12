@@ -1,6 +1,13 @@
 module Pieces where
 
-import Position
+data Color = Black | White deriving (Eq, Show)
+data Piece = 
+    Pawn { getColor :: Color } | 
+    Knight { getColor :: Color } | 
+    Bishop { getColor :: Color } |
+    Rook { getColor :: Color } | 
+    Queen { getColor :: Color } | 
+    King { getColor :: Color }
 
 whitePawn :: Piece
 whitePawn = Pawn White

@@ -1,21 +1,14 @@
 module Position where
 
-import Data.Array (assocs, Array, (!), listArray)
+import Data.Array (assocs, Array, (!), (//), listArray)
 import Data.Maybe (isNothing)
+
+import Pieces
+import Squares
 
 boardSize :: Int
 boardSize = 8
 
-data Color = Black | White deriving (Eq, Show)
-data Piece = 
-    Pawn { getColor :: Color } | 
-    Knight { getColor :: Color } | 
-    Bishop { getColor :: Color } |
-    Rook { getColor :: Color } | 
-    Queen { getColor :: Color } | 
-    King { getColor :: Color }
-
-type Square = (Int, Int)
 type Line = [Square]
 showSquare :: Square -> String
 showSquare (x, y) = 
@@ -40,12 +33,6 @@ instance Show Move where
 
 emptyBoard :: Board
 emptyBoard = listArray (a1, h8) $ repeat Nothing
-
-a1 :: Square
-a1 = (1, 1)
-
-h8 :: Square
-h8 = (boardSize, boardSize)
 
 isOnBoard :: Square -> Bool
 isOnBoard (x, y) = all fileOrRankIsOnBoard [x, y]
@@ -140,3 +127,27 @@ diagonals = [(1, 1), (1, -1), (-1, -1), (-1, 1)]
 
 straightLines :: [Direction]
 straightLines = [(1, 0), (0, 1), (-1, 0), (0, -1)]
+
+on :: Piece -> Square -> (Piece, Square)
+piece `on` square = (piece, square)
+
+put :: [(Piece, Square)] -> Board
+put piecesOnSquares = 
+    emptyBoard // [(square, Just piece) | (piece, square) <- piecesOnSquares]
+
+
+initialPosition :: Position
+initialPosition = 
+    Position board White
+    where 
+        board = put $ firstRank ++ secondRank ++ seventhRank ++ eightRank
+        firstRank = [whiteRook `on` a1, whiteKnight `on` b1, whiteBishop `on` c1,
+                     whiteQueen `on` d1, whiteKing `on` e1, 
+                     whiteBishop `on` f1, whiteKnight `on` g1, whiteRook `on` h1]
+
+        secondRank = map (whitePawn `on`) [a2, b2, c2, d2, e2, f2, g2, h2]
+        seventhRank = map (blackPawn `on`) [a7, b7, c7, d7, e7, f7, g7, h7]
+
+        eightRank = [blackRook `on` a8, blackKnight `on` b8, blackBishop `on` c8,
+                     blackQueen `on` d8, blackKing `on` e8, 
+                     blackBishop `on` f8, blackKnight `on` g8, blackRook `on` h8]
