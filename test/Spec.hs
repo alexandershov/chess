@@ -12,4 +12,5 @@ main = hspec do
     describeUciGetResponse
     describePlay
     describeKnight
+    describeBishop
     describeRook
