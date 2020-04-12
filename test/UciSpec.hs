@@ -6,6 +6,7 @@ import Data.IORef
 
 import Test.Hspec
 
+import Position
 import Uci
 
 describeUciParse :: Spec
@@ -21,7 +22,7 @@ describeUciParse =
             parse "ucinewgame" `shouldBe` UciNewGame
 
         it "parses `position` command" do
-            parse "position startpos moves e2e4" `shouldBe` Position
+            parse "position startpos moves e2e4 e7e5" `shouldBe` Position
 
         it "parses `go` command" do
             parse "go" `shouldBe` Go
