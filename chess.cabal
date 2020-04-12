@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 03a116e5aee9e7607619e4453177161356f3aaa790dc769522a6854cb61bcbd6
+-- hash: e2e4a2fba2c631bb0a1fb8da29992120fd4f322f0e1ec956a258dd9d90731b98
 
 name:           chess
 version:        0.1.0.0
@@ -59,6 +59,7 @@ test-suite chess-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Pieces
       PositionSpec
       Squares
       UciSpec

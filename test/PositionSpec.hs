@@ -7,6 +7,8 @@ import Data.Array ((//))
 import Test.Hspec
 
 import Position hiding (a1, h8)
+
+import Pieces
 import Squares
 
 
@@ -99,27 +101,3 @@ queenB2Moves = bishopB2Moves ++ rookB2Moves
 
 kingE1Moves :: [Move]
 kingE1Moves = [Move e1 f1, Move e1 d1, Move e1 e2, Move e1 f2]
-
-whiteKnight :: Piece
-whiteKnight = Knight White
-
-whiteBishop :: Piece
-whiteBishop = Bishop White
-
-whiteRook :: Piece
-whiteRook = Rook White
-
-whiteQueen :: Piece
-whiteQueen = Queen White
-
-whiteKing :: Piece
-whiteKing = King White
-
-blackPawn :: Piece
-blackPawn = Pawn Black
-
-blackKnight :: Piece
-blackKnight = Knight Black
-
-blackKing :: Piece
-blackKing = King Black
