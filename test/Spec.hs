@@ -15,3 +15,4 @@ main = hspec do
     describeBishop
     describeRook
     describeQueen
+    describeKing

@@ -36,6 +36,13 @@ describeQueen = do
         it "moves by diagonals and straight lines" do
             allMovesFrom b2 positionWithQueen `shouldMatchList` queenB2Moves
 
+
+describeKing :: Spec
+describeKing = do
+    describe "King" do
+        it "moves one square in each direction" do
+            allMovesFrom e1 positionWithKing `shouldMatchList` kingE1Moves
+
 allMovesFrom :: Square -> Position -> [Move]
 allMovesFrom square position =
     [ move | move@(Move from _) <- allMoves position, from == square ]
@@ -76,6 +83,13 @@ positionWithQueen =
                        whiteKnight `on` c1]
 
 
+positionWithKing :: Position
+positionWithKing =
+    Position board White
+    where board = put [whiteKing `on` e1, blackPawn `on` e2, 
+                       whiteKnight `on` d2]
+
+
 knightF3Moves :: [Move]
 knightF3Moves = [Move f3 e5, Move f3 g5, Move f3 h4, Move f3 h2, Move f3 g1,
                  Move f3 d2, Move f3 d4]
@@ -90,6 +104,9 @@ rookB2Moves = [Move b2 b3, Move b2 b4, Move b2 b5, Move b2 b1,
 
 queenB2Moves :: [Move]
 queenB2Moves = bishopB2Moves ++ rookB2Moves
+
+kingE1Moves :: [Move]
+kingE1Moves = [Move e1 f1, Move e1 d1, Move e1 e2, Move e1 f2]
 
 
 whiteKnight :: Piece
