@@ -14,20 +14,14 @@ describeKnight :: Spec
 describeKnight = do
     describe "Knight" do
         it "jumps" do
-            allMoves positionWithKnight `shouldContain` knightF3Moves
-        it "takes enemy piece" do
-            allMoves positionWithKnight `shouldContain` [Move f3 e5]
-        it "doesn't takes own piece" do
-            allMoves positionWithKnight `shouldNotContain` [Move f3 e1]
-        it "doesn't jump too far" do
-            allMoves positionWithKnight `shouldNotContain` [Move f3 c6]
+            allMovesFrom f3 positionWithKnight `shouldMatchList` knightF3Moves
 
 
 describeBishop :: Spec
 describeBishop = do
     describe "Bishop" do
-            it "moves diagonally" do
-                allMovesFrom e4 positionWithBishop `shouldMatchList` diagonalsFromE4
+        it "moves diagonally" do
+            allMovesFrom e4 positionWithBishop `shouldMatchList` bishopE4Moves
 
 
 describeRook :: Spec
@@ -80,11 +74,11 @@ positionWithRook =
 
 
 knightF3Moves :: [Move]
-knightF3Moves = [Move f3 g5, Move f3 h4, Move f3 h2, Move f3 g1,
+knightF3Moves = [Move f3 e5, Move f3 g5, Move f3 h4, Move f3 h2, Move f3 g1,
                  Move f3 d2, Move f3 d4]
 
-diagonalsFromE4 :: [Move]
-diagonalsFromE4 = [Move e4 d5, Move e4 c6, Move e4 f3, Move e4 g2, Move e4 h1,
+bishopE4Moves :: [Move]
+bishopE4Moves = [Move e4 d5, Move e4 c6, Move e4 f3, Move e4 g2, Move e4 h1,
                    Move e4 d3, Move e4 c2, Move e4 b1, Move e4 f5]
 
 lineA1D1 :: [Move]
