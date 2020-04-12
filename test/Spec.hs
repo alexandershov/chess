@@ -14,3 +14,4 @@ main = hspec do
     describeKnight
     describeBishop
     describeRook
+    describeQueen
