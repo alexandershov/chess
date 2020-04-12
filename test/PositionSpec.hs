@@ -27,19 +27,8 @@ describeBishop = do
 describeRook :: Spec
 describeRook = do
     describe "Rook" do
-            it "moves horizontally" do
-                allMoves positionWithRook `shouldContain` lineA1D1
-            it "moves vertically" do
-                allMoves positionWithRook `shouldContain` lineA1A5
-            it "takes enemy piece" do
-                allMoves positionWithRook `shouldContain` [Move a1 a5]
-            it "doesn't take own piece" do
-                allMoves positionWithRook `shouldNotContain` [Move a1 e1]
-            it "can't move past enemy piece" do
-                allMoves positionWithRook `shouldNotContain` [Move a1 a6]
-            it "can't move past own piece" do
-                allMoves positionWithRook `shouldNotContain` [Move a1 f1]
-
+        it "moves by straight lines" do
+            allMovesFrom b2 positionWithRook `shouldMatchList` rookB2Moves
 
 allMovesFrom :: Square -> Position -> [Move]
 allMovesFrom square position =
@@ -69,8 +58,8 @@ positionWithBishop =
 positionWithRook :: Position
 positionWithRook =
     Position board White
-    where board = put [whiteRook `on` a1, whiteKing `on` e1, 
-                       blackKnight `on` a5, blackKing `on` e8]
+    where board = put [whiteRook `on` b2, whiteKing `on` e2, 
+                       blackKnight `on` b5]
 
 
 knightF3Moves :: [Move]
@@ -81,12 +70,9 @@ bishopE4Moves :: [Move]
 bishopE4Moves = [Move e4 d5, Move e4 c6, Move e4 f3, Move e4 g2, Move e4 h1,
                    Move e4 d3, Move e4 c2, Move e4 b1, Move e4 f5]
 
-lineA1D1 :: [Move]
-lineA1D1 = [Move a1 b1, Move a1 c1, Move a1 d1]
-
-lineA1A5 :: [Move]
-lineA1A5 = [Move a1 a2, Move a1 a3, Move a1 a4, Move a1 a5]
-
+rookB2Moves :: [Move]
+rookB2Moves = [Move b2 b3, Move b2 b4, Move b2 b5, Move b2 b1,
+               Move b2 a2, Move b2 c2, Move b2 d2]
 
 
 whiteKnight :: Piece
