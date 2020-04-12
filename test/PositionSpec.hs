@@ -42,6 +42,7 @@ describeKing = do
         it "moves one square in each direction" do
             allMovesFrom e1 positionWithKing `shouldMatchList` kingE1Moves
 
+
 allMovesFrom :: Square -> Position -> [Move]
 allMovesFrom square position =
     [ move | move@(Move from _) <- allMoves position, from == square ]
