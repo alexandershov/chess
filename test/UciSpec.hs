@@ -42,6 +42,14 @@ describeUciParse =
             let (Position parsed) = parse "position startpos" in
                 parsed `shouldSatisfy` isLeft
 
+        it "handles bad files in `position` command" do
+            let (Position parsed) = parse "position startpos moves k2e4" in
+                parsed `shouldSatisfy` isLeft
+
+        it "handles bad files in `position` command" do
+            let (Position parsed) = parse "position startpos moves e9e4" in
+                parsed `shouldSatisfy` isLeft
+
         it "parses `go` command" do
             parse "go" `shouldBe` Go
 
