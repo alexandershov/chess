@@ -17,3 +17,4 @@ main = hspec do
     describeQueen
     describeKing
     describeInitialPosition
+    describeMakeMove

@@ -6,7 +6,6 @@ import Data.IORef
 
 import Test.Hspec
 
-import Position
 import Uci
 
 describeUciParse :: Spec

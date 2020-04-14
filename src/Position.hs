@@ -23,6 +23,7 @@ data Move = Move Square Square deriving (Eq)
 
 type Direction = (Int, Int)
 type Range = Int
+type ErrorDesc = String
 
 data Movement = Movement [Direction] Range
 
@@ -151,3 +152,9 @@ initialPosition =
         eightRank = [blackRook `on` a8, blackKnight `on` b8, blackBishop `on` c8,
                      blackQueen `on` d8, blackKing `on` e8, 
                      blackBishop `on` f8, blackKnight `on` g8, blackRook `on` h8]
+
+
+make :: Position -> Move -> Either ErrorDesc Position
+(Position board sideToMove) `make` (Move from to) = 
+    Right $ Position boardAfterMove sideToMove
+    where boardAfterMove = board // [(from, Nothing), (to, board ! from)]

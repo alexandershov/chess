@@ -2,7 +2,7 @@
 
 module PositionSpec where
 
-import Data.Array (elems)
+import Data.Array ((!), elems)
 
 import Test.Hspec
 
@@ -50,6 +50,14 @@ describeInitialPosition = do
             it "has white as side to move" do
                 sideToMove `shouldBe` White
             where Position board sideToMove = initialPosition
+
+describeMakeMove :: Spec
+describeMakeMove = do
+    describe "make move" do
+        it "moves a piece" do
+            (board ! g1) `shouldBe` Nothing
+            (board ! f3) `shouldBe` Just whiteKnight
+        where Right (Position board _) = initialPosition `make` Move g1 f3
 
 allMovesFrom :: Square -> Position -> [Move]
 allMovesFrom square position =
