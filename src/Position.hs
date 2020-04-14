@@ -156,5 +156,10 @@ initialPosition =
 
 make :: Position -> Move -> Either ErrorDesc Position
 (Position board sideToMove) `make` (Move from to) = 
-    Right $ Position boardAfterMove sideToMove
+    Right $ Position boardAfterMove (rival sideToMove)
     where boardAfterMove = board // [(from, Nothing), (to, board ! from)]
+
+
+rival :: Color -> Color
+rival White = Black
+rival Black = White

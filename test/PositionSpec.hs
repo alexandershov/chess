@@ -53,11 +53,13 @@ describeInitialPosition = do
 
 describeMakeMove :: Spec
 describeMakeMove = do
-    describe "make move" do
+    describe "making a move" do
         it "moves a piece" do
             (board ! g1) `shouldBe` Nothing
             (board ! f3) `shouldBe` Just whiteKnight
-        where Right (Position board _) = initialPosition `make` Move g1 f3
+        it "changes a side to move" do
+            sideToMove `shouldBe` Black
+    where Right (Position board sideToMove) = initialPosition `make` Move g1 f3
 
 allMovesFrom :: Square -> Position -> [Move]
 allMovesFrom square position =
