@@ -35,7 +35,7 @@ describeUciParse =
                 parsed `shouldSatisfy` isLeft
 
         it "handles invalid first part in `position` command" do
-            let (Position parsed) = parse "position wrong moves e3e4 e7e5" in
+            let (Position parsed) = parse "position wrong moves e2e4 e7e5" in
                 parsed `shouldSatisfy` isLeft
 
         it "handles missing `moves` in `position` command" do
