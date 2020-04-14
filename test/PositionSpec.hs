@@ -3,6 +3,7 @@
 module PositionSpec where
 
 import Data.Array ((!), elems)
+import Data.Either (isLeft)
 
 import Test.Hspec
 
@@ -59,7 +60,10 @@ describeMakeMove = do
             (board ! f3) `shouldBe` Just whiteKnight
         it "changes a side to move" do
             sideToMove `shouldBe` Black
+        it "returns Left if there's no piece in the square" do
+            initialPosition `make` Move f3 g1 `shouldSatisfy` isLeft
     where Right (Position board sideToMove) = initialPosition `make` Move g1 f3
+      
 
 allMovesFrom :: Square -> Position -> [Move]
 allMovesFrom square position =

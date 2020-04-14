@@ -18,7 +18,7 @@ showSquare (x, y) =
 
 type Board = Array Square (Maybe Piece)
 
-data Position = Position Board Color
+data Position = Position Board Color deriving (Eq, Show)
 data Move = Move Square Square deriving (Eq)
 
 type Direction = (Int, Int)
@@ -156,8 +156,11 @@ initialPosition =
 
 make :: Position -> Move -> Either ErrorDesc Position
 (Position board sideToMove) `make` (Move from to) = 
-    Right $ Position boardAfterMove (rival sideToMove)
-    where boardAfterMove = board // [(from, Nothing), (to, board ! from)]
+    case maybePiece of
+        Nothing -> Left $ showSquare from ++ " square is empty"
+        _ -> Right $ Position boardAfterMove (rival sideToMove)
+    where maybePiece = board ! from
+          boardAfterMove = board // [(from, Nothing), (to, maybePiece)]
 
 
 rival :: Color -> Color
