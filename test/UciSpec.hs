@@ -6,6 +6,9 @@ import Data.IORef
 
 import Test.Hspec
 
+import qualified Position as P
+import Position hiding (Position)
+import Squares
 import Uci
 
 describeUciParse :: Spec
@@ -20,8 +23,8 @@ describeUciParse =
         it "parses `ucinewgame` command" do
             parse "ucinewgame" `shouldBe` UciNewGame
 
-        it "parses `position` command" do
-            parse "position startpos moves e2e4 e7e5" `shouldBe` Position
+        it "parses valid `position` command" do
+            parse "position startpos moves e2e4 e7e5" `shouldBe` Position positionAfterE4E5
 
         it "parses `go` command" do
             parse "go" `shouldBe` Go
@@ -45,7 +48,7 @@ describeUciGetResponse =
             UciNewGame `responseShouldBe` []
 
         it "returns nothing on `position` command (for now)" do
-            Position `responseShouldBe` []
+            (Position $ Right initialPosition) `responseShouldBe` []
 
         it "asks player on `go` command" do
             Go `responseShouldBe` ["bestmove e2e4"]
@@ -62,7 +65,9 @@ describePlay =
     describe "Uci.Play" do
         it "plays a game" do
             responsesRef <- newIORef []
-            commandsRef <- newIORef [Uci, IsReady, UciNewGame, Position, Go, Quit]
+            commandsRef <- newIORef [Uci, IsReady, UciNewGame, 
+                                     (Position $ Right initialPosition), 
+                                     Go, Quit]
 
             play (commands commandsRef) morphy (refWriter responsesRef)
 
@@ -96,3 +101,9 @@ refWriter :: IORef [Response] -> Response -> IO ()
 refWriter ref response = do
     modifyIORef ref (++ [response])
 
+
+positionAfterE4E5 :: Either P.ErrorDesc P.Position
+positionAfterE4E5 = do
+    afterE4 <- initialPosition `make` Move e2 e4
+    afterE5 <- afterE4 `make` Move e7 e5
+    return afterE5

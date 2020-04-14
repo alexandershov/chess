@@ -6,11 +6,15 @@ import Data.List
 import Data.Time (getCurrentTime)
 import System.IO
 
+import qualified Position as P
+import Position hiding (Position)
+import Squares
+
 data Command = 
     Uci |
     IsReady |
     UciNewGame |
-    Position |
+    Position (Either ErrorDesc P.Position) |
     Go |
     Quit |
     Unknown String deriving (Eq, Show)
@@ -68,7 +72,7 @@ getResponse Uci.IsReady _ = return readyOkResponse
 
 getResponse Uci.UciNewGame _ = return emptyResponse
 
-getResponse Uci.Position _ = return emptyResponse
+getResponse (Uci.Position _) _ = return emptyResponse
 
 getResponse Uci.Go player = do
     move <- player
@@ -102,6 +106,59 @@ parse "ucinewgame" = UciNewGame
 parse "quit" = Quit
 parse s =
     case words s of
-        "position":_ -> Position
+        "position":args -> parsePosition args
         "go":_ -> Go
         _ -> Unknown s
+
+parsePosition :: [String] -> Command
+parsePosition ("startpos":"moves":moves) =
+    Position $ makeMoves (Right initialPosition) (map parseMove moves)
+parsePosition p = Position $ Left $ "should be in the form `startpos moves ...`, got " ++ show p
+
+
+type ParsedPosition = Either ErrorDesc P.Position
+
+makeMoves :: ParsedPosition -> [Either ErrorDesc P.Move] -> ParsedPosition
+makeMoves parsedPosition [] = parsedPosition
+makeMoves parsedPosition@(Left _) _ = parsedPosition
+makeMoves _ (Left s:_) = Left s
+makeMoves (Right position) (Right move:moves) = makeMoves (position `make` move) moves
+
+
+parseMove :: String -> Either ErrorDesc Move
+parseMove [fromFile, fromRank, toFile, toRank] = do
+    from <- parseSquare fromFile fromRank
+    to <- parseSquare toFile toRank
+    return $ Move from to
+parseMove s = Left $ "move should be in the form `f1f3`, got " ++ s
+
+
+parseSquare :: Char -> Char -> Either ErrorDesc Square
+parseSquare file' rank' = do
+    file <- parseFile file'
+    rank <- parseRank rank'
+    return (file, rank)
+
+
+parseFile :: Char -> Either ErrorDesc Int
+parseFile 'a' = Right 1
+parseFile 'b' = Right 2
+parseFile 'c' = Right 3
+parseFile 'd' = Right 4
+parseFile 'e' = Right 5
+parseFile 'f' = Right 6
+parseFile 'g' = Right 7
+parseFile 'h' = Right 8
+parseFile file = Left $ "file should be `abcdefgh`, got " ++ [file]
+
+
+parseRank :: Char -> Either ErrorDesc Int
+parseRank '1' = Right 1
+parseRank '2' = Right 2
+parseRank '3' = Right 3
+parseRank '4' = Right 4
+parseRank '5' = Right 5
+parseRank '6' = Right 6
+parseRank '7' = Right 7
+parseRank '8' = Right 8
+parseRank rank = Left $ "rank should be `12345678`, got " ++ [rank]
