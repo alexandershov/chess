@@ -11,6 +11,6 @@ main = do
     case args of
         [logPath, turkPath] -> do
             turkHandle <- openFile turkPath ReadMode
-            play (stdinReader logPath) (turk turkHandle) (stdoutWriter logPath)
+            play (stdinReader logPath) (Turk turkHandle) (stdoutWriter logPath)
 
         _ -> error "Usage: chess-exe log-path turk-path"

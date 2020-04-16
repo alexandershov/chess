@@ -20,25 +20,45 @@ data Command =
     Unknown String deriving (Eq, Show)
 
 data Response = Response [String] deriving (Eq, Show)
+data Turk = Turk Handle
 type Player = IO String
 
 type CommandReader = IO Command
 type ResponseWriter = Response -> IO ()
 
 
-play :: CommandReader -> Player -> ResponseWriter -> IO ()
-play reader player writer = do
+class Engine a where 
+    getResponseFor :: a -> Command -> IO Response
+
+
+
+instance Engine Turk where
+    (Turk handle) `getResponseFor` Uci.Go = do
+        move <- hGetLine handle
+        return $ bestMoveResponse move
+
+    _ `getResponseFor` Uci.Uci = return uciResponse
+
+    _ `getResponseFor` Uci.IsReady = return readyOkResponse
+
+    _ `getResponseFor` Uci.UciNewGame = return emptyResponse
+
+    _ `getResponseFor` (Uci.Position _) = return emptyResponse
+
+    _ `getResponseFor` (Uci.Unknown s) = return $ unknownResponse s
+
+    _ `getResponseFor` Uci.Quit = return emptyResponse
+
+
+play :: Engine a => CommandReader -> a -> ResponseWriter -> IO ()
+play reader engine writer = do
     command <- reader
     case command of
         Quit -> return ()
         _ -> do
-            response <- getResponse command player
+            response <- engine `getResponseFor` command
             writer response
-            play reader player writer
-
-
-turk :: Handle -> Player
-turk handle = hGetLine handle
+            play reader engine writer
 
 
 stdinReader :: FilePath -> CommandReader

@@ -93,7 +93,7 @@ describePlay =
                                      (Position $ Right initialPosition), 
                                      Go, Quit]
 
-            play (commands commandsRef) morphy (refWriter responsesRef)
+            play (commands commandsRef) Morphy (refWriter responsesRef)
 
             responses <- readIORef responsesRef
             responses `shouldBe` 
@@ -106,12 +106,26 @@ describePlay =
 
 responseShouldBe :: Command -> [String] -> IO ()
 command `responseShouldBe` expectedLines = do
-    response <- getResponse command morphy
+    response <- Morphy `getResponseFor` command
     response `shouldBe` Response expectedLines
 
 
-morphy :: IO String
-morphy = return "e2e4"
+data Morphy = Morphy
+instance Engine Morphy where
+    _ `getResponseFor` Uci.Go = do
+        return $ bestMoveResponse "e2e4"
+
+    _ `getResponseFor` Uci.Uci = return uciResponse
+
+    _ `getResponseFor` Uci.IsReady = return readyOkResponse
+
+    _ `getResponseFor` Uci.UciNewGame = return emptyResponse
+
+    _ `getResponseFor` (Uci.Position _) = return emptyResponse
+
+    _ `getResponseFor` (Uci.Unknown s) = return $ unknownResponse s
+
+    _ `getResponseFor` Uci.Quit = return emptyResponse
 
 
 commands :: IORef [Command] -> IO Command
