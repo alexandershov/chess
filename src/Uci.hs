@@ -2,6 +2,7 @@
 
 module Uci where
 
+import Data.IORef
 import Data.List
 import Data.Time (getCurrentTime)
 import System.IO
@@ -31,7 +32,6 @@ class Engine a where
     getResponseFor :: a -> Command -> IO Response
 
 
-
 instance Engine Turk where
     (Turk handle) `getResponseFor` Uci.Go = do
         move <- hGetLine handle
@@ -44,6 +44,31 @@ instance Engine Turk where
     _ `getResponseFor` Uci.UciNewGame = return emptyResponse
 
     _ `getResponseFor` (Uci.Position _) = return emptyResponse
+
+    _ `getResponseFor` (Uci.Unknown s) = return $ unknownResponse s
+
+    _ `getResponseFor` Uci.Quit = return emptyResponse
+
+
+data Tal = Tal (IORef (Maybe P.Position))
+
+instance Engine Tal where
+    (Tal ref) `getResponseFor` Uci.Go = do
+        (Just position) <- readIORef ref
+        let move = head $ allMoves position in
+            return $ bestMoveResponse $ show move
+
+    (Tal ref) `getResponseFor` (Uci.Position (Right position)) = do
+        modifyIORef ref (\_ -> Just position)
+        return emptyResponse
+
+    _ `getResponseFor` Uci.Uci = return uciResponse
+
+    _ `getResponseFor` Uci.IsReady = return readyOkResponse
+
+    _ `getResponseFor` Uci.UciNewGame = return emptyResponse
+
+    _ `getResponseFor` (Uci.Position (Left errorDesc)) = return $ unknownResponse errorDesc
 
     _ `getResponseFor` (Uci.Unknown s) = return $ unknownResponse s
 
