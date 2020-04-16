@@ -84,25 +84,6 @@ makeLogLine kind line = do
         return $ (intercalate "\t" entries) ++ "\n"
 
 
-getResponse :: Command -> Player -> IO Response
-
-getResponse Uci.Uci _ = return uciResponse
-
-getResponse Uci.IsReady _ = return readyOkResponse
-
-getResponse Uci.UciNewGame _ = return emptyResponse
-
-getResponse (Uci.Position _) _ = return emptyResponse
-
-getResponse Uci.Go player = do
-    move <- player
-    return $ bestMoveResponse move
-
-getResponse (Uci.Unknown s) _ = return $ unknownResponse s
-
-getResponse Uci.Quit _ = return emptyResponse
-
-
 uciResponse :: Response
 uciResponse = Response ["id name chess", "id author Alexander Ershov", "uciok"]
 
