@@ -9,16 +9,7 @@ import UciSpec
 main :: IO ()
 main = hspec do
     describeUci
-
-    describeWhitePawn
-    describeBlackPawn
-    describeKnight
-    describeBishop
-    describeRook
-    describeQueen
-    describeKing
+    describePieces
 
     describeInitialPosition
     describeMakeMove
-
-

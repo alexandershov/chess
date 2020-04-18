@@ -11,6 +11,16 @@ import Pieces
 import Position
 import Squares
 
+describePieces :: Spec
+describePieces = do
+    describeWhitePawn
+    describeBlackPawn
+    describeKnight
+    describeBishop
+    describeRook
+    describeQueen
+    describeKing
+
 describeWhitePawn :: Spec
 describeWhitePawn = do
     describe "white pawn" do
