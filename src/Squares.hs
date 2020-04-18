@@ -3,7 +3,7 @@ module Squares where
 type File = Int
 type Rank = Int
 
-type Square = (Int, Int)
+type Square = (File, Rank)
 
 a1 :: Square
 a2 :: Square
