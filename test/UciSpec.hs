@@ -33,11 +33,15 @@ describeUciParse =
         it "parses valid `position` command" do
             parse "position startpos moves e2e4 e7e5" `shouldBe` Position positionAfterE4E5
 
-        it "parses `position` command without moves" do
+        it "parses `position` command with no moves" do
             parse "position startpos moves" `shouldBe` (Position $ Right initialPosition)
 
         it "parses `position` without `moves` part" do
             parse "position startpos" `shouldBe` (Position $ Right initialPosition)
+
+        it "handles unexpected moves in `position` command" do
+            let (Position parsed) = parse "position startpos e2e4 e7e5" in
+                parsed `shouldSatisfy` isLeft
 
         it "handles invalid moves in `position` command" do
             let (Position parsed) = parse "position startpos moves e3e4 e7e5" in
