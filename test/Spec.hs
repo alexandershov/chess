@@ -11,7 +11,8 @@ main = hspec do
     describeUciParse
     describeUciGetResponse
     describePlay
-    describePawn
+    describeWhitePawn
+    describeBlackPawn
     describeKnight
     describeBishop
     describeRook

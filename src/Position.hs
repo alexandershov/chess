@@ -130,7 +130,12 @@ getMovement (Pawn White) (_, rank) =
         2 ->  PawnMovement whitePawnMoveDirection 2
         _ -> PawnMovement whitePawnMoveDirection 1
 
-getMovement (Pawn Black) _ = PawnMovement blackPawnMoveDirection 1
+
+getMovement (Pawn Black) (_, rank) = 
+    case rank of
+        7 ->  PawnMovement blackPawnMoveDirection 2
+        _ -> PawnMovement blackPawnMoveDirection 1
+
 getMovement (Knight _) _ = PieceMovement jumps 1
 getMovement (Bishop _) _ = PieceMovement diagonals boardSize
 getMovement (Rook _) _ = PieceMovement straightLines boardSize
