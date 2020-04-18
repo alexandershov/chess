@@ -27,7 +27,7 @@ type ErrorDesc = String
 
 data Movement = 
     PieceMovement [Direction] Range | 
-    PawnMovement Direction Range
+    PawnMovement Direction Range [Direction]
 
 instance Show Move where
     show (Move from to) 
@@ -75,10 +75,12 @@ getTos position (PieceMovement directions range) from =
           legalLines = [ cutLine position line | line <- slightlyLongLines ]
 
 
-getTos (Position board _) (PawnMovement direction range) from =
-    concat legalLines
-    where slightlyLongLines = getLines from [direction] range
-          legalLines = [ takeWhile (isEmpty board) line | line <- slightlyLongLines ]
+getTos position@(Position board _) (PawnMovement moveDirection range captureDirections) from =
+    concat legalMoveLines ++ concat legalCaptureLines
+    where slightlyLongMoveLines = getLines from [moveDirection] range
+          legalMoveLines = [ takeWhile (isEmpty board) line | line <- slightlyLongMoveLines ]
+          slightyLongCaptureLines = getLines from captureDirections 1
+          legalCaptureLines = [ takeWhile (isOccupiedByRival position) line | line <- slightyLongCaptureLines ]
 
 
 cutLine :: Position -> Line -> Line
@@ -92,10 +94,20 @@ exclude p xs = [ x | x <- xs, not $ p x ]
 
 
 isOccupiedBySideToMove :: Position -> Square -> Bool
-isOccupiedBySideToMove (Position board sideToMove) square =
+isOccupiedBySideToMove position@(Position _ sideToMove) square =
+    isOccupiedByColor position sideToMove square
+
+
+isOccupiedByRival :: Position -> Square -> Bool
+isOccupiedByRival position@(Position _ sideToMove) square =
+    isOccupiedByColor position (rival sideToMove) square
+
+
+isOccupiedByColor :: Position -> Color -> Square -> Bool
+isOccupiedByColor (Position board _) color square =
     case board ! square of
         Nothing -> False
-        Just piece -> (getColor piece) == sideToMove
+        Just piece -> (getColor piece) == color
 
 
 takeWhileWithBreaker :: (a -> Bool) -> [a] -> [a]
@@ -127,8 +139,10 @@ squareInDirection square direction range =
 
 
 getMovement :: Piece -> Square -> Movement
-getMovement (Pawn White) from = getPawnMovement from whitePawnMoveDirection 2
-getMovement (Pawn Black) from = getPawnMovement from blackPawnMoveDirection 7
+getMovement (Pawn White) from = 
+    getPawnMovement from whitePawnMoveDirection whitePawnCapturesDirection 2
+getMovement (Pawn Black) from = 
+    getPawnMovement from blackPawnMoveDirection blackPawnCapturesDirection 7
 getMovement (Knight _) _ = PieceMovement jumps 1
 getMovement (Bishop _) _ = PieceMovement diagonals boardSize
 getMovement (Rook _) _ = PieceMovement straightLines boardSize
@@ -138,14 +152,18 @@ getMovement (King _) _ = PieceMovement (diagonals ++ straightLines) 1
 
 whitePawnMoveDirection :: Direction
 whitePawnMoveDirection = (0, 1)
+whitePawnCapturesDirection :: [Direction]
+whitePawnCapturesDirection = [(1, 1), (-1, 1)]
 
 blackPawnMoveDirection :: Direction
 blackPawnMoveDirection = (0, -1)
+blackPawnCapturesDirection :: [Direction]
+blackPawnCapturesDirection = [(1, -1), (-1, -1)]
 
-getPawnMovement :: Square -> Direction -> Rank -> Movement
-getPawnMovement (_, rank) direction initialRank =
-    PawnMovement direction range
-    where range = if rank == initialRank then 2 else 1
+getPawnMovement :: Square -> Direction -> [Direction] -> Rank -> Movement
+getPawnMovement (_, rank) moveDirection captureDirections initialRank =
+    PawnMovement moveDirection moveRange captureDirections
+    where moveRange = if rank == initialRank then 2 else 1
 
 
 jumps :: [Direction]
