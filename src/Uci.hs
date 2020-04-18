@@ -22,7 +22,6 @@ data Command =
 
 data Response = Response [String] deriving (Eq, Show)
 data Turk = Turk Handle
-type Player = IO String
 
 type CommandReader = IO Command
 type ResponseWriter = Response -> IO ()
@@ -55,7 +54,7 @@ data Currychnoi = Currychnoi (IORef (Maybe P.Position))
 instance Engine Currychnoi where
     (Currychnoi ref) `getResponseFor` Uci.Go = do
         (Just position) <- readIORef ref
-        let move = head $ allMoves position in
+        let move = findBestMove position in
             return $ bestMoveResponse $ show move
 
     (Currychnoi ref) `getResponseFor` (Uci.Position (Right position)) = do
@@ -136,12 +135,14 @@ parse s =
         "go":_ -> Go
         _ -> Unknown s
 
+
 parsePosition :: [String] -> Command
 parsePosition ["startpos"] = Position $ Right initialPosition
 parsePosition ("startpos":"moves": moves) =
     Position $ makeMoves (Right initialPosition) (map parseMove moves)
 
-parsePosition p = Position $ Left $ "should be in the form `startpos moves ...`, got " ++ show p
+parsePosition p = 
+    Position $ Left $ "should be in the form `startpos moves ...`, got " ++ show p
 
 
 type ParsedPosition = Either ErrorDesc P.Position
@@ -162,31 +163,35 @@ parseMove s = Left $ "move should be in the form `f1f3`, got " ++ s
 
 
 parseSquare :: Char -> Char -> Either ErrorDesc Square
-parseSquare file' rank' = do
-    file <- parseFile file'
-    rank <- parseRank rank'
+parseSquare f r = do
+    file <- parseFile f
+    rank <- parseRank r
     return (file, rank)
 
 
 parseFile :: Char -> Either ErrorDesc Int
-parseFile 'a' = Right 1
-parseFile 'b' = Right 2
-parseFile 'c' = Right 3
-parseFile 'd' = Right 4
-parseFile 'e' = Right 5
-parseFile 'f' = Right 6
-parseFile 'g' = Right 7
-parseFile 'h' = Right 8
-parseFile file = Left $ "file should be `abcdefgh`, got " ++ [file]
+parseFile f =
+    case f of
+        'a' -> Right 1
+        'b' -> Right 2
+        'c' -> Right 3
+        'd' -> Right 4
+        'e' -> Right 5
+        'f' -> Right 6
+        'g' -> Right 7
+        'h' -> Right 8
+        _ -> Left $ "file should be one of `abcdefgh`, got " ++ [f]
 
 
 parseRank :: Char -> Either ErrorDesc Int
-parseRank '1' = Right 1
-parseRank '2' = Right 2
-parseRank '3' = Right 3
-parseRank '4' = Right 4
-parseRank '5' = Right 5
-parseRank '6' = Right 6
-parseRank '7' = Right 7
-parseRank '8' = Right 8
-parseRank rank = Left $ "rank should be `12345678`, got " ++ [rank]
+parseRank r =
+    case r of
+        '1' -> Right 1
+        '2' -> Right 2
+        '3' -> Right 3
+        '4' -> Right 4
+        '5' -> Right 5
+        '6' -> Right 6
+        '7' -> Right 7
+        '8' -> Right 8
+        _ -> Left $ "rank should be one of`12345678`, got " ++ [r]

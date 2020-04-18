@@ -53,6 +53,9 @@ allMoves position =
      move <- pieceMoves position piece square
     ]
 
+findBestMove :: Position -> Move
+findBestMove position = head $ allMoves position
+
 
 piecesToMoveInSquares :: Position -> [(Piece, Square)]
 piecesToMoveInSquares (Position board sideToMove) =
