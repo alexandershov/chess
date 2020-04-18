@@ -8,9 +8,8 @@ import UciSpec
 
 main :: IO ()
 main = hspec do
-    describeUciParse
-    describeUciGetResponse
-    describePlay
+    describeUci
+
     describeWhitePawn
     describeBlackPawn
     describeKnight
@@ -18,5 +17,8 @@ main = hspec do
     describeRook
     describeQueen
     describeKing
+
     describeInitialPosition
     describeMakeMove
+
+

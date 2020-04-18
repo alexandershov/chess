@@ -12,6 +12,12 @@ import Position hiding (Position)
 import Squares
 import Uci
 
+describeUci :: Spec
+describeUci = do
+    describeUciParse
+    describeUciGetResponse
+    describeUciPlay
+
 describeUciParse :: Spec
 describeUciParse =
     describe "Uci.parse" do
@@ -83,9 +89,9 @@ describeUciGetResponse =
             Quit `responseShouldBe` []
 
 
-describePlay :: Spec
-describePlay = 
-    describe "Uci.Play" do
+describeUciPlay :: Spec
+describeUciPlay = 
+    describe "Uci.play" do
         it "plays a game" do
             responsesRef <- newIORef []
             commandsRef <- newIORef [Uci, IsReady, UciNewGame, 
