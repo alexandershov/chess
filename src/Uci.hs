@@ -138,7 +138,7 @@ parse s =
 
 parsePosition :: [String] -> Command
 parsePosition ["startpos"] = Position $ Right initialPosition
-parsePosition ("startpos":"moves": moves) =
+parsePosition ("startpos":"moves":moves) =
     Position $ makeMoves (Right initialPosition) (map parseMove moves)
 
 parsePosition p = 
