@@ -62,9 +62,15 @@ piecesToMoveInSquares (Position board sideToMove) =
 pieceMoves :: Position -> Piece -> Square -> [Move]
 pieceMoves position piece from = 
     [ Move from to | to <- tos ]
-    where slightlyLongLines = getLines from (getMovement piece from)
+    where movement = getMovement piece from
+          tos = getTos position movement from
+
+
+getTos :: Position -> Movement -> Square -> [Square]
+getTos position movement from = 
+    concat legalLines
+    where slightlyLongLines = getLines from movement
           legalLines = [ cutLine position line | line <- slightlyLongLines ]
-          tos = concat legalLines
 
 
 cutLine :: Position -> Line -> Line
