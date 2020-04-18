@@ -25,7 +25,7 @@ type Direction = (Int, Int)
 type Range = Int
 type ErrorDesc = String
 
-data Movement = Movement [Direction] Range
+data Movement = PieceMovement [Direction] Range
 
 instance Show Move where
     show (Move from to) 
@@ -97,7 +97,7 @@ takeWhileWithBreaker p xs =
 
 
 getLines :: Square -> Movement -> [Line]
-getLines from (Movement directions range) =
+getLines from (PieceMovement directions range) =
     [ lineInDirection from d range | d <- directions ]
 
 
@@ -120,11 +120,11 @@ squareInDirection square direction range =
 
 getMovement :: Piece -> Square -> Movement
 getMovement (Pawn _) _ = error "TODO: implement pawn movement"
-getMovement (Knight _) _ = Movement jumps 1
-getMovement (Bishop _) _ = Movement diagonals boardSize
-getMovement (Rook _) _ = Movement straightLines boardSize
-getMovement (Queen _) _ = Movement (diagonals ++ straightLines) boardSize
-getMovement (King _) _ = Movement (diagonals ++ straightLines) 1
+getMovement (Knight _) _ = PieceMovement jumps 1
+getMovement (Bishop _) _ = PieceMovement diagonals boardSize
+getMovement (Rook _) _ = PieceMovement straightLines boardSize
+getMovement (Queen _) _ = PieceMovement (diagonals ++ straightLines) boardSize
+getMovement (King _) _ = PieceMovement (diagonals ++ straightLines) 1
 
 jumps :: [Direction]
 jumps = [(1, 2), (2, 1), (2, -1), (1, -2), (-1, -2), (-2, -1), (-2, 1), (-1, 2)]
