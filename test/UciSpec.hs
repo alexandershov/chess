@@ -57,7 +57,7 @@ describeUciParse =
             let (Position parsed) = parse "position startpos moves k2e4" in
                 parsed `shouldSatisfy` isLeft
 
-        it "handles bad files in `position` command" do
+        it "handles bad ranks in `position` command" do
             let (Position parsed) = parse "position startpos moves e9e4" in
                 parsed `shouldSatisfy` isLeft
 
@@ -89,7 +89,7 @@ describeUciGetResponse =
         it "returns bestmove on `go` command" do
             Go `responseShouldBe` ["bestmove e2e4"]
 
-        it "returns error on unknown command" do
+        it "returns unknown on unknown command" do
             Unknown "garbage" `responseShouldBe` ["unknown command garbage"]
 
         it "returns nothing on `quit` command" do

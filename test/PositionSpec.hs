@@ -105,7 +105,7 @@ describeInitialPosition = do
 
 describeMakeMove :: Spec
 describeMakeMove = do
-    describe "making a move" do
+    describe "Making a move" do
         it "moves a piece" do
             (board ! g1) `shouldBe` Nothing
             (board ! f3) `shouldBe` Just whiteKnight
