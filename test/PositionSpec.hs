@@ -18,7 +18,10 @@ describePawn = do
             allMovesFrom e3 positionWithWhitePawn `shouldMatchList` [Move e3 e4]
         it "moves forward by 2 squares from the initial position" do
             allMovesFrom d2 positionWithWhitePawn `shouldMatchList` [Move d2 d3, Move d2 d4]
-
+        it "stops at own piece" do
+            allMovesFrom c4 positionWithWhitePawn `shouldMatchList` []
+        it "stops at enemy piece" do
+            allMovesFrom f4 positionWithWhitePawn `shouldMatchList` []
 
 describeKnight :: Spec
 describeKnight = do
@@ -86,7 +89,9 @@ allMovesFrom square position =
 positionWithWhitePawn :: Position
 positionWithWhitePawn = 
     Position board White
-    where board = put [whitePawn `on` e3, whitePawn `on` d2]
+    where board = put [whitePawn `on` e3, whitePawn `on` d2,
+                       whitePawn `on` c4, whitePawn `on` c5,
+                       whitePawn `on` f4, blackPawn `on` f5]
 
 
 positionWithKnight :: Position
