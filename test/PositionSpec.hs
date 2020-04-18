@@ -22,6 +22,8 @@ describeWhitePawn = do
             allMovesFrom c4 positionWithWhitePawn `shouldMatchList` []
         it "stops at enemy piece" do
             allMovesFrom f4 positionWithWhitePawn `shouldMatchList` []
+        it "captures by diagonal" do
+            allMovesFrom g2 positionWithWhitePawn `shouldMatchList` [Move g2 h3, Move g2 f3]
 
 
 describeBlackPawn :: Spec
@@ -104,7 +106,9 @@ positionWithWhitePawn =
     Position board White
     where board = put [whitePawn `on` e3, whitePawn `on` d2,
                        whitePawn `on` c4, whitePawn `on` c5,
-                       whitePawn `on` f4, blackPawn `on` f5]
+                       whitePawn `on` f4, blackPawn `on` f5,
+                       whitePawn `on` g2, blackPawn `on` g3,
+                       blackKnight `on` f3, blackBishop `on` h3]
 
 
 positionWithBlackPawn :: Position

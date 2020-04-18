@@ -25,7 +25,9 @@ type Direction = (Int, Int)
 type Range = Int
 type ErrorDesc = String
 
-data Movement = PieceMovement [Direction] Range | PawnMovement Direction Range
+data Movement = 
+    PieceMovement [Direction] Range | 
+    PawnMovement Direction Range
 
 instance Show Move where
     show (Move from to) 
