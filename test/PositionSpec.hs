@@ -118,7 +118,11 @@ describeMakeMove = do
 
 allMovesFrom :: Square -> Position -> [Move]
 allMovesFrom square position =
-    [ move | move@(Move from _) <- allMoves position, from == square ]
+    filter (`isFrom` square) $ allMoves position
+
+
+isFrom :: Move -> Square -> Bool
+(Move from _) `isFrom` square = from == square
 
 
 positionWithWhitePawn :: Position
