@@ -25,7 +25,7 @@ type Direction = (Int, Int)
 type Range = Int
 type ErrorDesc = String
 
-data Movement = PieceMovement [Direction] Range | PawnMovement [Direction] Range
+data Movement = PieceMovement [Direction] Range | PawnMovement Direction Range
 
 instance Show Move where
     show (Move from to) 
@@ -75,7 +75,7 @@ getTos position (PieceMovement directions range) from =
 
 getTos (Position board _) (PawnMovement direction range) from =
     concat legalLines
-    where slightlyLongLines = getLines from direction range
+    where slightlyLongLines = getLines from [direction] range
           legalLines = [ takeWhile (isEmpty board) line | line <- slightlyLongLines ]
 
 
@@ -125,17 +125,8 @@ squareInDirection square direction range =
 
 
 getMovement :: Piece -> Square -> Movement
-getMovement (Pawn White) (_, rank) = 
-    case rank of
-        2 ->  PawnMovement whitePawnMoveDirection 2
-        _ -> PawnMovement whitePawnMoveDirection 1
-
-
-getMovement (Pawn Black) (_, rank) = 
-    case rank of
-        7 ->  PawnMovement blackPawnMoveDirection 2
-        _ -> PawnMovement blackPawnMoveDirection 1
-
+getMovement (Pawn White) from = getPawnMovement from whitePawnMoveDirection 2
+getMovement (Pawn Black) from = getPawnMovement from blackPawnMoveDirection 7
 getMovement (Knight _) _ = PieceMovement jumps 1
 getMovement (Bishop _) _ = PieceMovement diagonals boardSize
 getMovement (Rook _) _ = PieceMovement straightLines boardSize
@@ -143,12 +134,16 @@ getMovement (Queen _) _ = PieceMovement (diagonals ++ straightLines) boardSize
 getMovement (King _) _ = PieceMovement (diagonals ++ straightLines) 1
 
 
-whitePawnMoveDirection :: [Direction]
-whitePawnMoveDirection = [(0, 1)]
+whitePawnMoveDirection :: Direction
+whitePawnMoveDirection = (0, 1)
 
+blackPawnMoveDirection :: Direction
+blackPawnMoveDirection = (0, -1)
 
-blackPawnMoveDirection :: [Direction]
-blackPawnMoveDirection = [(0, -1)]
+getPawnMovement :: Square -> Direction -> Rank -> Movement
+getPawnMovement (_, rank) direction initialRank =
+    PawnMovement direction range
+    where range = if rank == initialRank then 2 else 1
 
 
 jumps :: [Direction]

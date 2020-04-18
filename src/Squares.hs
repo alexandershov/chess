@@ -1,5 +1,8 @@
 module Squares where
 
+type File = Int
+type Rank = Int
+
 type Square = (Int, Int)
 
 a1 :: Square
