@@ -62,7 +62,7 @@ piecesToMoveInSquares (Position board sideToMove) =
 pieceMoves :: Position -> Piece -> Square -> [Move]
 pieceMoves position piece from = 
     [ Move from to | to <- tos ]
-    where slightlyLongLines = getLines from (getMovement piece)
+    where slightlyLongLines = getLines from (getMovement piece from)
           legalLines = [ cutLine position line | line <- slightlyLongLines ]
           tos = concat legalLines
 
@@ -112,13 +112,13 @@ squareInDirection square direction range =
     addDelta square $ mulDirection direction range
 
 
-getMovement :: Piece -> Movement
-getMovement (Pawn _) = error "TODO: implement pawn movement"
-getMovement (Knight _) = Movement jumps 1
-getMovement (Bishop _) = Movement diagonals boardSize
-getMovement (Rook _) = Movement straightLines boardSize
-getMovement (Queen _) = Movement (diagonals ++ straightLines) boardSize
-getMovement (King _) = Movement (diagonals ++ straightLines) 1
+getMovement :: Piece -> Square -> Movement
+getMovement (Pawn _) _ = error "TODO: implement pawn movement"
+getMovement (Knight _) _ = Movement jumps 1
+getMovement (Bishop _) _ = Movement diagonals boardSize
+getMovement (Rook _) _ = Movement straightLines boardSize
+getMovement (Queen _) _ = Movement (diagonals ++ straightLines) boardSize
+getMovement (King _) _ = Movement (diagonals ++ straightLines) 1
 
 jumps :: [Direction]
 jumps = [(1, 2), (2, 1), (2, -1), (1, -2), (-1, -2), (-2, -1), (-2, 1), (-1, 2)]
