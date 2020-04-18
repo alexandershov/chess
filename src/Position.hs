@@ -85,12 +85,18 @@ getTos position (PieceMovement directions range) from =
           legalLines = [ cutLine position line | line <- slightlyLongLines ]
 
 
-getTos position@(Position board _) (PawnMovement moveDirection range captureDirections) from =
-    concat legalMoveLines ++ concat legalCaptureLines
-    where slightlyLongMoveLines = getLines from [moveDirection] range
-          legalMoveLines = [ takeWhile (isEmpty board) line | line <- slightlyLongMoveLines ]
+getTos position (PawnMovement moveDirection range captureDirections) from =
+    movesTos ++ concat legalCaptureLines
+    where movesTos = getPawnMovesTos position moveDirection range from
           slightyLongCaptureLines = getLines from captureDirections 1
           legalCaptureLines = [ takeWhile (isOccupiedByRival position) line | line <- slightyLongCaptureLines ]
+
+
+getPawnMovesTos :: Position -> Direction -> Range -> Square -> [Square]
+getPawnMovesTos (Position board _) direction range from = 
+    concat legalLines
+    where slightlyLongLines = getLines from [direction] range
+          legalLines = [ takeWhile (isEmpty board) line | line <- slightlyLongLines ]
 
 
 cutLine :: Position -> Line -> Line
