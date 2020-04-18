@@ -30,16 +30,15 @@ describeUciParse =
         it "parses `position` command without moves" do
             parse "position startpos moves" `shouldBe` (Position $ Right initialPosition)
 
+        it "parses `position` without `moves` part" do
+            parse "position startpos" `shouldBe` (Position $ Right initialPosition)
+
         it "handles invalid moves in `position` command" do
             let (Position parsed) = parse "position startpos moves e3e4 e7e5" in
                 parsed `shouldSatisfy` isLeft
 
         it "handles invalid first part in `position` command" do
             let (Position parsed) = parse "position wrong moves e2e4 e7e5" in
-                parsed `shouldSatisfy` isLeft
-
-        it "handles missing `moves` in `position` command" do
-            let (Position parsed) = parse "position startpos" in
                 parsed `shouldSatisfy` isLeft
 
         it "handles bad files in `position` command" do

@@ -137,9 +137,14 @@ parse s =
         _ -> Unknown s
 
 parsePosition :: [String] -> Command
-parsePosition ("startpos":"moves":moves) =
-    Position $ makeMoves (Right initialPosition) (map parseMove moves)
+parsePosition ("startpos":args) =
+    Position $ makeMoves (Right initialPosition) (map parseMove (trySkipMovesString args))
 parsePosition p = Position $ Left $ "should be in the form `startpos moves ...`, got " ++ show p
+
+
+trySkipMovesString :: [String] -> [String]
+trySkipMovesString ("moves":moves) = moves
+trySkipMovesString moves = moves
 
 
 type ParsedPosition = Either ErrorDesc P.Position
