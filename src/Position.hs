@@ -125,14 +125,17 @@ squareInDirection square direction range =
 
 
 getMovement :: Piece -> Square -> Movement
-getMovement (Pawn White) _ = PawnMovement whitePawnForward 1
+getMovement (Pawn White) (_, rank) = 
+    case rank of
+        2 ->  PawnMovement whitePawnForward 2
+        _ -> PawnMovement whitePawnForward 1
+
 getMovement (Pawn Black) _ = PawnMovement blackPawnForward 1
 getMovement (Knight _) _ = PieceMovement jumps 1
 getMovement (Bishop _) _ = PieceMovement diagonals boardSize
 getMovement (Rook _) _ = PieceMovement straightLines boardSize
 getMovement (Queen _) _ = PieceMovement (diagonals ++ straightLines) boardSize
 getMovement (King _) _ = PieceMovement (diagonals ++ straightLines) 1
-
 
 whitePawnForward :: [Direction]
 whitePawnForward = [(0, 1)]
