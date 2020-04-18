@@ -4,6 +4,7 @@ module PositionSpec where
 
 import Data.Array ((!), elems)
 import Data.Either (isLeft)
+import Data.Maybe (isJust)
 
 import Test.Hspec
 
@@ -21,9 +22,10 @@ describePieces = do
     describeQueen
     describeKing
 
+
 describeWhitePawn :: Spec
 describeWhitePawn = do
-    describe "white pawn" do
+    describe "White pawn" do
         it "moves forward by 1 square" do
             allMovesFrom e3 positionWithWhitePawn `shouldMatchList` [Move e3 e4]
         it "moves forward by 2 squares from the initial position" do
@@ -40,7 +42,7 @@ describeWhitePawn = do
 
 describeBlackPawn :: Spec
 describeBlackPawn = do
-    describe "black pawn" do
+    describe "Black pawn" do
         it "moves forward by 1 square" do
             allMovesFrom e6 positionWithBlackPawn `shouldMatchList` [Move e6 e5]
         it "moves forward by 2 squares from the initial position" do
@@ -53,6 +55,7 @@ describeBlackPawn = do
             allMovesFrom g7 positionWithBlackPawn `shouldMatchList` [Move g7 h6, Move g7 f6]
         it "doesn't capture own pieces" do
             allMovesFrom d7 positionWithBlackPawn `shouldMatchList` [Move d7 d6, Move d7 d5]
+
 
 describeKnight :: Spec
 describeKnight = do
@@ -91,12 +94,13 @@ describeKing = do
 
 describeInitialPosition :: Spec
 describeInitialPosition = do
-    describe "initialPosition" do
-            it "has 32 pieces" do
-                sum [ 1 | Just _ <- elems board ] `shouldBe` (32::Int)
-            it "has white as side to move" do
-                sideToMove `shouldBe` White
-            where Position board sideToMove = initialPosition
+    describe "Initial position" do
+        it "has 32 pieces" do
+            length pieces `shouldBe` 32
+        it "has white as side to move" do
+            sideToMove `shouldBe` White
+        where Position board sideToMove = initialPosition
+              pieces = filter isJust $ elems board
 
 
 describeMakeMove :: Spec
