@@ -70,6 +70,7 @@ describeUciParse =
         it "returns Unknown on unknown commands" do
             parse "parse this" `shouldBe` Unknown "parse this"
 
+
 describeUciGetResponse :: Spec
 describeUciGetResponse =
     describe "Uci.getResponse" do
