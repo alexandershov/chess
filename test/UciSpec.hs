@@ -12,11 +12,13 @@ import Position hiding (Position)
 import Squares
 import Uci
 
+
 describeUci :: Spec
 describeUci = do
     describeUciParse
     describeUciGetResponse
     describeUciPlay
+
 
 describeUciParse :: Spec
 describeUciParse =
@@ -80,10 +82,10 @@ describeUciGetResponse =
         it "returns nothing on `ucinewgame` command" do
             UciNewGame `responseShouldBe` []
 
-        it "returns nothing on `position` command (for now)" do
+        it "returns nothing on `position` command" do
             (Position $ Right initialPosition) `responseShouldBe` []
 
-        it "asks player on `go` command" do
+        it "returns bestmove on `go` command" do
             Go `responseShouldBe` ["bestmove e2e4"]
 
         it "returns error on unknown command" do
