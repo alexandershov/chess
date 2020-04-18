@@ -25,7 +25,7 @@ type Direction = (Int, Int)
 type Range = Int
 type ErrorDesc = String
 
-data Movement = PieceMovement [Direction] Range
+data Movement = PieceMovement [Direction] Range | PawnMovement [Direction] Range
 
 instance Show Move where
     show (Move from to) 
@@ -67,10 +67,16 @@ pieceMoves position piece from =
 
 
 getTos :: Position -> Movement -> Square -> [Square]
-getTos position movement from = 
+getTos position (PieceMovement directions range) from = 
     concat legalLines
-    where slightlyLongLines = getLines from movement
+    where slightlyLongLines = getLines from directions range
           legalLines = [ cutLine position line | line <- slightlyLongLines ]
+
+
+getTos (Position board _) (PawnMovement direction range) from =
+    concat legalLines
+    where slightlyLongLines = getLines from direction range
+          legalLines = [ takeWhile (isEmpty board) line | line <- slightlyLongLines ]
 
 
 cutLine :: Position -> Line -> Line
@@ -96,8 +102,8 @@ takeWhileWithBreaker p xs =
     where (good, bad) = span p xs
 
 
-getLines :: Square -> Movement -> [Line]
-getLines from (PieceMovement directions range) =
+getLines :: Square -> [Direction] -> Range -> [Line]
+getLines from directions range =
     [ lineInDirection from d range | d <- directions ]
 
 
@@ -119,12 +125,20 @@ squareInDirection square direction range =
 
 
 getMovement :: Piece -> Square -> Movement
-getMovement (Pawn _) _ = error "TODO: implement pawn movement"
+getMovement (Pawn White) _ = PawnMovement whitePawnForward 1
+getMovement (Pawn Black) _ = PawnMovement blackPawnForward 1
 getMovement (Knight _) _ = PieceMovement jumps 1
 getMovement (Bishop _) _ = PieceMovement diagonals boardSize
 getMovement (Rook _) _ = PieceMovement straightLines boardSize
 getMovement (Queen _) _ = PieceMovement (diagonals ++ straightLines) boardSize
 getMovement (King _) _ = PieceMovement (diagonals ++ straightLines) 1
+
+
+whitePawnForward :: [Direction]
+whitePawnForward = [(0, 1)]
+
+blackPawnForward :: [Direction]
+blackPawnForward = [(0, -1)]
 
 jumps :: [Direction]
 jumps = [(1, 2), (2, 1), (2, -1), (1, -2), (-1, -2), (-2, -1), (-2, 1), (-1, 2)]
