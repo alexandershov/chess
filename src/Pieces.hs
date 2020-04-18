@@ -27,6 +27,7 @@ whiteQueen = Queen White
 whiteKing :: Piece
 whiteKing = King White
 
+
 blackPawn :: Piece
 blackPawn = Pawn Black
 
