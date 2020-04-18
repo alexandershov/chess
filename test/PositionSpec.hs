@@ -16,6 +16,8 @@ describePawn = do
     describe "Pawn" do
         it "moves forward by 1 square" do
             allMovesFrom e3 positionWithWhitePawn `shouldMatchList` [Move e3 e4]
+        it "moves forward by 2 squares from the initial position" do
+            allMovesFrom d2 positionWithWhitePawn `shouldMatchList` [Move d2 d3, Move d2 d4]
 
 
 describeKnight :: Spec
@@ -84,7 +86,7 @@ allMovesFrom square position =
 positionWithWhitePawn :: Position
 positionWithWhitePawn = 
     Position board White
-    where board = put [whitePawn `on` e3]
+    where board = put [whitePawn `on` e3, whitePawn `on` d2]
 
 
 positionWithKnight :: Position
