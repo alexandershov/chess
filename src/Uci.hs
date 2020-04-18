@@ -50,15 +50,15 @@ instance Engine Turk where
     _ `getResponseFor` Uci.Quit = return emptyResponse
 
 
-data Tal = Tal (IORef (Maybe P.Position))
+data Currychnoi = Currychnoi (IORef (Maybe P.Position))
 
-instance Engine Tal where
-    (Tal ref) `getResponseFor` Uci.Go = do
+instance Engine Currychnoi where
+    (Currychnoi ref) `getResponseFor` Uci.Go = do
         (Just position) <- readIORef ref
         let move = head $ allMoves position in
             return $ bestMoveResponse $ show move
 
-    (Tal ref) `getResponseFor` (Uci.Position (Right position)) = do
+    (Currychnoi ref) `getResponseFor` (Uci.Position (Right position)) = do
         modifyIORef ref (\_ -> Just position)
         return emptyResponse
 
