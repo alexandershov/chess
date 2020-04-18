@@ -91,7 +91,6 @@ getTos position (PawnMovement moveDirection range captureDirections) from =
           capturesTos = getPawnCapturesTos position captureDirections from
           
 
-
 getPawnMovesTos :: Position -> Direction -> Range -> Square -> [Square]
 getPawnMovesTos (Position board _) direction range from = 
     concat legalLines
