@@ -149,9 +149,10 @@ type ParsedPosition = Either ErrorDesc P.Position
 
 makeMoves :: ParsedPosition -> [Either ErrorDesc P.Move] -> ParsedPosition
 makeMoves parsedPosition [] = parsedPosition
-makeMoves parsedPosition@(Left _) _ = parsedPosition
-makeMoves _ (Left s:_) = Left s
-makeMoves (Right position) (Right move:moves) = makeMoves (position `make` move) moves
+makeMoves parsedPosition (parsedMove:parsedMoves) = do
+    position <- parsedPosition
+    move <- parsedMove
+    makeMoves (position `make` move) parsedMoves
 
 
 parseMove :: String -> Either ErrorDesc Move
