@@ -86,7 +86,7 @@ allMoves position =
 
 
 findBestMove :: Position -> Move
-findBestMove position = head $ allMoves position
+findBestMove position = head $ legalMoves position
 
 
 piecesToMoveInSquares :: Position -> [(Piece, Square)]
