@@ -6,6 +6,7 @@ import Data.IORef
 import Data.List
 import Data.Time (getCurrentTime)
 import System.IO
+import System.Random
 
 import qualified Position as P
 import Position hiding (Position)
@@ -54,8 +55,8 @@ data Currychnoi = Currychnoi (IORef (Maybe P.Position))
 instance Engine Currychnoi where
     (Currychnoi ref) `getResponseFor` Uci.Go = do
         (Just position) <- readIORef ref
-        let move = findBestMove position in
-            return $ bestMoveResponse $ show move
+        move <- chooseMoveFrom position
+        return $ bestMoveResponse $ show move
 
     (Currychnoi ref) `getResponseFor` (Uci.Position (Right position)) = do
         modifyIORef ref (\_ -> Just position)
@@ -72,6 +73,17 @@ instance Engine Currychnoi where
     _ `getResponseFor` (Uci.Unknown s) = return $ unknownResponse s
 
     _ `getResponseFor` Uci.Quit = return emptyResponse
+
+
+chooseMoveFrom :: P.Position -> IO Move
+chooseMoveFrom position = do
+    chooseRandomItem $ legalMoves position
+
+
+chooseRandomItem :: [a] -> IO a
+chooseRandomItem xs = do
+    i <- randomRIO (0, length xs - 1)
+    return (xs !! i)
 
 
 play :: Engine a => CommandReader -> a -> ResponseWriter -> IO ()
