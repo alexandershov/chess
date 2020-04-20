@@ -22,6 +22,8 @@ describePieces = do
     describeQueen
     describeKing
 
+    describeLegalMoves
+
 
 describeWhitePawn :: Spec
 describeWhitePawn = do
@@ -114,6 +116,16 @@ describeMakeMove = do
         it "returns Left if there's no piece in the square" do
             initialPosition `make` Move f3 g1 `shouldSatisfy` isLeft
     where Right (Position board sideToMove) = initialPosition `make` Move g1 f3
+
+
+describeLegalMoves :: Spec
+describeLegalMoves = do
+    describe "Legal move" do
+        it "doesn't leave king under attack" do
+            legalMoves positionWithCheck `shouldMatchList` [
+                Move e1 f1, Move e1 f2, Move e1 d1, Move e1 d2,
+                Move b5 e8, Move b5 e2]
+
       
 
 allMovesFrom :: Square -> Position -> [Move]
@@ -179,6 +191,13 @@ positionWithKing =
     Position board White
     where board = put [whiteKing `on` e1, blackPawn `on` e2, 
                        whiteKnight `on` d2]
+
+
+positionWithCheck :: Position
+positionWithCheck = 
+    Position board White
+    where board = put [whiteKing `on` e1, blackRook `on` e8,
+                       whiteBishop `on` b5]
 
 
 knightF3Moves :: [Move]

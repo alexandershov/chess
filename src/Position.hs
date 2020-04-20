@@ -52,6 +52,31 @@ isEmpty :: Board -> Square -> Bool
 isEmpty board square = isNothing $ board ! square
 
 
+legalMoves :: Position -> [Move]
+legalMoves position = 
+    filter (`isLegalIn` position) moves
+    where moves = allMoves position
+
+
+isLegalIn :: Move -> Position -> Bool
+move `isLegalIn` position@(Position _ sideToMove) = 
+    case position `make` move of
+        Right nextPosition -> not $ sideToMove `isUnderCheckIn` nextPosition
+        Left _ -> False
+
+
+isUnderCheckIn :: Color -> Position -> Bool
+color `isUnderCheckIn` position =
+    any (threatens position king) moves
+    where moves = allMoves position
+          king = King color
+
+
+threatens :: Position -> Piece -> Move -> Bool
+threatens (Position board _) piece (Move _ to) =
+    board ! to == Just piece
+
+
 allMoves :: Position -> [Move]
 allMoves position = 
     [ move | 
