@@ -125,10 +125,13 @@ describeMakeMove = do
 
 describeWhiteCastlingRights :: Spec
 describeWhiteCastlingRights = do
-    describe "White long castle" do
-        it "right is lost after the white rook moves" do
+    describe "White castle" do
+        it "right is lost after the queen rook moves" do
             castlingRightsAfter (Move a1 a2) position `shouldMatchList` [
                 (White, [ShortCastle]), (Black, [LongCastle, ShortCastle])]
+        it "right is lost after the king rook moves" do
+            castlingRightsAfter (Move h1 h2) position `shouldMatchList` [
+                (White, [LongCastle]), (Black, [LongCastle, ShortCastle])]
         it "right is lost after the white king moves" do
             castlingRightsAfter (Move e1 e2) position `shouldMatchList` [
                 (White, []), (Black, [LongCastle, ShortCastle])]

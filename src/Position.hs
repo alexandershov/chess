@@ -272,14 +272,20 @@ position@(Position board sideToMove _) `make` move@(Move from to) =
 
 getNextCastlingRights :: Position -> Move -> CastlingRights
 getNextCastlingRights (Position board sideToMove castlingRights) move
-    | queenRookMoved sideToMove move = without castlingRights sideToMove [LongCastle]
     | kingMoved board move = without castlingRights sideToMove [LongCastle, ShortCastle]
+    | queenRookMoved sideToMove move = without castlingRights sideToMove [LongCastle]
+    | kingRookMoved sideToMove move = without castlingRights sideToMove [ShortCastle]
     | otherwise = castlingRights
     
 
 queenRookMoved :: Color -> Move -> Bool
 queenRookMoved color (Move (file, rank) _) =
     file == 1 && rank == rankWithPieces color
+
+
+kingRookMoved :: Color -> Move -> Bool
+kingRookMoved color (Move (file, rank) _) =
+    file == boardSize && rank == rankWithPieces color
 
 
 kingMoved :: Board -> Move -> Bool
