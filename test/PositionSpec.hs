@@ -25,7 +25,7 @@ describePieces = do
     describeKing
 
     describeLegalMoves
-    describeCastlingRights
+    describeWhiteCastlingRights
 
 
 describeWhitePawn :: Spec
@@ -123,24 +123,27 @@ describeMakeMove = do
     where Right (Position board sideToMove _) = initialPosition `make` Move g1 f3
 
 
-describeCastlingRights :: Spec
-describeCastlingRights = do
-    describeLongCastle White 1 e2
-    describeLongCastle Black 8 e7
+describeWhiteCastlingRights :: Spec
+describeWhiteCastlingRights = do
+    describe "White long castle" do
+        it "right is lost after the white rook moves" do
+            castlingRightsAfter (Move a1 a2) position `shouldMatchList` [
+                (White, [ShortCastle]), (Black, [LongCastle, ShortCastle])]
+        it "right is lost after the white king moves" do
+            castlingRightsAfter (Move e1 e2) position `shouldMatchList` [
+                (White, []), (Black, [LongCastle, ShortCastle])]
+    where position = positionWithCastling White
 
 
-describeLongCastle :: Color -> Rank -> Square -> Spec
-describeLongCastle color rank kingTo = do
-    describe "Long castle" do
-        it "right is lost after the queen rook moves" do
-            let Right (Position _ _ castlingRights) = position `make` Move queenRook kingTo in
-                castlingRights `shouldBe` M.fromList [(color, S.fromList [ShortCastle]), (rival color, bothCastles)]
-        it "right is lost after the king moves" do
-            let Right (Position _ _ castlingRights) = position `make` Move king kingTo in
-                castlingRights `shouldBe` M.fromList [(color, S.fromList []), (rival color, bothCastles)]
-    where position = positionWithCastling color
-          queenRook = (1, rank)
-          king = (5, rank)
+castlingRightsAfter :: Move -> Position -> [(Color, [Castle])]
+castlingRightsAfter move position =
+    convertCastlingRights castlingRights
+    where Right (Position _ _ castlingRights) = position `make` move
+
+
+convertCastlingRights :: CastlingRights -> [(Color, [Castle])]
+convertCastlingRights castlingRights =
+    [(color, S.toList castles) | (color, castles) <- M.toList castlingRights]
 
 
 describeLegalMoves :: Spec
