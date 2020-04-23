@@ -125,18 +125,22 @@ describeMakeMove = do
 
 describeCastlingRights :: Spec
 describeCastlingRights = do
-    describeLongCastle White 1
-    describeLongCastle Black 8
+    describeLongCastle White 1 e2
+    describeLongCastle Black 8 e7
 
 
-describeLongCastle :: Color -> Rank -> Spec
-describeLongCastle color rank = do
+describeLongCastle :: Color -> Rank -> Square -> Spec
+describeLongCastle color rank kingTo = do
     describe "Long castle" do
         it "right is lost after the queen rook moves" do
-            let Right (Position _ _ castlingRights) = position `make` Move queenRook a2 in
+            let Right (Position _ _ castlingRights) = position `make` Move queenRook kingTo in
                 castlingRights `shouldBe` M.fromList [(color, S.fromList [ShortCastle]), (rival color, bothCastles)]
+        it "right is lost after the king moves" do
+            let Right (Position _ _ castlingRights) = position `make` Move king kingTo in
+                castlingRights `shouldBe` M.fromList [(color, S.fromList []), (rival color, bothCastles)]
     where position = positionWithCastling color
           queenRook = (1, rank)
+          king = (5, rank)
 
 
 describeLegalMoves :: Spec

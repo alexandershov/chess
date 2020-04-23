@@ -271,8 +271,9 @@ position@(Position board sideToMove _) `make` move@(Move from to) =
 
 
 getNextCastlingRights :: Position -> Move -> CastlingRights
-getNextCastlingRights (Position _ sideToMove castlingRights) move
+getNextCastlingRights (Position board sideToMove castlingRights) move
     | queenRookMoved sideToMove move = without castlingRights sideToMove [LongCastle]
+    | kingMoved board move = without castlingRights sideToMove [LongCastle, ShortCastle]
     | otherwise = castlingRights
     
 
@@ -280,6 +281,12 @@ queenRookMoved :: Color -> Move -> Bool
 queenRookMoved color (Move (file, rank) _) =
     file == 1 && rank == rankWithPieces color
 
+
+kingMoved :: Board -> Move -> Bool
+kingMoved board (Move from _) =
+    case board ! from of
+        Just (King _) -> True
+        _ -> False
 
 rankWithPieces :: Color -> Rank
 rankWithPieces White = 1
