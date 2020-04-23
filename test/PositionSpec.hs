@@ -25,6 +25,7 @@ describePieces = do
     describeKing
 
     describeLegalMoves
+    describeCastlingRights
 
 
 describeWhitePawn :: Spec
@@ -123,6 +124,28 @@ describeMakeMove = do
     where Right (Position board sideToMove _) = initialPosition `make` Move g1 f3
 
 
+describeCastlingRights :: Spec
+describeCastlingRights = do
+    describeLongCastle White 1
+
+
+describeLongCastle :: Color -> Rank -> Spec
+describeLongCastle color rank = do
+    describe "Long castle" do
+        it "right is lost after the queen rook moves" do
+            let Right (Position _ _ castlingRights) = position `make` Move queenRook a2 in
+                castlingRights `shouldBe` without color [LongCastle]
+    where position = positionWithCastling color
+          queenRook = (1, rank)
+
+
+without :: Color -> [Castle] -> CastlingRights
+without color castles =
+    M.insert color newCastles fullCastlingRights
+    where newCastles = S.difference bothCastles $ S.fromList castles
+          bothCastles = S.fromList [LongCastle, ShortCastle]
+
+
 describeLegalMoves :: Spec
 describeLegalMoves = do
     describe "Legal move" do
@@ -131,7 +154,6 @@ describeLegalMoves = do
                 Move e1 f1, Move e1 f2, Move e1 d1, Move e1 d2,
                 Move b5 e8, Move b5 e2]
 
-      
 
 allMovesFrom :: Square -> Position -> [Move]
 allMovesFrom square position =
@@ -140,6 +162,14 @@ allMovesFrom square position =
 
 isFrom :: Move -> Square -> Bool
 (Move from _) `isFrom` square = from == square
+
+
+positionWithCastling :: Color -> Position
+positionWithCastling color =
+    Position board color fullCastlingRights
+    where board = put [whiteRook `on` a1, whiteKing `on` e1, whiteRook `on` h1,
+                       whiteRook `on` c4,
+                       blackRook `on` a8, blackKing `on` e8, blackRook `on` h8]
 
 
 positionWithWhitePawn :: Position
