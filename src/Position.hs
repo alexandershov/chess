@@ -1,6 +1,8 @@
 module Position where
 
 import Data.Array (assocs, Array, (!), (//), listArray)
+import Data.Set (Set)
+import Data.Map (Map)
 import Data.Maybe (isNothing)
 
 import Pieces
@@ -17,6 +19,9 @@ showSquare (x, y) =
           rank = show y
 
 type Board = Array Square (Maybe Piece)
+
+data Castle = LongCastle | ShortCastle
+type CastlingRights = Map Color (Set Castle)
 
 data Position = Position Board Color deriving (Eq, Show)
 data Move = Move Square Square deriving (Eq)

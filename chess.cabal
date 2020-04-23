@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f5dc61e1aaaf1556f6fe835b19497f9ebe31d55d91a4f753a8cbe1fb756a279a
+-- hash: af150e895e78b6d1a1dae478ea43005be5b72e61b69077b40b62eb04ab15b699
 
 name:           chess
 version:        0.1.0.0
@@ -38,6 +38,7 @@ library
   build-depends:
       array
     , base >=4.7 && <5
+    , containers
     , hspec
     , random
     , time
@@ -54,6 +55,7 @@ executable chess-exe
       array
     , base >=4.7 && <5
     , chess
+    , containers
     , hspec
     , random
     , time
@@ -73,6 +75,7 @@ test-suite chess-test
       array
     , base >=4.7 && <5
     , chess
+    , containers
     , hspec
     , random
     , time
