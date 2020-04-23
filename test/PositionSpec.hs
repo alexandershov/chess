@@ -26,6 +26,7 @@ describePieces = do
 
     describeLegalMoves
     describeWhiteCastlingRights
+    describeBlackCastlingRights
 
 
 describeWhitePawn :: Spec
@@ -146,6 +147,31 @@ describeWhiteCastlingRights = do
                 (White, [LongCastle]), (Black, [LongCastle])]
     where position = positionWithCastling White
           blackPosition = positionWithCastling Black
+
+
+describeBlackCastlingRights :: Spec
+describeBlackCastlingRights = do
+    describe "Black castle" do
+        it "right is lost after the queen rook moves" do
+            castlingRightsAfter (Move a8 a7) position `shouldMatchList` [
+                (Black, [ShortCastle]), (White, [LongCastle, ShortCastle])]
+        it "right is lost after the king rook moves" do
+            castlingRightsAfter (Move h8 h7) position `shouldMatchList` [
+                (Black, [LongCastle]), (White, [LongCastle, ShortCastle])]
+        it "right is lost after the white king moves" do
+            castlingRightsAfter (Move e8 e7) position `shouldMatchList` [
+                (Black, []), (White, [LongCastle, ShortCastle])]
+        it "right is not lost after the third rook moves" do
+            castlingRightsAfter (Move c5 c4) position `shouldMatchList` [
+                (Black, [LongCastle, ShortCastle]), (White, [LongCastle, ShortCastle])]
+        it "right is lost after the queen rook is taken" do
+            castlingRightsAfter (Move a1 a8) whitePosition `shouldMatchList` [
+                (Black, [ShortCastle]), (White, [ShortCastle])]
+        it "right is lost after the king rook is taken" do
+            castlingRightsAfter (Move h1 h8) whitePosition `shouldMatchList` [
+                (Black, [LongCastle]), (White, [LongCastle])]
+    where position = positionWithCastling Black
+          whitePosition = positionWithCastling White
 
 
 castlingRightsAfter :: Move -> Position -> [(Color, [Castle])]
