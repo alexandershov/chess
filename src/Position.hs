@@ -1,8 +1,8 @@
 module Position where
 
 import Data.Array (assocs, Array, (!), (//), listArray)
-import Data.Set (Set)
-import Data.Map (Map)
+import qualified Data.Set as S
+import qualified Data.Map as M
 import Data.Maybe (isNothing)
 
 import Pieces
@@ -20,10 +20,10 @@ showSquare (x, y) =
 
 type Board = Array Square (Maybe Piece)
 
-data Castle = LongCastle | ShortCastle
-type CastlingRights = Map Color (Set Castle)
+data Castle = LongCastle | ShortCastle deriving (Eq, Ord, Show)
+type CastlingRights = M.Map Color (S.Set Castle)
 
-data Position = Position Board Color deriving (Eq, Show)
+data Position = Position Board Color CastlingRights deriving (Eq, Show)
 data Move = Move Square Square deriving (Eq)
 
 type Direction = (File, Rank)
@@ -64,7 +64,7 @@ legalMoves position =
 
 
 isLegalIn :: Move -> Position -> Bool
-move `isLegalIn` position@(Position _ sideToMove) = 
+move `isLegalIn` position@(Position _ sideToMove _) = 
     case position `make` move of
         Right nextPosition -> not $ sideToMove `isUnderCheckIn` nextPosition
         Left _ -> False
@@ -78,7 +78,7 @@ color `isUnderCheckIn` position =
 
 
 threatens :: Position -> Piece -> Move -> Bool
-threatens (Position board _) piece (Move _ to) =
+threatens (Position board _ _) piece (Move _ to) =
     board ! to == Just piece
 
 
@@ -91,7 +91,7 @@ allMoves position =
 
 
 piecesToMoveInSquares :: Position -> [(Piece, Square)]
-piecesToMoveInSquares (Position board sideToMove) =
+piecesToMoveInSquares (Position board sideToMove _) =
     [ (piece, square) | 
       (square, Just piece) <- assocs board, 
       getColor piece == sideToMove ]
@@ -118,7 +118,7 @@ getTos position (PawnMovement moveDirection range captureDirections) from =
           
 
 getPawnMovesTos :: Position -> Direction -> Range -> Square -> [Square]
-getPawnMovesTos (Position board _) direction range from = 
+getPawnMovesTos (Position board _ _) direction range from = 
     concat legalLines
     where slightlyLongLines = getLines from [direction] range
           legalLines = [ takeWhile (isEmpty board) line | line <- slightlyLongLines ]
@@ -132,7 +132,7 @@ getPawnCapturesTos position directions from =
 
 
 cutLine :: Position -> Line -> Line
-cutLine position@(Position board _) line =
+cutLine position@(Position board _ _) line =
     exclude (isOccupiedBySideToMove position) squares
     where squares = takeWhileWithBreaker (isEmpty board) line
 
@@ -142,17 +142,17 @@ exclude p xs = [ x | x <- xs, not $ p x ]
 
 
 isOccupiedBySideToMove :: Position -> Square -> Bool
-isOccupiedBySideToMove position@(Position _ sideToMove) square =
+isOccupiedBySideToMove position@(Position _ sideToMove _) square =
     isOccupiedByColor position sideToMove square
 
 
 isOccupiedByRival :: Position -> Square -> Bool
-isOccupiedByRival position@(Position _ sideToMove) square =
+isOccupiedByRival position@(Position _ sideToMove _) square =
     isOccupiedByColor position (rival sideToMove) square
 
 
 isOccupiedByColor :: Position -> Color -> Square -> Bool
-isOccupiedByColor (Position board _) color square =
+isOccupiedByColor (Position board _ _) color square =
     case board ! square of
         Nothing -> False
         Just piece -> (getColor piece) == color
@@ -236,7 +236,7 @@ put piecesOnSquares =
 
 initialPosition :: Position
 initialPosition = 
-    Position board White
+    Position board White fullCastlingRights
     where 
         board = put $ firstRank ++ secondRank ++ seventhRank ++ eightRank
         firstRank = [whiteRook `on` a1, whiteKnight `on` b1, whiteBishop `on` c1,
@@ -251,11 +251,17 @@ initialPosition =
                      blackBishop `on` f8, blackKnight `on` g8, blackRook `on` h8]
 
 
+fullCastlingRights :: CastlingRights
+fullCastlingRights = 
+    M.fromList [(White, bothCastles), (Black, bothCastles)]
+    where bothCastles = S.fromList [LongCastle, ShortCastle]
+
+
 make :: Position -> Move -> Either ErrorDesc Position
-(Position board sideToMove) `make` (Move from to) = 
+(Position board sideToMove castlingRights) `make` (Move from to) = 
     case maybePiece of
         Nothing -> Left $ showSquare from ++ " square is empty"
-        _ -> Right $ Position boardAfterMove (rival sideToMove)
+        _ -> Right $ Position boardAfterMove (rival sideToMove) castlingRights
     where maybePiece = board ! from
           boardAfterMove = board // [(from, Nothing), (to, maybePiece)]
 

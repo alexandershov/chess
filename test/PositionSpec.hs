@@ -3,6 +3,8 @@
 module PositionSpec where
 
 import Data.Array ((!), elems)
+import qualified Data.Map as M
+import qualified Data.Set as S
 import Data.Either (isLeft)
 import Data.Maybe (isJust)
 
@@ -101,8 +103,11 @@ describeInitialPosition = do
             length pieces `shouldBe` 32
         it "has white as side to move" do
             sideToMove `shouldBe` White
-        where Position board sideToMove = initialPosition
+        it "allows every castle" do
+            castlingRights `shouldBe` M.fromList [(White, bothCastles), (Black, bothCastles)]
+        where Position board sideToMove castlingRights = initialPosition
               pieces = filter isJust $ elems board
+              bothCastles = S.fromList [LongCastle, ShortCastle]
 
 
 describeMakeMove :: Spec
@@ -115,7 +120,7 @@ describeMakeMove = do
             sideToMove `shouldBe` Black
         it "returns Left if there's no piece in the square" do
             initialPosition `make` Move f3 g1 `shouldSatisfy` isLeft
-    where Right (Position board sideToMove) = initialPosition `make` Move g1 f3
+    where Right (Position board sideToMove _) = initialPosition `make` Move g1 f3
 
 
 describeLegalMoves :: Spec
@@ -139,7 +144,7 @@ isFrom :: Move -> Square -> Bool
 
 positionWithWhitePawn :: Position
 positionWithWhitePawn = 
-    Position board White
+    Position board White fullCastlingRights
     where board = put [whitePawn `on` e3, whitePawn `on` d2,
                        whitePawn `on` c4, whitePawn `on` c5,
                        whitePawn `on` f4, blackPawn `on` f5,
@@ -149,7 +154,7 @@ positionWithWhitePawn =
 
 positionWithBlackPawn :: Position
 positionWithBlackPawn = 
-    Position board Black
+    Position board Black fullCastlingRights
     where board = put [blackPawn `on` e6, blackPawn `on` d7,
                        blackPawn `on` c5, blackPawn `on` c4,
                        blackPawn `on` f5, whitePawn `on` f4,
@@ -159,28 +164,28 @@ positionWithBlackPawn =
 
 positionWithKnight :: Position
 positionWithKnight = 
-    Position board White
+    Position board White fullCastlingRights
     where board = put [whiteKnight `on` f3, blackPawn `on` e5, 
                        whiteRook `on` e1, whiteBishop `on` f2]
 
 
 positionWithBishop :: Position
 positionWithBishop = 
-    Position board White
+    Position board White fullCastlingRights
     where board = put [whiteBishop `on` b2, blackPawn `on` e5, 
                        whiteKnight `on` c1]
 
 
 positionWithRook :: Position
 positionWithRook =
-    Position board White
+    Position board White fullCastlingRights
     where board = put [whiteRook `on` b2, whiteKing `on` e2, 
                        blackKnight `on` b5]
 
 
 positionWithQueen :: Position
 positionWithQueen =
-    Position board White
+    Position board White fullCastlingRights
     where board = put [whiteQueen `on` b2, whiteKing `on` e2, 
                        blackKnight `on` b5, blackPawn `on` e5,
                        whiteKnight `on` c1]
@@ -188,14 +193,14 @@ positionWithQueen =
 
 positionWithKing :: Position
 positionWithKing =
-    Position board White
+    Position board White fullCastlingRights
     where board = put [whiteKing `on` e1, blackPawn `on` e2, 
                        whiteKnight `on` d2]
 
 
 positionWithCheck :: Position
 positionWithCheck = 
-    Position board White
+    Position board White fullCastlingRights
     where board = put [whiteKing `on` e1, blackRook `on` e8,
                        whiteBishop `on` b5]
 

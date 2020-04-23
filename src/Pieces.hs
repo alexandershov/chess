@@ -1,6 +1,6 @@
 module Pieces where
 
-data Color = Black | White deriving (Eq, Show)
+data Color = Black | White deriving (Eq, Ord, Show)
 data Piece = 
     Pawn { getColor :: Color } | 
     Knight { getColor :: Color } | 
