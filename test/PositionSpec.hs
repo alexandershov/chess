@@ -108,7 +108,6 @@ describeInitialPosition = do
             castlingRights `shouldBe` M.fromList [(White, bothCastles), (Black, bothCastles)]
         where Position board sideToMove castlingRights = initialPosition
               pieces = filter isJust $ elems board
-              bothCastles = S.fromList [LongCastle, ShortCastle]
 
 
 describeMakeMove :: Spec
@@ -127,6 +126,7 @@ describeMakeMove = do
 describeCastlingRights :: Spec
 describeCastlingRights = do
     describeLongCastle White 1
+    describeLongCastle Black 8
 
 
 describeLongCastle :: Color -> Rank -> Spec
@@ -134,16 +134,9 @@ describeLongCastle color rank = do
     describe "Long castle" do
         it "right is lost after the queen rook moves" do
             let Right (Position _ _ castlingRights) = position `make` Move queenRook a2 in
-                castlingRights `shouldBe` without color [LongCastle]
+                castlingRights `shouldBe` M.fromList [(color, S.fromList [ShortCastle]), (rival color, bothCastles)]
     where position = positionWithCastling color
           queenRook = (1, rank)
-
-
-without :: Color -> [Castle] -> CastlingRights
-without color castles =
-    M.insert color newCastles fullCastlingRights
-    where newCastles = S.difference bothCastles $ S.fromList castles
-          bothCastles = S.fromList [LongCastle, ShortCastle]
 
 
 describeLegalMoves :: Spec

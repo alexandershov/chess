@@ -254,16 +254,42 @@ initialPosition =
 fullCastlingRights :: CastlingRights
 fullCastlingRights = 
     M.fromList [(White, bothCastles), (Black, bothCastles)]
-    where bothCastles = S.fromList [LongCastle, ShortCastle]
+
+
+bothCastles :: S.Set Castle
+bothCastles = S.fromList [LongCastle, ShortCastle]
 
 
 make :: Position -> Move -> Either ErrorDesc Position
-(Position board sideToMove castlingRights) `make` (Move from to) = 
+position@(Position board sideToMove _) `make` move@(Move from to) = 
     case maybePiece of
         Nothing -> Left $ showSquare from ++ " square is empty"
-        _ -> Right $ Position boardAfterMove (rival sideToMove) castlingRights
+        _ -> Right $ Position nextBoard (rival sideToMove) nextCastlingRights
     where maybePiece = board ! from
-          boardAfterMove = board // [(from, Nothing), (to, maybePiece)]
+          nextBoard = board // [(from, Nothing), (to, maybePiece)]
+          nextCastlingRights = getNextCastlingRights position move
+
+
+getNextCastlingRights :: Position -> Move -> CastlingRights
+getNextCastlingRights (Position _ sideToMove castlingRights) move
+    | queenRookMoved sideToMove move = without castlingRights sideToMove [LongCastle]
+    | otherwise = castlingRights
+    
+
+queenRookMoved :: Color -> Move -> Bool
+queenRookMoved color (Move (file, rank) _) =
+    file == 1 && rank == rankWithPieces color
+
+
+rankWithPieces :: Color -> Rank
+rankWithPieces White = 1
+rankWithPieces Black = boardSize
+
+
+without :: CastlingRights -> Color -> [Castle] -> CastlingRights
+without castlingRights color castles =
+    M.insert color newCastles castlingRights
+    where newCastles = S.difference bothCastles $ S.fromList castles
 
 
 rival :: Color -> Color
