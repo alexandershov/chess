@@ -142,7 +142,7 @@ describeWhiteCastlingRights = do
             castlingRightsAfter (Move a8 a1) blackPosition `shouldMatchList` [
                 (White, [ShortCastle]), (Black, [ShortCastle])]
         it "right is lost after the king rook is taken" do
-            castlingRightsAfter (Move h8 a1) blackPosition `shouldMatchList` [
+            castlingRightsAfter (Move h8 h1) blackPosition `shouldMatchList` [
                 (White, [LongCastle]), (Black, [LongCastle])]
     where position = positionWithCastling White
           blackPosition = positionWithCastling Black

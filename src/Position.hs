@@ -261,36 +261,37 @@ bothCastles = S.fromList [LongCastle, ShortCastle]
 
 
 make :: Position -> Move -> Either ErrorDesc Position
-position@(Position board sideToMove _) `make` move@(Move from to) = 
+(Position board sideToMove castlingRights) `make` (Move from to) = 
     case maybePiece of
         Nothing -> Left $ showSquare from ++ " square is empty"
         _ -> Right $ Position nextBoard (rival sideToMove) nextCastlingRights
     where maybePiece = board ! from
           nextBoard = board // [(from, Nothing), (to, maybePiece)]
-          nextCastlingRights = getNextCastlingRights position move
+          tmpCastlingRights = getNextCastlingRights board sideToMove castlingRights from
+          nextCastlingRights = getNextCastlingRights board (rival sideToMove) tmpCastlingRights to
 
 
-getNextCastlingRights :: Position -> Move -> CastlingRights
-getNextCastlingRights (Position board sideToMove castlingRights) move
-    | kingMoved board move = without castlingRights sideToMove [LongCastle, ShortCastle]
-    | queenRookMoved sideToMove move = without castlingRights sideToMove [LongCastle]
-    | kingRookMoved sideToMove move = without castlingRights sideToMove [ShortCastle]
+getNextCastlingRights :: Board -> Color -> CastlingRights -> Square -> CastlingRights
+getNextCastlingRights board color castlingRights square
+    | kingTouched board square = without castlingRights color [LongCastle, ShortCastle]
+    | queenRookTouched color square = without castlingRights color [LongCastle]
+    | kingRookTouched color square = without castlingRights color [ShortCastle]
     | otherwise = castlingRights
     
 
-queenRookMoved :: Color -> Move -> Bool
-queenRookMoved color (Move (file, rank) _) =
+queenRookTouched  :: Color -> Square -> Bool
+queenRookTouched color (file, rank) =
     file == 1 && rank == rankWithPieces color
 
 
-kingRookMoved :: Color -> Move -> Bool
-kingRookMoved color (Move (file, rank) _) =
+kingRookTouched :: Color -> Square -> Bool
+kingRookTouched color (file, rank) =
     file == boardSize && rank == rankWithPieces color
 
 
-kingMoved :: Board -> Move -> Bool
-kingMoved board (Move from _) =
-    case board ! from of
+kingTouched :: Board -> Square -> Bool
+kingTouched board square =
+    case board ! square of
         Just (King _) -> True
         _ -> False
 
