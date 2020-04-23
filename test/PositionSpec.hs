@@ -135,6 +135,9 @@ describeWhiteCastlingRights = do
         it "right is lost after the white king moves" do
             castlingRightsAfter (Move e1 e2) position `shouldMatchList` [
                 (White, []), (Black, [LongCastle, ShortCastle])]
+        it "right is not lost after the third rook moves" do
+            castlingRightsAfter (Move c4 c5) position `shouldMatchList` [
+                (White, [LongCastle, ShortCastle]), (Black, [LongCastle, ShortCastle])]
     where position = positionWithCastling White
 
 
@@ -171,7 +174,7 @@ positionWithCastling :: Color -> Position
 positionWithCastling color =
     Position board color fullCastlingRights
     where board = put [whiteRook `on` a1, whiteKing `on` e1, whiteRook `on` h1,
-                       whiteRook `on` c4,
+                       whiteRook `on` c4, blackRook `on` c5,
                        blackRook `on` a8, blackKing `on` e8, blackRook `on` h8]
 
 
