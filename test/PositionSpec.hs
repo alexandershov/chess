@@ -25,8 +25,10 @@ describePieces = do
     describeKing
 
     describeLegalMoves
+
     describeWhiteCastlingRights
     describeBlackCastlingRights
+    describeShortCastle
 
 
 describeWhitePawn :: Spec
@@ -172,6 +174,23 @@ describeBlackCastlingRights = do
                 (Black, [LongCastle]), (White, [LongCastle])]
     where position = positionWithCastling Black
           whitePosition = positionWithCastling White
+
+
+describeShortCastle :: Spec
+describeShortCastle = do
+    describe "Short castle" do
+        it "moves a king" do
+            board ! g1 `shouldBe` Just whiteKing
+            board ! e1 `shouldBe` Nothing
+        it "moves a rook" do
+            board ! f1 `shouldBe` Just whiteRook
+            board ! h1 `shouldBe` Nothing
+        it "changes side to move" do
+            sideToMove `shouldBe` Black
+        it "removes castling rights" do
+            convertCastlingRights castlingRights `shouldBe` [(White, []), (Black, [LongCastle, ShortCastle])]
+    where position = positionWithCastling White
+          Right (Position board sideToMove castlingRights) = position `make` Move e1 g1
 
 
 castlingRightsAfter :: Move -> Position -> [(Color, [Castle])]
