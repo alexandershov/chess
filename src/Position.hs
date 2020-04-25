@@ -65,9 +65,8 @@ legalMoves position =
 
 isLegalIn :: Move -> Position -> Bool
 move `isLegalIn` position@(Position _ sideToMove _) = 
-    case position `make` move of
-        Right nextPosition -> not $ sideToMove `isUnderCheckIn` nextPosition
-        Left _ -> False
+    not $ sideToMove `isUnderCheckIn` nextPosition
+    where nextPosition = position `makeUnchecked` move
 
 
 isUnderCheckIn :: Color -> Position -> Bool
@@ -341,13 +340,20 @@ bothCastles :: S.Set Castle
 bothCastles = S.fromList [LongCastle, ShortCastle]
 
 
-make :: Position -> Move -> Either ErrorDesc Position
-position@(Position board sideToMove castlingRights) `make` move@(Move from to) = do
-    nextBoard <- getNextBoard position move
-    return $ Position nextBoard (rival sideToMove) nextCastlingRights
-    where 
+makeUnchecked :: Position -> Move -> Position
+position@(Position board sideToMove castlingRights) `makeUnchecked` move@(Move from to) =
+    Position nextBoard (rival sideToMove) nextCastlingRights
+    where nextBoard = getNextBoard position move
           tmpCastlingRights = getNextCastlingRights board sideToMove castlingRights from
           nextCastlingRights = getNextCastlingRights board (rival sideToMove) tmpCastlingRights to
+
+
+make :: Position -> Move -> Either ErrorDesc Position
+position `make` move =
+    case move `elem` (legalMoves position) of
+        True -> do
+            return $ position `makeUnchecked` move
+        False -> Left $ "move " ++ (show move) ++ " is illegal"
 
 
 getNextCastlingRights :: Board -> Color -> CastlingRights -> Square -> CastlingRights
@@ -358,10 +364,10 @@ getNextCastlingRights board color castlingRights square
     | otherwise = castlingRights
 
 
-getNextBoard :: Position -> Move -> Either ErrorDesc Board
+getNextBoard :: Position -> Move -> Board
 getNextBoard position move
-    | isShortCastle position move = Right $ castleShort position
-    | isLongCastle position move = Right $ castleLong position
+    | isShortCastle position move = castleShort position
+    | isLongCastle position move = castleLong position
     | otherwise = makeSimpleMove position move
 
 
@@ -399,11 +405,9 @@ castleLong (Position board Black _) =
     board // [(e8, Nothing), (c8, Just blackKing), (a8, Nothing), (d8, Just blackRook)]
 
 
-makeSimpleMove :: Position -> Move -> Either ErrorDesc Board
+makeSimpleMove :: Position -> Move -> Board
 makeSimpleMove (Position board _ _) (Move from to) =
-    case maybePiece of
-        Nothing -> Left "square is empty"
-        _ -> Right (board // [(from, Nothing), (to, maybePiece)])
+    board // [(from, Nothing), (to, maybePiece)]
     where maybePiece = board ! from
     
 

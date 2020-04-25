@@ -123,7 +123,7 @@ describeMakeMove = do
             (board ! f3) `shouldBe` Just whiteKnight
         it "changes a side to move" do
             sideToMove `shouldBe` Black
-        it "returns Left if there's no piece in the square" do
+        it "returns Left if move is illegal" do
             initialPosition `make` Move f3 g1 `shouldSatisfy` isLeft
     where Right (Position board sideToMove _) = initialPosition `make` Move g1 f3
 
