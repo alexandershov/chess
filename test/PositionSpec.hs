@@ -221,10 +221,13 @@ describeCastleMoves = do
             allMovesFrom e1 (positionWithoutCastling White) `shouldMatchList` kingMoves
         it "are not possible if there's a piece obstacle" do
             allMovesFrom e1 positionWithObstacle `shouldMatchList` kingMoves
+        it "are not possible if there's a threat on the king path" do
+            allMovesFrom e1 positionWithThreat `shouldMatchList` kingMoves
     where kingMoves = [Move e1 d1, Move e1 f1, Move e1 d2, Move e1 e2, Move e1 f2]
           castleMoves = [Move e1 g1, Move e1 c1]
           positionWithObstacle = (positionWithCastling White) `changeBoard` [
               whiteKnight `on` b1, whiteKnight `on` g1]
+          positionWithThreat = (positionWithCastling White) `changeBoard` [blackQueen `on` d3]
 
 
 castlingRightsAfter :: Move -> Position -> [(Color, [Castle])]
