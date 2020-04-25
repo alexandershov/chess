@@ -251,6 +251,10 @@ isFrom :: Move -> Square -> Bool
 (Move from _) `isFrom` square = from == square
 
 
+noCastlingRights :: CastlingRights
+noCastlingRights = M.fromList [(White, S.empty), (Black, S.empty)]
+
+
 positionWithCastling :: Color -> Position
 positionWithCastling color =
     Position board color fullCastlingRights
@@ -261,7 +265,7 @@ positionWithCastling color =
 
 positionWithWhitePawn :: Position
 positionWithWhitePawn = 
-    Position board White fullCastlingRights
+    Position board White noCastlingRights
     where board = put [whitePawn `on` e3, whitePawn `on` d2,
                        whitePawn `on` c4, whitePawn `on` c5,
                        whitePawn `on` f4, blackPawn `on` f5,
@@ -271,7 +275,7 @@ positionWithWhitePawn =
 
 positionWithBlackPawn :: Position
 positionWithBlackPawn = 
-    Position board Black fullCastlingRights
+    Position board Black noCastlingRights
     where board = put [blackPawn `on` e6, blackPawn `on` d7,
                        blackPawn `on` c5, blackPawn `on` c4,
                        blackPawn `on` f5, whitePawn `on` f4,
@@ -281,28 +285,28 @@ positionWithBlackPawn =
 
 positionWithKnight :: Position
 positionWithKnight = 
-    Position board White fullCastlingRights
+    Position board White noCastlingRights
     where board = put [whiteKnight `on` f3, blackPawn `on` e5, 
                        whiteRook `on` e1, whiteBishop `on` f2]
 
 
 positionWithBishop :: Position
 positionWithBishop = 
-    Position board White fullCastlingRights
+    Position board White noCastlingRights
     where board = put [whiteBishop `on` b2, blackPawn `on` e5, 
                        whiteKnight `on` c1]
 
 
 positionWithRook :: Position
 positionWithRook =
-    Position board White fullCastlingRights
+    Position board White noCastlingRights
     where board = put [whiteRook `on` b2, whiteKing `on` e2, 
                        blackKnight `on` b5]
 
 
 positionWithQueen :: Position
 positionWithQueen =
-    Position board White fullCastlingRights
+    Position board White noCastlingRights
     where board = put [whiteQueen `on` b2, whiteKing `on` e2, 
                        blackKnight `on` b5, blackPawn `on` e5,
                        whiteKnight `on` c1]
@@ -310,14 +314,14 @@ positionWithQueen =
 
 positionWithKing :: Position
 positionWithKing =
-    Position board White fullCastlingRights
+    Position board White noCastlingRights
     where board = put [whiteKing `on` e1, blackPawn `on` e2, 
                        whiteKnight `on` d2]
 
 
 positionWithCheck :: Position
 positionWithCheck = 
-    Position board White fullCastlingRights
+    Position board White noCastlingRights
     where board = put [whiteKing `on` e1, blackRook `on` e8,
                        whiteBishop `on` b5]
 

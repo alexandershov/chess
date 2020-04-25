@@ -90,7 +90,39 @@ allSimpleMoves position =
     ]
 
 allMoves :: Position -> [Move]
-allMoves = allSimpleMoves
+allMoves position = allSimpleMoves position ++ allCastleMoves position
+
+
+allCastleMoves :: Position -> [Move]
+allCastleMoves position
+    | canLong && canShort = [long, short]
+    | canLong = [long]
+    | canShort = [short]
+    | otherwise = []
+    where canLong = canCastleLong position
+          canShort = canCastleShort position
+          long = createLongCastleMove position
+          short = createShortCastleMove position
+
+
+canCastleLong :: Position -> Bool
+canCastleLong (Position _ sideToMove castlingRights) = 
+    S.member LongCastle (castlingRights M.! sideToMove)
+
+
+canCastleShort :: Position -> Bool
+canCastleShort (Position _ sideToMove castlingRights) = 
+    S.member ShortCastle (castlingRights M.! sideToMove)
+
+
+createShortCastleMove :: Position -> Move
+createShortCastleMove (Position _ White _) = Move e1 g1
+createShortCastleMove (Position _ Black _) = Move e8 g8
+
+
+createLongCastleMove :: Position -> Move
+createLongCastleMove (Position _ White _) = Move e1 c1
+createLongCastleMove (Position _ Black _) = Move e8 c8
 
 
 piecesToMoveInSquares :: Position -> [(Piece, Square)]
