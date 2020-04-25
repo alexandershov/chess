@@ -188,7 +188,7 @@ describeShortCastle = do
         it "changes side to move" do
             sideToMove `shouldBe` Black
         it "removes castling rights" do
-            convertCastlingRights castlingRights `shouldBe` [(White, []), (Black, [LongCastle, ShortCastle])]
+            convertCastlingRights castlingRights `shouldMatchList` [(White, []), (Black, [LongCastle, ShortCastle])]
     where position = positionWithCastling White
           Right (Position board sideToMove castlingRights) = position `make` Move e1 g1
 

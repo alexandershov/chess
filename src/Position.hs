@@ -261,12 +261,10 @@ bothCastles = S.fromList [LongCastle, ShortCastle]
 
 
 make :: Position -> Move -> Either ErrorDesc Position
-(Position board sideToMove castlingRights) `make` (Move from to) = 
-    case maybePiece of
-        Nothing -> Left $ showSquare from ++ " square is empty"
-        _ -> Right $ Position nextBoard (rival sideToMove) nextCastlingRights
-    where maybePiece = board ! from
-          nextBoard = board // [(from, Nothing), (to, maybePiece)]
+position@(Position board sideToMove castlingRights) `make` move@(Move from to) = do
+    nextBoard <- getNextBoard position move
+    return $ Position nextBoard (rival sideToMove) nextCastlingRights
+    where 
           tmpCastlingRights = getNextCastlingRights board sideToMove castlingRights from
           nextCastlingRights = getNextCastlingRights board (rival sideToMove) tmpCastlingRights to
 
@@ -277,6 +275,37 @@ getNextCastlingRights board color castlingRights square
     | queenRookTouched color square = without castlingRights color [LongCastle]
     | kingRookTouched color square = without castlingRights color [ShortCastle]
     | otherwise = castlingRights
+
+
+getNextBoard :: Position -> Move -> Either ErrorDesc Board
+getNextBoard position move
+    | isShortCastle position move = Right $ castleShort position
+    | otherwise = makeSimpleMove position move
+
+
+isShortCastle :: Position -> Move -> Bool
+isShortCastle (Position board White _) (Move from to) =
+    movesKing && from == e1 && to == g1
+    where movesKing = board ! from == Just (King White)
+
+isShortCastle (Position board Black _) (Move from to) =
+    movesKing && from == e8 && to == g8
+    where movesKing = board ! from == Just (King Black)
+
+
+castleShort :: Position -> Board
+castleShort (Position board White _) =
+    board // [(e1, Nothing), (g1, Just whiteKing), (h1, Nothing), (f1, Just whiteRook)]
+castleShort (Position board Black _) =
+    board // [(e8, Nothing), (g8, Just blackKing), (h8, Nothing), (f8, Just blackRook)]
+
+
+makeSimpleMove :: Position -> Move -> Either ErrorDesc Board
+makeSimpleMove (Position board _ _) (Move from to) =
+    case maybePiece of
+        Nothing -> Left "square is empty"
+        _ -> Right (board // [(from, Nothing), (to, maybePiece)])
+    where maybePiece = board ! from
     
 
 queenRookTouched  :: Color -> Square -> Bool
