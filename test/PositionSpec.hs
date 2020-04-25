@@ -30,6 +30,7 @@ describePieces = do
     describeBlackCastlingRights
     describeShortCastle
     describeLongCastle
+    describeCastleMoves
 
 
 describeWhitePawn :: Spec
@@ -209,6 +210,16 @@ describeLongCastle = do
             convertCastlingRights castlingRights `shouldMatchList` [(White, []), (Black, [LongCastle, ShortCastle])]
     where position = positionWithCastling White
           Right (Position board sideToMove castlingRights) = position `make` Move e1 c1
+
+
+describeCastleMoves :: Spec
+describeCastleMoves = do
+    describe "Long and short castle" do
+        it "are possible moves" do
+            allMovesFrom e1 position `shouldMatchList` moves
+    where position = positionWithCastling White
+          moves = [Move e1 g1, Move e1 c1,
+                   Move e1 d1, Move e1 f1, Move e1 d2, Move e1 e2, Move e1 f2]
 
 
 castlingRightsAfter :: Move -> Position -> [(Color, [Castle])]
