@@ -73,7 +73,7 @@ move `isLegalIn` position@(Position _ sideToMove _) =
 isUnderCheckIn :: Color -> Position -> Bool
 color `isUnderCheckIn` position =
     any (threatens position king) moves
-    where moves = allMoves position
+    where moves = allSimpleMoves position
           king = King color
 
 
@@ -82,12 +82,15 @@ threatens (Position board _ _) piece (Move _ to) =
     board ! to == Just piece
 
 
-allMoves :: Position -> [Move]
-allMoves position = 
+allSimpleMoves :: Position -> [Move]
+allSimpleMoves position = 
     [ move | 
      (piece, square) <- piecesToMoveInSquares position,
      move <- pieceMoves position piece square
     ]
+
+allMoves :: Position -> [Move]
+allMoves = allSimpleMoves
 
 
 piecesToMoveInSquares :: Position -> [(Piece, Square)]
