@@ -280,6 +280,7 @@ getNextCastlingRights board color castlingRights square
 getNextBoard :: Position -> Move -> Either ErrorDesc Board
 getNextBoard position move
     | isShortCastle position move = Right $ castleShort position
+    | isLongCastle position move = Right $ castleLong position
     | otherwise = makeSimpleMove position move
 
 
@@ -293,11 +294,28 @@ isShortCastle (Position board Black _) (Move from to) =
     where movesKing = board ! from == Just (King Black)
 
 
+isLongCastle :: Position -> Move -> Bool
+isLongCastle (Position board White _) (Move from to) =
+    movesKing && from == e1 && to == c1
+    where movesKing = board ! from == Just (King White)
+
+isLongCastle (Position board Black _) (Move from to) =
+    movesKing && from == e8 && to == c8
+    where movesKing = board ! from == Just (King Black)
+
+
 castleShort :: Position -> Board
 castleShort (Position board White _) =
     board // [(e1, Nothing), (g1, Just whiteKing), (h1, Nothing), (f1, Just whiteRook)]
 castleShort (Position board Black _) =
     board // [(e8, Nothing), (g8, Just blackKing), (h8, Nothing), (f8, Just blackRook)]
+
+
+castleLong :: Position -> Board
+castleLong (Position board White _) =
+    board // [(e1, Nothing), (c1, Just whiteKing), (a1, Nothing), (d1, Just whiteRook)]
+castleLong (Position board Black _) =
+    board // [(e8, Nothing), (c8, Just blackKing), (a8, Nothing), (d8, Just blackRook)]
 
 
 makeSimpleMove :: Position -> Move -> Either ErrorDesc Board
