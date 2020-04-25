@@ -264,9 +264,14 @@ straightLines = [(1, 0), (0, 1), (-1, 0), (0, -1)]
 on :: Piece -> Square -> (Piece, Square)
 piece `on` square = (piece, square)
 
+
+putOnBoard :: Board -> [(Piece, Square)] -> Board
+putOnBoard board piecesOnSquares = 
+    board // [(square, Just piece) | (piece, square) <- piecesOnSquares]
+
+
 put :: [(Piece, Square)] -> Board
-put piecesOnSquares = 
-    emptyBoard // [(square, Just piece) | (piece, square) <- piecesOnSquares]
+put = putOnBoard emptyBoard
 
 
 initialPosition :: Position
