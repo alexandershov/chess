@@ -107,30 +107,53 @@ allCastleMoves position
 
 canCastleLong :: Position -> Bool
 canCastleLong position@(Position _ sideToMove castlingRights) = 
-    possible && noObstacles
+    possible && noObstacles && noThreats
     where possible = S.member LongCastle (castlingRights M.! sideToMove)
           noObstacles = hasEmptySquaresForLongCastle position
+          noThreats = hasSafeLongCastle position
 
 
 canCastleShort :: Position -> Bool
 canCastleShort position@(Position _ sideToMove castlingRights) = 
-    possible && noObstacles
+    possible && noObstacles && noThreats
     where possible = S.member ShortCastle (castlingRights M.! sideToMove)
           noObstacles = hasEmptySquaresForShortCastle position
+          noThreats = hasSafeShortCastle position
 
 
 hasEmptySquaresForShortCastle :: Position -> Bool
 hasEmptySquaresForShortCastle (Position board White _) =
-    isEmpty board f1 && isEmpty board g1
+    and $ map (isEmpty board) [f1, g1]
 hasEmptySquaresForShortCastle (Position board Black _) =
-    isEmpty board f8 && isEmpty board g8
+    and $ map (isEmpty board) [f8, g8]
 
 
 hasEmptySquaresForLongCastle :: Position -> Bool
 hasEmptySquaresForLongCastle (Position board White _) =
-    isEmpty board d1 && isEmpty board c1 && isEmpty board b1
+    and $ map (isEmpty board) [d1, c1, b1]
 hasEmptySquaresForLongCastle (Position board Black _) =
-    isEmpty board d8 && isEmpty board c8 && isEmpty board b8
+    and $ map (isEmpty board) [d8, c8, b8]
+
+
+hasSafeLongCastle :: Position -> Bool
+hasSafeLongCastle position@(Position _ White _) = 
+    not $ position `hasThreatTo` [c1, d1, e1]
+
+hasSafeLongCastle position@(Position _ Black _) = 
+    not $ position `hasThreatTo` [c8, d8, e8]
+
+hasSafeShortCastle :: Position -> Bool
+hasSafeShortCastle position@(Position _ White _) = 
+    not $ position `hasThreatTo` [e1, f1, g1]
+
+hasSafeShortCastle position@(Position _ Black _) = 
+    not $ position `hasThreatTo` [e8, f8, g8]
+
+
+hasThreatTo :: Position -> [Square] -> Bool
+hasThreatTo (Position board sideToMove castlingRights) squares =
+    or [to `elem` squares | (Move _ to) <- threats]
+    where threats = allSimpleMoves (Position board (rival sideToMove) castlingRights)
 
 
 createShortCastleMove :: Position -> Move
