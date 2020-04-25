@@ -216,10 +216,11 @@ describeCastleMoves :: Spec
 describeCastleMoves = do
     describe "Long and short castle" do
         it "are possible moves" do
-            allMovesFrom e1 position `shouldMatchList` moves
-    where position = positionWithCastling White
-          moves = [Move e1 g1, Move e1 c1,
-                   Move e1 d1, Move e1 f1, Move e1 d2, Move e1 e2, Move e1 f2]
+            allMovesFrom e1 (positionWithCastling White) `shouldMatchList` (kingMoves ++ castleMoves)
+        it "are not possible if there's no right to castle" do
+            allMovesFrom e1 (positionWithoutCastling White) `shouldMatchList` kingMoves
+    where kingMoves = [Move e1 d1, Move e1 f1, Move e1 d2, Move e1 e2, Move e1 f2]
+          castleMoves = [Move e1 g1, Move e1 c1]
 
 
 castlingRightsAfter :: Move -> Position -> [(Color, [Castle])]
@@ -258,9 +259,20 @@ noCastlingRights = M.fromList [(White, S.empty), (Black, S.empty)]
 positionWithCastling :: Color -> Position
 positionWithCastling color =
     Position board color fullCastlingRights
-    where board = put [whiteRook `on` a1, whiteKing `on` e1, whiteRook `on` h1,
-                       whiteRook `on` c4, blackRook `on` c5,
-                       blackRook `on` a8, blackKing `on` e8, blackRook `on` h8]
+    where board = boardWithKingsAndRooks
+
+
+positionWithoutCastling :: Color -> Position
+positionWithoutCastling color =
+    Position board color noCastlingRights
+    where board = boardWithKingsAndRooks
+
+
+boardWithKingsAndRooks :: Board
+boardWithKingsAndRooks = 
+    put [whiteRook `on` a1, whiteKing `on` e1, whiteRook `on` h1,
+         whiteRook `on` c4, blackRook `on` c5,
+         blackRook `on` a8, blackKing `on` e8, blackRook `on` h8]
 
 
 positionWithWhitePawn :: Position
