@@ -106,13 +106,31 @@ allCastleMoves position
 
 
 canCastleLong :: Position -> Bool
-canCastleLong (Position _ sideToMove castlingRights) = 
-    S.member LongCastle (castlingRights M.! sideToMove)
+canCastleLong position@(Position _ sideToMove castlingRights) = 
+    possible && noObstacles
+    where possible = S.member LongCastle (castlingRights M.! sideToMove)
+          noObstacles = hasEmptySquaresForLongCastle position
 
 
 canCastleShort :: Position -> Bool
-canCastleShort (Position _ sideToMove castlingRights) = 
-    S.member ShortCastle (castlingRights M.! sideToMove)
+canCastleShort position@(Position _ sideToMove castlingRights) = 
+    possible && noObstacles
+    where possible = S.member ShortCastle (castlingRights M.! sideToMove)
+          noObstacles = hasEmptySquaresForShortCastle position
+
+
+hasEmptySquaresForShortCastle :: Position -> Bool
+hasEmptySquaresForShortCastle (Position board White _) =
+    isEmpty board f1 && isEmpty board g1
+hasEmptySquaresForShortCastle (Position board Black _) =
+    isEmpty board f8 && isEmpty board g8
+
+
+hasEmptySquaresForLongCastle :: Position -> Bool
+hasEmptySquaresForLongCastle (Position board White _) =
+    isEmpty board d1 && isEmpty board c1 && isEmpty board b1
+hasEmptySquaresForLongCastle (Position board Black _) =
+    isEmpty board d8 && isEmpty board c8 && isEmpty board b8
 
 
 createShortCastleMove :: Position -> Move

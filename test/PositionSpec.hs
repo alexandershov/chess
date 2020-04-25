@@ -365,5 +365,5 @@ kingE1Moves = [Move e1 f1, Move e1 d1, Move e1 e2, Move e1 f2]
 
 
 changeBoard :: Position -> [(Piece, Square)] -> Position
-changeBoard (Position board sideToMove castlingRights) piecesOnSquares =
+(Position board sideToMove castlingRights) `changeBoard` piecesOnSquares =
     Position (putOnBoard board piecesOnSquares) sideToMove castlingRights
