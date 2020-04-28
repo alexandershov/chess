@@ -2,7 +2,7 @@
 
 module UciSpec where
 
-import Data.Either (isLeft)
+import Data.Either (isLeft, isRight)
 import Data.IORef
 
 import Test.Hspec
@@ -35,6 +35,10 @@ describeUciParse =
         it "parses valid `position` command" do
             parse "position startpos moves e2e4 e7e5" `shouldBe` Position positionAfterE4E5
 
+        it "parses moves with promotions" do
+            let movesWithPromotion = "f2f4 a7a6 f4f5 a6a5 f5f6 a5a4 f6g7 a4a3 g7h8q"
+                (Position parsed) = parse $ "position startpos moves " ++ movesWithPromotion in
+                   parsed `shouldSatisfy` isRight
         it "parses `position` command with no moves" do
             parse "position startpos moves" `shouldBe` (Position $ Right initialPosition)
 
