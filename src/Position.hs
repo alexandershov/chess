@@ -3,6 +3,7 @@ module Position where
 import Data.Array (assocs, Array, (!), (//), listArray)
 import qualified Data.Set as S
 import qualified Data.Map as M
+import Data.List (partition)
 import Data.Maybe (isNothing)
 
 import Pieces
@@ -185,23 +186,33 @@ piecesToMoveInSquares (Position board sideToMove _) =
 
 pieceMoves :: Position -> Piece -> Square -> [Move]
 pieceMoves position piece from = 
-    [ Move from to Nothing | to <- tos ]
+    getMoves position movement from
     where movement = getMovement piece from
-          tos = getTos position movement from
 
 
-getTos :: Position -> Movement -> Square -> [Square]
-getTos position (PieceMovement directions range) from = 
-    concat legalLines
+getMoves :: Position -> Movement -> Square -> [Move]
+getMoves position (PieceMovement directions range) from = 
+    [ Move from to Nothing | to <- tos ]
     where slightlyLongLines = getLines from directions range
           legalLines = [ cutLine position line | line <- slightlyLongLines ]
+          tos = concat legalLines
 
 
-getTos position (PawnMovement moveDirection range captureDirections) from =
-    movesTos ++ capturesTos
+getMoves position@(Position _ sideToMove _) (PawnMovement moveDirection range captureDirections) from =
+    simpleMoves ++ promotions
     where movesTos = getPawnMovesTos position moveDirection range from
           capturesTos = getPawnCapturesTos position captureDirections from
-          
+          tos = movesTos ++ capturesTos
+          (promotionTos, simpleTos) = partition (isInPromotionRank sideToMove) tos
+          simpleMoves = [ Move from to Nothing | to <- simpleTos ]
+          pieces = [(Knight sideToMove), (Bishop sideToMove), (Rook sideToMove), (Queen sideToMove)]
+          promotions = [ Move from to (Just piece) | to <- promotionTos, piece <- pieces ]
+
+
+isInPromotionRank :: Color -> Square -> Bool
+isInPromotionRank White (_, rank) = rank == boardSize
+isInPromotionRank Black (_, rank) = rank == 1
+
 
 getPawnMovesTos :: Position -> Direction -> Range -> Square -> [Square]
 getPawnMovesTos (Position board _ _) direction range from = 
