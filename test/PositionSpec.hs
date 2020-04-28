@@ -69,6 +69,10 @@ describeBlackPawn = do
             allMovesFrom g7 positionWithBlackPawn `shouldMatchList` [move' g7 h6, move' g7 f6]
         it "doesn't capture own pieces" do
             allMovesFrom d7 positionWithBlackPawn `shouldMatchList` [move' d7 d6, move' d7 d5]
+        it "promotes from the 7th rank" do
+            allMovesFrom h2 positionWithBlackPawn `shouldMatchList` [
+                Move h2 h1 (Just blackKnight), Move h2 h1 (Just blackBishop),
+                Move h2 h1 (Just blackRook), Move h2 h1 (Just blackQueen)]
 
 
 describeKnight :: Spec
@@ -304,6 +308,7 @@ positionWithBlackPawn =
                        blackPawn `on` c5, blackPawn `on` c4,
                        blackPawn `on` f5, whitePawn `on` f4,
                        blackPawn `on` g7, whitePawn `on` g6,
+                       blackPawn `on` h2,
                        whiteKnight `on` f6, whiteBishop `on` h6]
 
 
