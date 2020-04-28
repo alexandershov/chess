@@ -168,6 +168,8 @@ makeMoves parsedPosition (parsedMove:parsedMoves) = do
 
 
 parseMove :: String -> Either ErrorDesc Move
+parseMove [fromFile, fromRank, toFile, toRank, promotion] = 
+
 parseMove [fromFile, fromRank, toFile, toRank] = do
     from <- parseSquare fromFile fromRank
     to <- parseSquare toFile toRank
@@ -208,3 +210,9 @@ parseRank r =
         '7' -> Right 7
         '8' -> Right 8
         _ -> Left $ "rank should be one of`12345678`, got " ++ [r]
+
+parsePromotion :: Char -> Color -> Either ErrorDesc (Maybe Piece)
+parsePromotion 'n' color = Just (Knight color)
+parsePromotion 'b' color = Just (Bishop color)
+parsePromotion 'r' color = Just (Rook color)
+parsePromotion 'q' color = Just (Queen color)
