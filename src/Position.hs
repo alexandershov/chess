@@ -4,7 +4,7 @@ import Data.Array (assocs, Array, (!), (//), listArray)
 import qualified Data.Set as S
 import qualified Data.Map as M
 import Data.List (partition)
-import Data.Maybe (isNothing)
+import Data.Maybe (isJust, isNothing)
 
 import Pieces
 import Squares
@@ -390,7 +390,7 @@ getNextBoard :: Position -> Move -> Board
 getNextBoard position move
     | isShortCastle position move = castleShort position
     | isLongCastle position move = castleLong position
-    | otherwise = makeSimpleMove position move
+    | otherwise = moveChessman position move
 
 
 isShortCastle :: Position -> Move -> Bool
@@ -427,11 +427,12 @@ castleLong (Position board Black _) =
     board // [(e8, Nothing), (c8, Just blackKing), (a8, Nothing), (d8, Just blackRook)]
 
 
-makeSimpleMove :: Position -> Move -> Board
-makeSimpleMove (Position board _ _) (Move from to _) =
-    board // [(from, Nothing), (to, maybePiece)]
-    where maybePiece = board ! from
-    
+moveChessman :: Position -> Move -> Board
+moveChessman (Position board _ _) (Move from to promotion) =
+    board // [(from, Nothing), (to, dstPiece)]
+    where srcPiece = board ! from
+          dstPiece = if isJust promotion then promotion else srcPiece
+
 
 queenRookTouched  :: Color -> Square -> Bool
 queenRookTouched color (file, rank) =
