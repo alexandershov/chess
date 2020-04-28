@@ -10,6 +10,7 @@ import System.Random
 
 import qualified Position as P
 import Position hiding (Position)
+import Pieces
 import Squares
 
 data Command = 
@@ -151,7 +152,8 @@ parse s =
 parsePosition :: [String] -> Command
 parsePosition ["startpos"] = Position $ Right initialPosition
 parsePosition ("startpos":"moves":moves) =
-    Position $ makeMoves (Right initialPosition) (map parseMove moves)
+    Position $ makeMoves (Right initialPosition) (map parseMove movesWithSideToMove)
+    where movesWithSideToMove = zip moves (cycle [White, Black])
 
 parsePosition p = 
     Position $ Left $ "should be in the form `startpos moves ...`, got " ++ show p
@@ -167,14 +169,17 @@ makeMoves parsedPosition (parsedMove:parsedMoves) = do
     makeMoves (position `make` move) parsedMoves
 
 
-parseMove :: String -> Either ErrorDesc Move
-parseMove [fromFile, fromRank, toFile, toRank, promotion] = 
-
-parseMove [fromFile, fromRank, toFile, toRank] = do
+parseMove :: (String, Color) -> Either ErrorDesc Move
+parseMove ([fromFile, fromRank, toFile, toRank, promotion'], sideToMove) = do
+    from <- parseSquare fromFile fromRank
+    to <- parseSquare toFile toRank
+    promotion <- parsePromotion promotion' sideToMove
+    return $ Move from to promotion
+parseMove ([fromFile, fromRank, toFile, toRank], _) = do
     from <- parseSquare fromFile fromRank
     to <- parseSquare toFile toRank
     return $ Move from to Nothing
-parseMove s = Left $ "move should be in the form `f1f3`, got " ++ s
+parseMove (s, _) = Left $ "move should be in the form `f1f3`, got " ++ s
 
 
 parseSquare :: Char -> Char -> Either ErrorDesc Square
@@ -209,10 +214,14 @@ parseRank r =
         '6' -> Right 6
         '7' -> Right 7
         '8' -> Right 8
-        _ -> Left $ "rank should be one of`12345678`, got " ++ [r]
+        _ -> Left $ "rank should be one of `12345678`, got " ++ [r]
+
 
 parsePromotion :: Char -> Color -> Either ErrorDesc (Maybe Piece)
-parsePromotion 'n' color = Just (Knight color)
-parsePromotion 'b' color = Just (Bishop color)
-parsePromotion 'r' color = Just (Rook color)
-parsePromotion 'q' color = Just (Queen color)
+parsePromotion p color = 
+    case p of 
+        'n' -> Right $ Just $ Knight color
+        'b' -> Right $ Just $ Bishop color
+        'r' -> Right $ Just $ Rook color
+        'q' -> Right $ Just $ Queen color
+        _ -> Left $ "promotion should be one of `nbrq`, got " ++ [p]
