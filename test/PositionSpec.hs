@@ -129,11 +129,15 @@ describeMakeMove = do
         it "moves a piece" do
             (board ! g1) `shouldBe` Nothing
             (board ! f3) `shouldBe` Just whiteKnight
+        it "promotes a pawn" do
+            (boardAfterPromotion ! h7) `shouldBe` Nothing
+            (boardAfterPromotion ! h8) `shouldBe` Just whiteQueen
         it "changes a side to move" do
             sideToMove `shouldBe` Black
         it "returns Left if move is illegal" do
             initialPosition `make` move' f3 g1 `shouldSatisfy` isLeft
     where Right (Position board sideToMove _) = initialPosition `make` move' g1 f3
+          Right (Position boardAfterPromotion _ _) = positionWithWhitePawn `make` Move h7 h8 (Just whiteQueen)
 
 
 describeWhiteCastlingRights :: Spec
