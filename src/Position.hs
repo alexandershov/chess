@@ -24,7 +24,7 @@ data Castle = LongCastle | ShortCastle deriving (Eq, Ord, Show)
 type CastlingRights = M.Map Color (S.Set Castle)
 
 data Position = Position Board Color CastlingRights deriving (Eq, Show)
-data Move = Move Square Square deriving (Eq)
+data Move = Move Square Square (Maybe Piece) deriving (Eq)
 
 type Direction = (File, Rank)
 type Range = Int
