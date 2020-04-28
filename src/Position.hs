@@ -24,11 +24,12 @@ data Castle = LongCastle | ShortCastle deriving (Eq, Ord, Show)
 type CastlingRights = M.Map Color (S.Set Castle)
 
 data Position = Position Board Color CastlingRights deriving (Eq, Show)
-data Move = Move Square Square (Maybe Piece) deriving (Eq)
+data Move = Move Square Square Promotion deriving (Eq)
 
 type Direction = (File, Rank)
 type Range = Int
 type ErrorDesc = String
+type Promotion = Maybe Piece
 
 data Movement = 
     PieceMovement [Direction] Range | 
@@ -36,9 +37,19 @@ data Movement =
 
 
 instance Show Move where
-    show (Move from to) 
-        | isOnBoard from && isOnBoard to = showSquare from ++ showSquare to
-        | otherwise = "MoveOutsideTheBoard " ++ (show from) ++ " -> " ++ (show to)
+    show (Move from to promotion) 
+        | isOnBoard from && isOnBoard to = showSquare from ++ showSquare to ++ showPromotion promotion
+        | otherwise = "MoveOutsideTheBoard " ++ show from ++ " -> " ++ show to ++ showPromotion promotion
+
+
+showPromotion :: Promotion -> String
+showPromotion Nothing = ""
+showPromotion (Just (Pawn _)) = "p"
+showPromotion (Just (Knight _)) = "N"
+showPromotion (Just (Bishop _)) = "B"
+showPromotion (Just (Rook _)) = "R"
+showPromotion (Just (Queen _)) = "Q"
+showPromotion (Just (King _)) = "K"
 
 
 emptyBoard :: Board
@@ -77,7 +88,7 @@ color `isUnderCheckIn` position =
 
 
 threatens :: Position -> Piece -> Move -> Bool
-threatens (Position board _ _) piece (Move _ to) =
+threatens (Position board _ _) piece (Move _ to _) =
     board ! to == Just piece
 
 
@@ -151,18 +162,18 @@ hasSafeShortCastle position@(Position _ Black _) =
 
 hasThreatTo :: Position -> [Square] -> Bool
 hasThreatTo (Position board sideToMove castlingRights) squares =
-    or [to `elem` squares | (Move _ to) <- threats]
+    or [to `elem` squares | (Move _ to _) <- threats]
     where threats = allSimpleMoves (Position board (rival sideToMove) castlingRights)
 
 
 createShortCastleMove :: Position -> Move
-createShortCastleMove (Position _ White _) = Move e1 g1
-createShortCastleMove (Position _ Black _) = Move e8 g8
+createShortCastleMove (Position _ White _) = Move e1 g1 Nothing
+createShortCastleMove (Position _ Black _) = Move e8 g8 Nothing
 
 
 createLongCastleMove :: Position -> Move
-createLongCastleMove (Position _ White _) = Move e1 c1
-createLongCastleMove (Position _ Black _) = Move e8 c8
+createLongCastleMove (Position _ White _) = Move e1 c1 Nothing
+createLongCastleMove (Position _ Black _) = Move e8 c8 Nothing
 
 
 piecesToMoveInSquares :: Position -> [(Piece, Square)]
@@ -174,7 +185,7 @@ piecesToMoveInSquares (Position board sideToMove _) =
 
 pieceMoves :: Position -> Piece -> Square -> [Move]
 pieceMoves position piece from = 
-    [ Move from to | to <- tos ]
+    [ Move from to Nothing | to <- tos ]
     where movement = getMovement piece from
           tos = getTos position movement from
 
@@ -341,7 +352,7 @@ bothCastles = S.fromList [LongCastle, ShortCastle]
 
 
 makeUnchecked :: Position -> Move -> Position
-position@(Position board sideToMove castlingRights) `makeUnchecked` move@(Move from to) =
+position@(Position board sideToMove castlingRights) `makeUnchecked` move@(Move from to _) =
     Position nextBoard (rival sideToMove) nextCastlingRights
     where nextBoard = getNextBoard position move
           tmpCastlingRights = getNextCastlingRights board sideToMove castlingRights from
@@ -372,21 +383,21 @@ getNextBoard position move
 
 
 isShortCastle :: Position -> Move -> Bool
-isShortCastle (Position board White _) (Move from to) =
+isShortCastle (Position board White _) (Move from to _) =
     movesKing && from == e1 && to == g1
     where movesKing = board ! from == Just (King White)
 
-isShortCastle (Position board Black _) (Move from to) =
+isShortCastle (Position board Black _) (Move from to _) =
     movesKing && from == e8 && to == g8
     where movesKing = board ! from == Just (King Black)
 
 
 isLongCastle :: Position -> Move -> Bool
-isLongCastle (Position board White _) (Move from to) =
+isLongCastle (Position board White _) (Move from to _) =
     movesKing && from == e1 && to == c1
     where movesKing = board ! from == Just (King White)
 
-isLongCastle (Position board Black _) (Move from to) =
+isLongCastle (Position board Black _) (Move from to _) =
     movesKing && from == e8 && to == c8
     where movesKing = board ! from == Just (King Black)
 
@@ -406,7 +417,7 @@ castleLong (Position board Black _) =
 
 
 makeSimpleMove :: Position -> Move -> Board
-makeSimpleMove (Position board _ _) (Move from to) =
+makeSimpleMove (Position board _ _) (Move from to _) =
     board // [(from, Nothing), (to, maybePiece)]
     where maybePiece = board ! from
     

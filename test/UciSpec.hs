@@ -154,6 +154,6 @@ refWriter ref response = do
 
 positionAfterE4E5 :: Either P.ErrorDesc P.Position
 positionAfterE4E5 = do
-    afterE4 <- initialPosition `make` Move e2 e4
-    afterE5 <- afterE4 `make` Move e7 e5
+    afterE4 <- initialPosition `make` Move e2 e4 Nothing
+    afterE5 <- afterE4 `make` Move e7 e5 Nothing
     return afterE5

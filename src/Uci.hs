@@ -171,7 +171,7 @@ parseMove :: String -> Either ErrorDesc Move
 parseMove [fromFile, fromRank, toFile, toRank] = do
     from <- parseSquare fromFile fromRank
     to <- parseSquare toFile toRank
-    return $ Move from to
+    return $ Move from to Nothing
 parseMove s = Left $ "move should be in the form `f1f3`, got " ++ s
 
 
