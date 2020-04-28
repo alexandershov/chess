@@ -170,15 +170,11 @@ makeMoves parsedPosition (parsedMove:parsedMoves) = do
 
 
 parseMove :: (String, Color) -> Either ErrorDesc Move
-parseMove ([fromFile, fromRank, toFile, toRank, promotion'], sideToMove) = do
+parseMove (fromFile:fromRank:toFile:toRank:promotion', sideToMove) = do
     from <- parseSquare fromFile fromRank
     to <- parseSquare toFile toRank
     promotion <- parsePromotion promotion' sideToMove
     return $ Move from to promotion
-parseMove ([fromFile, fromRank, toFile, toRank], _) = do
-    from <- parseSquare fromFile fromRank
-    to <- parseSquare toFile toRank
-    return $ Move from to Nothing
 parseMove (s, _) = Left $ "move should be in the form `f1f3`, got " ++ s
 
 
@@ -217,11 +213,12 @@ parseRank r =
         _ -> Left $ "rank should be one of `12345678`, got " ++ [r]
 
 
-parsePromotion :: Char -> Color -> Either ErrorDesc (Maybe Piece)
+parsePromotion :: String -> Color -> Either ErrorDesc (Maybe Piece)
 parsePromotion p color = 
     case p of 
-        'n' -> Right $ Just $ Knight color
-        'b' -> Right $ Just $ Bishop color
-        'r' -> Right $ Just $ Rook color
-        'q' -> Right $ Just $ Queen color
-        _ -> Left $ "promotion should be one of `nbrq`, got " ++ [p]
+        "" -> Right Nothing
+        "n" -> Right $ Just $ Knight color
+        "b" -> Right $ Just $ Bishop color
+        "r" -> Right $ Just $ Rook color
+        "q" -> Right $ Just $ Queen color
+        _ -> Left $ "promotion should be one of `nbrq`, got " ++ p
