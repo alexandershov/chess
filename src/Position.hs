@@ -24,7 +24,7 @@ type Board = Array Square (Maybe Piece)
 data Castle = LongCastle | ShortCastle deriving (Eq, Ord, Show)
 type CastlingRights = M.Map Color (S.Set Castle)
 
-data Position = Position Board Color CastlingRights deriving (Eq, Show)
+data Position = Position Board Color CastlingRights (Maybe Square) deriving (Eq, Show)
 data Move = Move Square Square Promotion deriving (Eq)
 
 type Direction = (File, Rank)
@@ -76,7 +76,7 @@ legalMoves position =
 
 
 isLegalIn :: Move -> Position -> Bool
-move `isLegalIn` position@(Position _ sideToMove _) = 
+move `isLegalIn` position@(Position _ sideToMove _ _) = 
     not $ sideToMove `isUnderCheckIn` nextPosition
     where nextPosition = position `makeUnchecked` move
 
@@ -89,7 +89,7 @@ color `isUnderCheckIn` position =
 
 
 threatens :: Position -> Piece -> Move -> Bool
-threatens (Position board _ _) piece (Move _ to _) =
+threatens (Position board _ _ _) piece (Move _ to _) =
     board ! to == Just piece
 
 
@@ -117,7 +117,7 @@ allCastleMoves position
 
 
 canCastleLong :: Position -> Bool
-canCastleLong position@(Position _ sideToMove castlingRights) = 
+canCastleLong position@(Position _ sideToMove castlingRights _) = 
     possible && noObstacles && noThreats
     where possible = S.member LongCastle (castlingRights M.! sideToMove)
           noObstacles = hasEmptySquaresForLongCastle position
@@ -125,7 +125,7 @@ canCastleLong position@(Position _ sideToMove castlingRights) =
 
 
 canCastleShort :: Position -> Bool
-canCastleShort position@(Position _ sideToMove castlingRights) = 
+canCastleShort position@(Position _ sideToMove castlingRights _) = 
     possible && noObstacles && noThreats
     where possible = S.member ShortCastle (castlingRights M.! sideToMove)
           noObstacles = hasEmptySquaresForShortCastle position
@@ -133,52 +133,52 @@ canCastleShort position@(Position _ sideToMove castlingRights) =
 
 
 hasEmptySquaresForShortCastle :: Position -> Bool
-hasEmptySquaresForShortCastle (Position board White _) =
+hasEmptySquaresForShortCastle (Position board White _ _) =
     and $ map (isEmpty board) [f1, g1]
-hasEmptySquaresForShortCastle (Position board Black _) =
+hasEmptySquaresForShortCastle (Position board Black _ _) =
     and $ map (isEmpty board) [f8, g8]
 
 
 hasEmptySquaresForLongCastle :: Position -> Bool
-hasEmptySquaresForLongCastle (Position board White _) =
+hasEmptySquaresForLongCastle (Position board White _ _) =
     and $ map (isEmpty board) [d1, c1, b1]
-hasEmptySquaresForLongCastle (Position board Black _) =
+hasEmptySquaresForLongCastle (Position board Black _ _) =
     and $ map (isEmpty board) [d8, c8, b8]
 
 
 hasSafeLongCastle :: Position -> Bool
-hasSafeLongCastle position@(Position _ White _) = 
+hasSafeLongCastle position@(Position _ White _ _) = 
     not $ position `hasThreatTo` [c1, d1, e1]
 
-hasSafeLongCastle position@(Position _ Black _) = 
+hasSafeLongCastle position@(Position _ Black _ _) = 
     not $ position `hasThreatTo` [c8, d8, e8]
 
 hasSafeShortCastle :: Position -> Bool
-hasSafeShortCastle position@(Position _ White _) = 
+hasSafeShortCastle position@(Position _ White _ _) = 
     not $ position `hasThreatTo` [e1, f1, g1]
 
-hasSafeShortCastle position@(Position _ Black _) = 
+hasSafeShortCastle position@(Position _ Black _ _) = 
     not $ position `hasThreatTo` [e8, f8, g8]
 
 
 hasThreatTo :: Position -> [Square] -> Bool
-hasThreatTo (Position board sideToMove castlingRights) squares =
+hasThreatTo (Position board sideToMove castlingRights _) squares =
     or [to `elem` squares | (Move _ to _) <- threats]
-    where threats = allSimpleMoves (Position board (rival sideToMove) castlingRights)
+    where threats = allSimpleMoves (Position board (rival sideToMove) castlingRights Nothing)
 
 
 createShortCastleMove :: Position -> Move
-createShortCastleMove (Position _ White _) = Move e1 g1 Nothing
-createShortCastleMove (Position _ Black _) = Move e8 g8 Nothing
+createShortCastleMove (Position _ White _ _) = Move e1 g1 Nothing
+createShortCastleMove (Position _ Black _ _) = Move e8 g8 Nothing
 
 
 createLongCastleMove :: Position -> Move
-createLongCastleMove (Position _ White _) = Move e1 c1 Nothing
-createLongCastleMove (Position _ Black _) = Move e8 c8 Nothing
+createLongCastleMove (Position _ White _ _) = Move e1 c1 Nothing
+createLongCastleMove (Position _ Black _ _) = Move e8 c8 Nothing
 
 
 piecesToMoveInSquares :: Position -> [(Piece, Square)]
-piecesToMoveInSquares (Position board sideToMove _) =
+piecesToMoveInSquares (Position board sideToMove _ _) =
     [ (piece, square) | 
       (square, Just piece) <- assocs board, 
       getColor piece == sideToMove ]
@@ -198,7 +198,7 @@ getMoves position (PieceMovement directions range) from =
           tos = concat legalLines
 
 
-getMoves position@(Position _ sideToMove _) (PawnMovement moveDirection range captureDirections) from =
+getMoves position@(Position _ sideToMove _ _) (PawnMovement moveDirection range captureDirections) from =
     simpleMoves ++ promotions
     where movesTos = getPawnMovesTos position moveDirection range from
           capturesTos = getPawnCapturesTos position captureDirections from
@@ -215,7 +215,7 @@ isInPromotionRank Black (_, rank) = rank == 1
 
 
 getPawnMovesTos :: Position -> Direction -> Range -> Square -> [Square]
-getPawnMovesTos (Position board _ _) direction range from = 
+getPawnMovesTos (Position board _ _ _) direction range from = 
     concat legalLines
     where slightlyLongLines = getLines from [direction] range
           legalLines = [ takeWhile (isEmpty board) line | line <- slightlyLongLines ]
@@ -229,7 +229,7 @@ getPawnCapturesTos position directions from =
 
 
 cutLine :: Position -> Line -> Line
-cutLine position@(Position board _ _) line =
+cutLine position@(Position board _ _ _) line =
     exclude (isOccupiedBySideToMove position) squares
     where squares = takeWhileWithBreaker (isEmpty board) line
 
@@ -239,17 +239,17 @@ exclude p xs = [ x | x <- xs, not $ p x ]
 
 
 isOccupiedBySideToMove :: Position -> Square -> Bool
-isOccupiedBySideToMove position@(Position _ sideToMove _) square =
+isOccupiedBySideToMove position@(Position _ sideToMove _ _) square =
     isOccupiedByColor position sideToMove square
 
 
 isOccupiedByRival :: Position -> Square -> Bool
-isOccupiedByRival position@(Position _ sideToMove _) square =
+isOccupiedByRival position@(Position _ sideToMove _ _) square =
     isOccupiedByColor position (rival sideToMove) square
 
 
 isOccupiedByColor :: Position -> Color -> Square -> Bool
-isOccupiedByColor (Position board _ _) color square =
+isOccupiedByColor (Position board _ _ _) color square =
     case board ! square of
         Nothing -> False
         Just piece -> (getColor piece) == color
@@ -338,7 +338,7 @@ put = putOnBoard emptyBoard
 
 initialPosition :: Position
 initialPosition = 
-    Position board White fullCastlingRights
+    Position board White fullCastlingRights Nothing
     where 
         board = put $ firstRank ++ secondRank ++ seventhRank ++ eightRank
         firstRank = [whiteRook `on` a1, whiteKnight `on` b1, whiteBishop `on` c1,
@@ -363,11 +363,12 @@ bothCastles = S.fromList [LongCastle, ShortCastle]
 
 
 makeUnchecked :: Position -> Move -> Position
-position@(Position board sideToMove castlingRights) `makeUnchecked` move@(Move from to _) =
-    Position nextBoard (rival sideToMove) nextCastlingRights
+position@(Position board sideToMove castlingRights _) `makeUnchecked` move@(Move from to _) =
+    Position nextBoard (rival sideToMove) nextCastlingRights nextEnPassant
     where nextBoard = getNextBoard position move
           tmpCastlingRights = getNextCastlingRights board sideToMove castlingRights from
           nextCastlingRights = getNextCastlingRights board (rival sideToMove) tmpCastlingRights to
+          nextEnPassant = Nothing
 
 
 make :: Position -> Move -> Either ErrorDesc Position
@@ -394,41 +395,41 @@ getNextBoard position move
 
 
 isShortCastle :: Position -> Move -> Bool
-isShortCastle (Position board White _) (Move from to _) =
+isShortCastle (Position board White _ _) (Move from to _) =
     movesKing && from == e1 && to == g1
     where movesKing = board ! from == Just (King White)
 
-isShortCastle (Position board Black _) (Move from to _) =
+isShortCastle (Position board Black _ _) (Move from to _) =
     movesKing && from == e8 && to == g8
     where movesKing = board ! from == Just (King Black)
 
 
 isLongCastle :: Position -> Move -> Bool
-isLongCastle (Position board White _) (Move from to _) =
+isLongCastle (Position board White _ _) (Move from to _) =
     movesKing && from == e1 && to == c1
     where movesKing = board ! from == Just (King White)
 
-isLongCastle (Position board Black _) (Move from to _) =
+isLongCastle (Position board Black _ _) (Move from to _) =
     movesKing && from == e8 && to == c8
     where movesKing = board ! from == Just (King Black)
 
 
 castleShort :: Position -> Board
-castleShort (Position board White _) =
+castleShort (Position board White _ _) =
     board // [(e1, Nothing), (g1, Just whiteKing), (h1, Nothing), (f1, Just whiteRook)]
-castleShort (Position board Black _) =
+castleShort (Position board Black _ _) =
     board // [(e8, Nothing), (g8, Just blackKing), (h8, Nothing), (f8, Just blackRook)]
 
 
 castleLong :: Position -> Board
-castleLong (Position board White _) =
+castleLong (Position board White _ _) =
     board // [(e1, Nothing), (c1, Just whiteKing), (a1, Nothing), (d1, Just whiteRook)]
-castleLong (Position board Black _) =
+castleLong (Position board Black _ _) =
     board // [(e8, Nothing), (c8, Just blackKing), (a8, Nothing), (d8, Just blackRook)]
 
 
 moveChessman :: Position -> Move -> Board
-moveChessman (Position board _ _) (Move from to promotion) =
+moveChessman (Position board _ _ _) (Move from to promotion) =
     board // [(from, Nothing), (to, dstPiece)]
     where srcPiece = board ! from
           dstPiece = if isJust promotion then promotion else srcPiece

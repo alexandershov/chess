@@ -119,7 +119,9 @@ describeInitialPosition = do
             sideToMove `shouldBe` White
         it "allows every castle" do
             castlingRights `shouldBe` M.fromList [(White, bothCastles), (Black, bothCastles)]
-        where Position board sideToMove castlingRights = initialPosition
+        it "has no en passant square" do
+            enPassant `shouldBe` Nothing
+        where Position board sideToMove castlingRights enPassant = initialPosition
               pieces = filter isJust $ elems board
 
 
@@ -136,8 +138,8 @@ describeMakeMove = do
             sideToMove `shouldBe` Black
         it "returns Left if move is illegal" do
             initialPosition `make` move' f3 g1 `shouldSatisfy` isLeft
-    where Right (Position board sideToMove _) = initialPosition `make` move' g1 f3
-          Right (Position boardAfterPromotion _ _) = positionWithWhitePawn `make` Move h7 h8 (Just whiteQueen)
+    where Right (Position board sideToMove _ _) = initialPosition `make` move' g1 f3
+          Right (Position boardAfterPromotion _ _ _) = positionWithWhitePawn `make` Move h7 h8 (Just whiteQueen)
 
 
 describeWhiteCastlingRights :: Spec
@@ -204,7 +206,7 @@ describeShortCastle = do
         it "removes castling rights" do
             convertCastlingRights castlingRights `shouldMatchList` [(White, []), (Black, [LongCastle, ShortCastle])]
     where position = positionWithCastling White
-          Right (Position board sideToMove castlingRights) = position `make` move' e1 g1
+          Right (Position board sideToMove castlingRights _) = position `make` move' e1 g1
 
 
 describeLongCastle :: Spec
@@ -221,7 +223,7 @@ describeLongCastle = do
         it "removes castling rights" do
             convertCastlingRights castlingRights `shouldMatchList` [(White, []), (Black, [LongCastle, ShortCastle])]
     where position = positionWithCastling White
-          Right (Position board sideToMove castlingRights) = position `make` move' e1 c1
+          Right (Position board sideToMove castlingRights _) = position `make` move' e1 c1
 
 
 describeCastleMoves :: Spec
@@ -245,7 +247,7 @@ describeCastleMoves = do
 castlingRightsAfter :: Move -> Position -> [(Color, [Castle])]
 castlingRightsAfter move position =
     convertCastlingRights castlingRights
-    where Right (Position _ _ castlingRights) = position `make` move
+    where Right (Position _ _ castlingRights _) = position `make` move
 
 
 convertCastlingRights :: CastlingRights -> [(Color, [Castle])]
@@ -277,13 +279,13 @@ noCastlingRights = M.fromList [(White, S.empty), (Black, S.empty)]
 
 positionWithCastling :: Color -> Position
 positionWithCastling color =
-    Position board color fullCastlingRights
+    Position board color fullCastlingRights Nothing
     where board = boardWithKingsAndRooks
 
 
 positionWithoutCastling :: Color -> Position
 positionWithoutCastling color =
-    Position board color noCastlingRights
+    Position board color noCastlingRights Nothing
     where board = boardWithKingsAndRooks
 
 
@@ -296,7 +298,7 @@ boardWithKingsAndRooks =
 
 positionWithWhitePawn :: Position
 positionWithWhitePawn = 
-    Position board White noCastlingRights
+    Position board White noCastlingRights Nothing
     where board = put [whitePawn `on` e3, whitePawn `on` d2,
                        whitePawn `on` c4, whitePawn `on` c5,
                        whitePawn `on` f4, blackPawn `on` f5,
@@ -307,7 +309,7 @@ positionWithWhitePawn =
 
 positionWithBlackPawn :: Position
 positionWithBlackPawn = 
-    Position board Black noCastlingRights
+    Position board Black noCastlingRights Nothing
     where board = put [blackPawn `on` e6, blackPawn `on` d7,
                        blackPawn `on` c5, blackPawn `on` c4,
                        blackPawn `on` f5, whitePawn `on` f4,
@@ -318,28 +320,28 @@ positionWithBlackPawn =
 
 positionWithKnight :: Position
 positionWithKnight = 
-    Position board White noCastlingRights
+    Position board White noCastlingRights Nothing
     where board = put [whiteKnight `on` f3, blackPawn `on` e5, 
                        whiteRook `on` e1, whiteBishop `on` f2]
 
 
 positionWithBishop :: Position
 positionWithBishop = 
-    Position board White noCastlingRights
+    Position board White noCastlingRights Nothing
     where board = put [whiteBishop `on` b2, blackPawn `on` e5, 
                        whiteKnight `on` c1]
 
 
 positionWithRook :: Position
 positionWithRook =
-    Position board White noCastlingRights
+    Position board White noCastlingRights Nothing
     where board = put [whiteRook `on` b2, whiteKing `on` e2, 
                        blackKnight `on` b5]
 
 
 positionWithQueen :: Position
 positionWithQueen =
-    Position board White noCastlingRights
+    Position board White noCastlingRights Nothing
     where board = put [whiteQueen `on` b2, whiteKing `on` e2, 
                        blackKnight `on` b5, blackPawn `on` e5,
                        whiteKnight `on` c1]
@@ -347,14 +349,14 @@ positionWithQueen =
 
 positionWithKing :: Position
 positionWithKing =
-    Position board White noCastlingRights
+    Position board White noCastlingRights Nothing
     where board = put [whiteKing `on` e1, blackPawn `on` e2, 
                        whiteKnight `on` d2]
 
 
 positionWithCheck :: Position
 positionWithCheck = 
-    Position board White noCastlingRights
+    Position board White noCastlingRights Nothing
     where board = put [whiteKing `on` e1, blackRook `on` e8,
                        whiteBishop `on` b5]
 
@@ -382,8 +384,8 @@ kingE1Moves = [move' e1 f1, move' e1 d1, move' e1 e2, move' e1 f2]
 
 
 changeBoard :: Position -> [(Piece, Square)] -> Position
-(Position board sideToMove castlingRights) `changeBoard` piecesOnSquares =
-    Position (putOnBoard board piecesOnSquares) sideToMove castlingRights
+(Position board sideToMove castlingRights enPassant) `changeBoard` piecesOnSquares =
+    Position (putOnBoard board piecesOnSquares) sideToMove castlingRights enPassant
 
 move' :: Square -> Square -> Move
 move' from to = Move from to Nothing
