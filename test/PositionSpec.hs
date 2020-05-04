@@ -140,8 +140,11 @@ describeMakeMove = do
             initialPosition `make` move' f3 g1 `shouldSatisfy` isLeft
         it "by pawn sets en passant if it is a double move" do
             enPassantAfterDoublePawnMove `shouldBe` Just e3
+        it "by pawn doesn't sets en passant if it is a single move" do
+            enPassantAfterSinglePawnMove `shouldBe` Nothing
     where Right (Position board sideToMove _ _) = initialPosition `make` move' g1 f3
           Right (Position _ _ _ enPassantAfterDoublePawnMove) = initialPosition `make` move' e2 e4
+          Right (Position _ _ _ enPassantAfterSinglePawnMove) = initialPosition `make` move' e2 e3
           Right (Position boardAfterPromotion _ _ _) = positionWithWhitePawn `make` Move h7 h8 (Just whiteQueen)
 
 

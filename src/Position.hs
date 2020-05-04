@@ -368,7 +368,7 @@ position@(Position board sideToMove castlingRights _) `makeUnchecked` move@(Move
     where nextBoard = getNextBoard position move
           tmpCastlingRights = getNextCastlingRights board sideToMove castlingRights from
           nextCastlingRights = getNextCastlingRights board (rival sideToMove) tmpCastlingRights to
-          nextEnPassant = Nothing
+          nextEnPassant = getNextEnPassant position move
 
 
 make :: Position -> Move -> Either ErrorDesc Position
@@ -385,6 +385,14 @@ getNextCastlingRights board color castlingRights square
     | queenRookTouched color square = without castlingRights color [LongCastle]
     | kingRookTouched color square = without castlingRights color [ShortCastle]
     | otherwise = castlingRights
+
+
+getNextEnPassant :: Position -> Move -> Maybe Square
+getNextEnPassant (Position board sideToMove _ _) (Move from@(fromFile, fromRank) (_, toRank) _) =
+    if isPawn && doubleMove then Just (fromFile, rank) else Nothing
+    where isPawn = board ! from == Just (Pawn sideToMove)
+          doubleMove = abs (toRank - fromRank) == 2
+          rank = (fromRank + toRank) `div` 2
 
 
 getNextBoard :: Position -> Move -> Board
