@@ -404,6 +404,7 @@ getNextBoard :: Position -> Move -> Board
 getNextBoard position move
     | isShortCastle position move = castleShort position
     | isLongCastle position move = castleLong position
+    | isEnPassant position move = takeEnPassant position move
     | otherwise = moveChessman position move
 
 
@@ -439,6 +440,25 @@ castleLong (Position board White _ _) =
     board // [(e1, Nothing), (c1, Just whiteKing), (a1, Nothing), (d1, Just whiteRook)]
 castleLong (Position board Black _ _) =
     board // [(e8, Nothing), (c8, Just blackKing), (a8, Nothing), (d8, Just blackRook)]
+
+
+isEnPassant :: Position -> Move -> Bool
+isEnPassant (Position board sideToMove _ enPassant) (Move from to _) =
+    isPawnMove && Just to == enPassant
+    where isPawnMove = board ! from == Just (Pawn sideToMove)
+
+
+takeEnPassant :: Position -> Move -> Board
+takeEnPassant position@(Position _ sideToMove _ enPassant) move =
+    case enPassant of
+        Nothing -> error $ "impossible " ++ (show position) ++ " should have en passant"
+        Just square -> board // [(getEnPassantReality square (rival sideToMove), Nothing)]
+    where board = moveChessman position move
+
+
+getEnPassantReality :: Square -> Color -> Square
+getEnPassantReality (file, rank) White = (file, rank + 1)
+getEnPassantReality (file, rank) Black = (file, rank - 1)
 
 
 moveChessman :: Position -> Move -> Board
