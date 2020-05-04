@@ -225,7 +225,7 @@ getPawnCapturesTos :: Position -> [Direction] -> Square -> [Square]
 getPawnCapturesTos position directions from =
     concat legalLines
     where slightyLongLines = getLines from directions 1
-          legalLines = [ takeWhile (isOccupiedByRival position) line | line <- slightyLongLines ]
+          legalLines = [ takeWhile (canBeCapturedByPawn position) line | line <- slightyLongLines ]
 
 
 cutLine :: Position -> Line -> Line
@@ -246,6 +246,11 @@ isOccupiedBySideToMove position@(Position _ sideToMove _ _) square =
 isOccupiedByRival :: Position -> Square -> Bool
 isOccupiedByRival position@(Position _ sideToMove _ _) square =
     isOccupiedByColor position (rival sideToMove) square
+
+
+canBeCapturedByPawn :: Position -> Square -> Bool
+canBeCapturedByPawn position@(Position _ _ _ enPassant) square =
+    (isOccupiedByRival position square) || (Just square == enPassant)
 
 
 isOccupiedByColor :: Position -> Color -> Square -> Bool
