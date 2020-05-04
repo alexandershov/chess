@@ -52,6 +52,8 @@ describeWhitePawn = do
             allMovesFrom h7 positionWithWhitePawn `shouldMatchList` [
                 Move h7 h8 (Just whiteKnight), Move h7 h8 (Just whiteBishop),
                 Move h7 h8 (Just whiteRook), Move h7 h8 (Just whiteQueen)]
+        it "takes en passant" do
+            allMovesFrom e5 positionWithEnPassant `shouldMatchList` [move' e5 d6]
 
 
 describeBlackPawn :: Spec
@@ -311,6 +313,15 @@ positionWithWhitePawn =
                        whitePawn `on` g2, blackPawn `on` g3,
                        whitePawn `on` h7,
                        blackKnight `on` f3, blackBishop `on` h3]
+
+
+positionWithEnPassant :: Position
+positionWithEnPassant =
+    makeUncheckedMoves initialPosition [move' e2 e4, move' e7 e6, move' e4 e5, move' d7 d5]
+
+
+makeUncheckedMoves :: Position -> [Move] -> Position
+makeUncheckedMoves position moves = foldl makeUnchecked position moves
 
 
 positionWithBlackPawn :: Position
