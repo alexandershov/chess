@@ -141,11 +141,16 @@ describeMakeMove = do
         it "returns Left if move is illegal" do
             initialPosition `make` move' f3 g1 `shouldSatisfy` isLeft
         it "by pawn sets en passant if it is a double move" do
-            enPassantAfterDoublePawnMove `shouldBe` Just e3
+            enPassantAfterDoublePawnMove `shouldBe` Just d6
         it "by pawn doesn't sets en passant if it is a single move" do
             enPassantAfterSinglePawnMove `shouldBe` Nothing
+        it "en passant is possible" do
+            boardAfterEnPassant ! e5 `shouldBe` Nothing
+            boardAfterEnPassant ! d6 `shouldBe` Just whitePawn
+            boardAfterEnPassant ! d5 `shouldBe` Nothing
     where Right (Position board sideToMove _ _) = initialPosition `make` move' g1 f3
-          Right (Position _ _ _ enPassantAfterDoublePawnMove) = initialPosition `make` move' e2 e4
+          Position _ _ _ enPassantAfterDoublePawnMove = positionWithEnPassant
+          Right (Position boardAfterEnPassant _ _ _) = positionWithEnPassant `make` move' e5 d6
           Right (Position _ _ _ enPassantAfterSinglePawnMove) = initialPosition `make` move' e2 e3
           Right (Position boardAfterPromotion _ _ _) = positionWithWhitePawn `make` Move h7 h8 (Just whiteQueen)
 
