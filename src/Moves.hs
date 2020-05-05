@@ -9,7 +9,7 @@ import Data.List (partition)
 import Data.Maybe (isJust, isNothing)
 
 import Pieces
-import Position hiding (board, sideToMove)
+import Position hiding (board, sideToMove, castlingRights, enPassant)
 import qualified Position as P
 import Squares
 

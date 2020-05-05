@@ -12,5 +12,5 @@ data Castle = LongCastle | ShortCastle deriving (Eq, Ord, Show)
 type CastlingRights = M.Map Color (S.Set Castle)
 
 data Position = Position {board :: Board, sideToMove :: Color,
-                          getCastlingRights :: CastlingRights,
-                          getEnPassant :: (Maybe Square)} deriving (Eq, Show)
+                          castlingRights :: CastlingRights,
+                          enPassant :: (Maybe Square)} deriving (Eq, Show)
