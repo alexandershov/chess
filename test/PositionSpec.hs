@@ -12,7 +12,7 @@ import Test.Hspec
 
 import Moves
 import Pieces
-import Position hiding (board)
+import Position hiding (board, sideToMove)
 import Squares
 
 describePieces :: Spec
