@@ -161,23 +161,23 @@ hasSafeShortCastle position@Position{P.sideToMove=Black} =
 
 
 hasThreatTo :: Position -> [Square] -> Bool
-hasThreatTo (Position board sideToMove castlingRights _) squares =
+hasThreatTo Position{P.board, P.sideToMove, P.castlingRights} squares =
     or [to `elem` squares | (Move _ to _) <- threats]
     where threats = allSimpleMoves (Position board (rival sideToMove) castlingRights Nothing)
 
 
 createShortCastleMove :: Position -> Move
-createShortCastleMove (Position _ White _ _) = Move e1 g1 Nothing
-createShortCastleMove (Position _ Black _ _) = Move e8 g8 Nothing
+createShortCastleMove Position{P.sideToMove=White} = Move e1 g1 Nothing
+createShortCastleMove Position{P.sideToMove=Black} = Move e8 g8 Nothing
 
 
 createLongCastleMove :: Position -> Move
-createLongCastleMove (Position _ White _ _) = Move e1 c1 Nothing
-createLongCastleMove (Position _ Black _ _) = Move e8 c8 Nothing
+createLongCastleMove Position{P.sideToMove=White} = Move e1 c1 Nothing
+createLongCastleMove Position{P.sideToMove=Black} = Move e8 c8 Nothing
 
 
 piecesToMoveInSquares :: Position -> [(Piece, Square)]
-piecesToMoveInSquares (Position board sideToMove _ _) =
+piecesToMoveInSquares Position{P.board, P.sideToMove} =
     [ (piece, square) | 
       (square, Just piece) <- assocs board, 
       getColor piece == sideToMove ]
@@ -197,7 +197,7 @@ getMoves position (PieceMovement directions range) from =
           tos = concat legalLines
 
 
-getMoves position@(Position _ sideToMove _ _) (PawnMovement moveDirection range captureDirections) from =
+getMoves position@Position{P.sideToMove} (PawnMovement moveDirection range captureDirections) from =
     simpleMoves ++ promotions
     where movesTos = getPawnMovesTos position moveDirection range from
           capturesTos = getPawnCapturesTos position captureDirections from
