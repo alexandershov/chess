@@ -1,4 +1,5 @@
 {-# LANGUAGE BlockArguments #-}
+{-# LANGUAGE NamedFieldPuns #-}
 
 module MovesSpec where
 
@@ -13,6 +14,7 @@ import Test.Hspec
 import Moves
 import Pieces
 import Position hiding (board, sideToMove, castlingRights, enPassant)
+import qualified Position as P
 import Squares
 
 describePieces :: Spec
@@ -149,11 +151,11 @@ describeMakeMove = do
             boardAfterEnPassant ! e5 `shouldBe` Nothing
             boardAfterEnPassant ! d6 `shouldBe` Just whitePawn
             boardAfterEnPassant ! d5 `shouldBe` Nothing
-    where Right (Position board sideToMove _ _) = initialPosition `make` move' g1 f3
+    where Right Position{P.board, P.sideToMove} = initialPosition `make` move' g1 f3
           Position _ _ _ enPassantAfterDoublePawnMove = positionWithEnPassant
-          Right (Position boardAfterEnPassant _ _ _) = positionWithEnPassant `make` move' e5 d6
-          Right (Position _ _ _ enPassantAfterSinglePawnMove) = initialPosition `make` move' e2 e3
-          Right (Position boardAfterPromotion _ _ _) = positionWithWhitePawn `make` Move h7 h8 (Just whiteQueen)
+          Right Position{P.board=boardAfterEnPassant} = positionWithEnPassant `make` move' e5 d6
+          Right Position{P.enPassant=enPassantAfterSinglePawnMove} = initialPosition `make` move' e2 e3
+          Right Position{P.board=boardAfterPromotion} = positionWithWhitePawn `make` Move h7 h8 (Just whiteQueen)
 
 
 describeWhiteCastlingRights :: Spec
@@ -220,7 +222,7 @@ describeShortCastle = do
         it "removes castling rights" do
             convertCastlingRights castlingRights `shouldMatchList` [(White, []), (Black, [LongCastle, ShortCastle])]
     where position = positionWithCastling White
-          Right (Position board sideToMove castlingRights _) = position `make` move' e1 g1
+          Right Position{P.board, P.sideToMove, P.castlingRights} = position `make` move' e1 g1
 
 
 describeLongCastle :: Spec
@@ -237,7 +239,7 @@ describeLongCastle = do
         it "removes castling rights" do
             convertCastlingRights castlingRights `shouldMatchList` [(White, []), (Black, [LongCastle, ShortCastle])]
     where position = positionWithCastling White
-          Right (Position board sideToMove castlingRights _) = position `make` move' e1 c1
+          Right Position{P.board, P.sideToMove, P.castlingRights} = position `make` move' e1 c1
 
 
 describeCastleMoves :: Spec
@@ -261,7 +263,7 @@ describeCastleMoves = do
 castlingRightsAfter :: Move -> Position -> [(Color, [Castle])]
 castlingRightsAfter move position =
     convertCastlingRights castlingRights
-    where Right (Position _ _ castlingRights _) = position `make` move
+    where Right Position{P.castlingRights} = position `make` move
 
 
 convertCastlingRights :: CastlingRights -> [(Color, [Castle])]
@@ -407,7 +409,7 @@ kingE1Moves = [move' e1 f1, move' e1 d1, move' e1 e2, move' e1 f2]
 
 
 changeBoard :: Position -> [(Piece, Square)] -> Position
-(Position board sideToMove castlingRights enPassant) `changeBoard` piecesOnSquares =
+Position{P.board, P.sideToMove, P.castlingRights, P.enPassant} `changeBoard` piecesOnSquares =
     Position (putOnBoard board piecesOnSquares) sideToMove castlingRights enPassant
 
 move' :: Square -> Square -> Move
