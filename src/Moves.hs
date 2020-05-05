@@ -405,9 +405,14 @@ isPawnMove Position{P.board, P.sideToMove} (Move from _ _) =
     board ! from == Just (Pawn sideToMove)
 
 
+isCapture :: Position -> Move -> Bool
+isCapture position move@(Move _ to _) =
+    isEnPassant position move || isOccupiedByRival position to
+
+
 getNextHalfMoveClock :: Position -> Move -> Int
 getNextHalfMoveClock position@Position{P.halfMoveClock} move = 
-    if isPawn then 0 else halfMoveClock + 1
+    if isPawn || isCapture position move then 0 else halfMoveClock + 1
     where isPawn = isPawnMove position move
 
 

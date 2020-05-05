@@ -290,8 +290,13 @@ describeHalfMoveClock = do
             clockAfterNf3 `shouldBe` 1
         it "resets after a pawn move" do
             clockAfterE5 `shouldBe` 0
+        it "resets after a capture" do
+            clockAfterNh4 `shouldBe` 0
     where Right afterNf3@Position{P.halfMoveClock=clockAfterNf3} = initialPosition `make` move' g1 f3
-          Right Position{P.halfMoveClock=clockAfterE5} = afterNf3 `make` move' e7 e5
+          Right afterE5@Position{P.halfMoveClock=clockAfterE5} = afterNf3 `make` move' e7 e5
+          Right afterE3 = afterE5 `make` move' e2 e3
+          Right afterQh4 = afterE3 `make` move' d8 h4
+          Right Position{P.halfMoveClock=clockAfterNh4} = afterQh4 `make` move' f3 h4
 
 
 allMovesFrom :: Square -> Position -> [Move]
