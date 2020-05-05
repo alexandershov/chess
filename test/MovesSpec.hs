@@ -1,6 +1,6 @@
 {-# LANGUAGE BlockArguments #-}
 
-module PositionSpec where
+module MovesSpec where
 
 import Data.Array ((!), elems)
 import qualified Data.Map as M

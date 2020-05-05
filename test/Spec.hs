@@ -2,7 +2,7 @@
 
 import Test.Hspec
 
-import PositionSpec
+import MovesSpec
 import UciSpec
 
 
