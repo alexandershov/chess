@@ -88,7 +88,7 @@ color `isUnderCheckIn` position =
 
 
 threatens :: Position -> Piece -> Move -> Bool
-threatens (Position board _ _ _) piece (Move _ to _) =
+threatens Position{P.board} piece (Move _ to _) =
     board ! to == Just piece
 
 
@@ -116,7 +116,7 @@ allCastleMoves position
 
 
 canCastleLong :: Position -> Bool
-canCastleLong position@(Position _ sideToMove castlingRights _) = 
+canCastleLong position@Position{P.sideToMove, P.castlingRights} = 
     possible && noObstacles && noThreats
     where possible = S.member LongCastle (castlingRights M.! sideToMove)
           noObstacles = hasEmptySquaresForLongCastle position
@@ -124,7 +124,7 @@ canCastleLong position@(Position _ sideToMove castlingRights _) =
 
 
 canCastleShort :: Position -> Bool
-canCastleShort position@(Position _ sideToMove castlingRights _) = 
+canCastleShort position@Position{P.sideToMove, P.castlingRights} = 
     possible && noObstacles && noThreats
     where possible = S.member ShortCastle (castlingRights M.! sideToMove)
           noObstacles = hasEmptySquaresForShortCastle position
@@ -132,31 +132,31 @@ canCastleShort position@(Position _ sideToMove castlingRights _) =
 
 
 hasEmptySquaresForShortCastle :: Position -> Bool
-hasEmptySquaresForShortCastle (Position board White _ _) =
+hasEmptySquaresForShortCastle Position{P.board, P.sideToMove=White} =
     and $ map (isEmpty board) [f1, g1]
-hasEmptySquaresForShortCastle (Position board Black _ _) =
+hasEmptySquaresForShortCastle Position{P.board, P.sideToMove=Black} =
     and $ map (isEmpty board) [f8, g8]
 
 
 hasEmptySquaresForLongCastle :: Position -> Bool
-hasEmptySquaresForLongCastle (Position board White _ _) =
+hasEmptySquaresForLongCastle Position{P.board, P.sideToMove=White} =
     and $ map (isEmpty board) [d1, c1, b1]
-hasEmptySquaresForLongCastle (Position board Black _ _) =
+hasEmptySquaresForLongCastle Position{P.board, P.sideToMove=Black} =
     and $ map (isEmpty board) [d8, c8, b8]
 
 
 hasSafeLongCastle :: Position -> Bool
-hasSafeLongCastle position@(Position _ White _ _) = 
+hasSafeLongCastle position@Position{P.sideToMove=White} = 
     not $ position `hasThreatTo` [c1, d1, e1]
 
-hasSafeLongCastle position@(Position _ Black _ _) = 
+hasSafeLongCastle position@Position{P.sideToMove=Black} = 
     not $ position `hasThreatTo` [c8, d8, e8]
 
 hasSafeShortCastle :: Position -> Bool
-hasSafeShortCastle position@(Position _ White _ _) = 
+hasSafeShortCastle position@Position{P.sideToMove=White} = 
     not $ position `hasThreatTo` [e1, f1, g1]
 
-hasSafeShortCastle position@(Position _ Black _ _) = 
+hasSafeShortCastle position@Position{P.sideToMove=Black} = 
     not $ position `hasThreatTo` [e8, f8, g8]
 
 
