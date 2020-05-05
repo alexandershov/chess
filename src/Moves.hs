@@ -408,47 +408,47 @@ getNextBoard position move
 
 
 isShortCastle :: Position -> Move -> Bool
-isShortCastle (Position board White _ _) (Move from to _) =
+isShortCastle Position{P.board, P.sideToMove=White} (Move from to _) =
     movesKing && from == e1 && to == g1
     where movesKing = board ! from == Just (King White)
 
-isShortCastle (Position board Black _ _) (Move from to _) =
+isShortCastle Position{P.board, P.sideToMove=Black} (Move from to _) =
     movesKing && from == e8 && to == g8
     where movesKing = board ! from == Just (King Black)
 
 
 isLongCastle :: Position -> Move -> Bool
-isLongCastle (Position board White _ _) (Move from to _) =
+isLongCastle Position{P.board, P.sideToMove=White} (Move from to _) =
     movesKing && from == e1 && to == c1
     where movesKing = board ! from == Just (King White)
 
-isLongCastle (Position board Black _ _) (Move from to _) =
+isLongCastle Position{P.board, P.sideToMove=Black} (Move from to _) =
     movesKing && from == e8 && to == c8
     where movesKing = board ! from == Just (King Black)
 
 
 castleShort :: Position -> Board
-castleShort (Position board White _ _) =
+castleShort Position{P.board, P.sideToMove=White} =
     board // [(e1, Nothing), (g1, Just whiteKing), (h1, Nothing), (f1, Just whiteRook)]
-castleShort (Position board Black _ _) =
+castleShort Position{P.board, P.sideToMove=Black} =
     board // [(e8, Nothing), (g8, Just blackKing), (h8, Nothing), (f8, Just blackRook)]
 
 
 castleLong :: Position -> Board
-castleLong (Position board White _ _) =
+castleLong Position{P.board, P.sideToMove=White} =
     board // [(e1, Nothing), (c1, Just whiteKing), (a1, Nothing), (d1, Just whiteRook)]
-castleLong (Position board Black _ _) =
+castleLong Position{P.board, P.sideToMove=Black} =
     board // [(e8, Nothing), (c8, Just blackKing), (a8, Nothing), (d8, Just blackRook)]
 
 
 isEnPassant :: Position -> Move -> Bool
-isEnPassant (Position board sideToMove _ enPassant) (Move from to _) =
+isEnPassant Position{P.board, P.sideToMove, P.enPassant} (Move from to _) =
     isPawnMove && Just to == enPassant
     where isPawnMove = board ! from == Just (Pawn sideToMove)
 
 
 takeEnPassant :: Position -> Move -> Board
-takeEnPassant position@(Position _ sideToMove _ enPassant) move =
+takeEnPassant position@Position{P.sideToMove, P.enPassant} move =
     case enPassant of
         Nothing -> error $ "impossible " ++ (show position) ++ " should have en passant"
         Just square -> board // [(getEnPassantReality square (rival sideToMove), Nothing)]
@@ -461,7 +461,7 @@ getEnPassantReality (file, rank) Black = (file, rank - 1)
 
 
 moveChessman :: Position -> Move -> Board
-moveChessman (Position board _ _ _) (Move from to promotion) =
+moveChessman Position{P.board} (Move from to promotion) =
     board // [(from, Nothing), (to, dstPiece)]
     where srcPiece = board ! from
           dstPiece = if isJust promotion then promotion else srcPiece
