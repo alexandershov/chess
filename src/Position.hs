@@ -13,4 +13,5 @@ type CastlingRights = M.Map Color (S.Set Castle)
 
 data Position = Position {board :: Board, sideToMove :: Color,
                           castlingRights :: CastlingRights,
-                          enPassant :: (Maybe Square)} deriving (Eq, Show)
+                          enPassant :: (Maybe Square),
+                          halfMoveClock :: Int} deriving (Eq, Show)

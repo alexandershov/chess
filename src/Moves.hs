@@ -9,7 +9,7 @@ import Data.List (partition)
 import Data.Maybe (isJust, isNothing)
 
 import Pieces
-import Position hiding (board, sideToMove, castlingRights, enPassant)
+import Position hiding (board, sideToMove, castlingRights, enPassant, halfMoveClock)
 import qualified Position as P
 import Squares
 
@@ -163,7 +163,7 @@ hasSafeShortCastle position@Position{P.sideToMove=Black} =
 hasThreatTo :: Position -> [Square] -> Bool
 hasThreatTo Position{P.board, P.sideToMove, P.castlingRights} squares =
     or [to `elem` squares | (Move _ to _) <- threats]
-    where threats = allSimpleMoves (Position board (rival sideToMove) castlingRights Nothing)
+    where threats = allSimpleMoves (Position board (rival sideToMove) castlingRights Nothing 0)
 
 
 createShortCastleMove :: Position -> Move
@@ -342,7 +342,7 @@ put = putOnBoard emptyBoard
 
 initialPosition :: Position
 initialPosition = 
-    Position board White fullCastlingRights Nothing
+    Position board White fullCastlingRights Nothing 0
     where 
         board = put $ firstRank ++ secondRank ++ seventhRank ++ eightRank
         firstRank = [whiteRook `on` a1, whiteKnight `on` b1, whiteBishop `on` c1,
@@ -368,11 +368,12 @@ bothCastles = S.fromList [LongCastle, ShortCastle]
 
 makeUnchecked :: Position -> Move -> Position
 position@Position{P.board, P.sideToMove, P.castlingRights} `makeUnchecked` move@(Move from to _) =
-    Position nextBoard (rival sideToMove) nextCastlingRights nextEnPassant
+    Position nextBoard (rival sideToMove) nextCastlingRights nextEnPassant nextHalfMoveClock
     where nextBoard = getNextBoard position move
           tmpCastlingRights = getNextCastlingRights board sideToMove castlingRights from
           nextCastlingRights = getNextCastlingRights board (rival sideToMove) tmpCastlingRights to
           nextEnPassant = getNextEnPassant position move
+          nextHalfMoveClock = getNextHalfMoveClock position move
 
 
 make :: Position -> Move -> Either ErrorDesc Position
@@ -397,6 +398,10 @@ getNextEnPassant Position{P.board, P.sideToMove} (Move from@(fromFile, fromRank)
     where isPawn = board ! from == Just (Pawn sideToMove)
           doubleMove = abs (toRank - fromRank) == 2
           rank = (fromRank + toRank) `div` 2
+
+
+getNextHalfMoveClock :: Position -> Move -> Int
+getNextHalfMoveClock Position{P.halfMoveClock} _ = halfMoveClock + 1
 
 
 getNextBoard :: Position -> Move -> Board

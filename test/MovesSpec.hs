@@ -13,7 +13,7 @@ import Test.Hspec
 
 import Moves
 import Pieces
-import Position hiding (board, sideToMove, castlingRights, enPassant)
+import Position hiding (board, sideToMove, castlingRights, enPassant, halfMoveClock)
 import qualified Position as P
 import Squares
 
@@ -28,6 +28,7 @@ describePieces = do
     describeKing
 
     describeLegalMoves
+    describeHalfMoveClock
 
     describeWhiteCastlingRights
     describeBlackCastlingRights
@@ -126,7 +127,9 @@ describeInitialPosition = do
             castlingRights `shouldBe` M.fromList [(White, bothCastles), (Black, bothCastles)]
         it "has no en passant square" do
             enPassant `shouldBe` Nothing
-        where Position board sideToMove castlingRights enPassant = initialPosition
+        it "has half move clock set to zero" do
+            halfMoveClock `shouldBe` 0
+        where Position{P.board, P.sideToMove, P.castlingRights, P.enPassant, P.halfMoveClock} = initialPosition
               pieces = filter isJust $ elems board
 
 
@@ -152,7 +155,7 @@ describeMakeMove = do
             boardAfterEnPassant ! d6 `shouldBe` Just whitePawn
             boardAfterEnPassant ! d5 `shouldBe` Nothing
     where Right Position{P.board, P.sideToMove} = initialPosition `make` move' g1 f3
-          Position _ _ _ enPassantAfterDoublePawnMove = positionWithEnPassant
+          Position{P.enPassant=enPassantAfterDoublePawnMove} = positionWithEnPassant
           Right Position{P.board=boardAfterEnPassant} = positionWithEnPassant `make` move' e5 d6
           Right Position{P.enPassant=enPassantAfterSinglePawnMove} = initialPosition `make` move' e2 e3
           Right Position{P.board=boardAfterPromotion} = positionWithWhitePawn `make` Move h7 h8 (Just whiteQueen)
@@ -280,6 +283,14 @@ describeLegalMoves = do
                 move' b5 e8, move' b5 e2]
 
 
+describeHalfMoveClock :: Spec
+describeHalfMoveClock = do
+    describe "Half move clock" do
+        it "increases with a piece move without capture" do
+            clockAfterNf3 `shouldBe` 1
+    where Right Position{P.halfMoveClock=clockAfterNf3} = initialPosition `make` move' g1 f3
+
+
 allMovesFrom :: Square -> Position -> [Move]
 allMovesFrom square position =
     filter (`isFrom` square) $ allMoves position
@@ -295,13 +306,13 @@ noCastlingRights = M.fromList [(White, S.empty), (Black, S.empty)]
 
 positionWithCastling :: Color -> Position
 positionWithCastling color =
-    Position board color fullCastlingRights Nothing
+    Position board color fullCastlingRights Nothing 0
     where board = boardWithKingsAndRooks
 
 
 positionWithoutCastling :: Color -> Position
 positionWithoutCastling color =
-    Position board color noCastlingRights Nothing
+    Position board color noCastlingRights Nothing 0
     where board = boardWithKingsAndRooks
 
 
@@ -314,7 +325,7 @@ boardWithKingsAndRooks =
 
 positionWithWhitePawn :: Position
 positionWithWhitePawn = 
-    Position board White noCastlingRights Nothing
+    Position board White noCastlingRights Nothing 0
     where board = put [whitePawn `on` e3, whitePawn `on` d2,
                        whitePawn `on` c4, whitePawn `on` c5,
                        whitePawn `on` f4, blackPawn `on` f5,
@@ -334,7 +345,7 @@ makeUncheckedMoves position moves = foldl makeUnchecked position moves
 
 positionWithBlackPawn :: Position
 positionWithBlackPawn = 
-    Position board Black noCastlingRights Nothing
+    Position board Black noCastlingRights Nothing 0
     where board = put [blackPawn `on` e6, blackPawn `on` d7,
                        blackPawn `on` c5, blackPawn `on` c4,
                        blackPawn `on` f5, whitePawn `on` f4,
@@ -345,28 +356,28 @@ positionWithBlackPawn =
 
 positionWithKnight :: Position
 positionWithKnight = 
-    Position board White noCastlingRights Nothing
+    Position board White noCastlingRights Nothing 0
     where board = put [whiteKnight `on` f3, blackPawn `on` e5, 
                        whiteRook `on` e1, whiteBishop `on` f2]
 
 
 positionWithBishop :: Position
 positionWithBishop = 
-    Position board White noCastlingRights Nothing
+    Position board White noCastlingRights Nothing 0
     where board = put [whiteBishop `on` b2, blackPawn `on` e5, 
                        whiteKnight `on` c1]
 
 
 positionWithRook :: Position
 positionWithRook =
-    Position board White noCastlingRights Nothing
+    Position board White noCastlingRights Nothing 0
     where board = put [whiteRook `on` b2, whiteKing `on` e2, 
                        blackKnight `on` b5]
 
 
 positionWithQueen :: Position
 positionWithQueen =
-    Position board White noCastlingRights Nothing
+    Position board White noCastlingRights Nothing 0
     where board = put [whiteQueen `on` b2, whiteKing `on` e2, 
                        blackKnight `on` b5, blackPawn `on` e5,
                        whiteKnight `on` c1]
@@ -374,14 +385,14 @@ positionWithQueen =
 
 positionWithKing :: Position
 positionWithKing =
-    Position board White noCastlingRights Nothing
+    Position board White noCastlingRights Nothing 0
     where board = put [whiteKing `on` e1, blackPawn `on` e2, 
                        whiteKnight `on` d2]
 
 
 positionWithCheck :: Position
 positionWithCheck = 
-    Position board White noCastlingRights Nothing
+    Position board White noCastlingRights Nothing 0
     where board = put [whiteKing `on` e1, blackRook `on` e8,
                        whiteBishop `on` b5]
 
@@ -409,8 +420,9 @@ kingE1Moves = [move' e1 f1, move' e1 d1, move' e1 e2, move' e1 f2]
 
 
 changeBoard :: Position -> [(Piece, Square)] -> Position
-Position{P.board, P.sideToMove, P.castlingRights, P.enPassant} `changeBoard` piecesOnSquares =
-    Position (putOnBoard board piecesOnSquares) sideToMove castlingRights enPassant
+position@Position{P.board} `changeBoard` piecesOnSquares =
+    position {P.board=newBoard}
+    where newBoard = (putOnBoard board piecesOnSquares)
 
 move' :: Square -> Square -> Move
 move' from to = Move from to Nothing
