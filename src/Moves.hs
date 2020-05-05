@@ -7,7 +7,7 @@ import Data.List (partition)
 import Data.Maybe (isJust, isNothing)
 
 import Pieces
-import Position
+import Position hiding (board)
 import Squares
 
 boardSize :: Int
