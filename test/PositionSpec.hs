@@ -10,6 +10,7 @@ import Data.Maybe (isJust)
 
 import Test.Hspec
 
+import Moves
 import Pieces
 import Position
 import Squares

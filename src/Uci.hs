@@ -8,9 +8,9 @@ import Data.Time (getCurrentTime)
 import System.IO
 import System.Random
 
-import qualified Position as P
-import Position hiding (Position)
+import Moves
 import Pieces
+import qualified Position as P
 import Squares
 
 data Command = 
@@ -161,7 +161,7 @@ parsePosition p =
 
 type ParsedPosition = Either ErrorDesc P.Position
 
-makeMoves :: ParsedPosition -> [Either ErrorDesc P.Move] -> ParsedPosition
+makeMoves :: ParsedPosition -> [Either ErrorDesc Move] -> ParsedPosition
 makeMoves parsedPosition [] = parsedPosition
 makeMoves parsedPosition (parsedMove:parsedMoves) = do
     position <- parsedPosition

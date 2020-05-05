@@ -7,8 +7,8 @@ import Data.IORef
 
 import Test.Hspec
 
+import Moves
 import qualified Position as P
-import Position hiding (Position)
 import Squares
 import Uci
 
@@ -156,7 +156,7 @@ refWriter ref response = do
     modifyIORef ref (++ [response])
 
 
-positionAfterE4E5 :: Either P.ErrorDesc P.Position
+positionAfterE4E5 :: Either ErrorDesc P.Position
 positionAfterE4E5 = do
     afterE4 <- initialPosition `make` Move e2 e4 Nothing
     afterE5 <- afterE4 `make` Move e7 e5 Nothing
