@@ -10,6 +10,7 @@ import Data.Maybe (isJust, isNothing)
 
 import Pieces
 import Position hiding (board, sideToMove)
+import qualified Position as P
 import Squares
 
 boardSize :: Int
@@ -74,7 +75,7 @@ legalMoves position =
 
 
 isLegalIn :: Move -> Position -> Bool
-move `isLegalIn` position@(Position _ sideToMove _ _) = 
+move `isLegalIn` position@Position{P.sideToMove} = 
     not $ sideToMove `isUnderCheckIn` nextPosition
     where nextPosition = position `makeUnchecked` move
 
