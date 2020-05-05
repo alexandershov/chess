@@ -214,7 +214,7 @@ isInPromotionRank Black (_, rank) = rank == 1
 
 
 getPawnMovesTos :: Position -> Direction -> Range -> Square -> [Square]
-getPawnMovesTos (Position board _ _ _) direction range from = 
+getPawnMovesTos Position{P.board} direction range from = 
     concat legalLines
     where slightlyLongLines = getLines from [direction] range
           legalLines = [ takeWhile (isEmpty board) line | line <- slightlyLongLines ]
@@ -228,7 +228,7 @@ getPawnCapturesTos position directions from =
 
 
 cutLine :: Position -> Line -> Line
-cutLine position@(Position board _ _ _) line =
+cutLine position@Position{P.board} line =
     exclude (isOccupiedBySideToMove position) squares
     where squares = takeWhileWithBreaker (isEmpty board) line
 
@@ -238,22 +238,22 @@ exclude p xs = [ x | x <- xs, not $ p x ]
 
 
 isOccupiedBySideToMove :: Position -> Square -> Bool
-isOccupiedBySideToMove position@(Position _ sideToMove _ _) square =
+isOccupiedBySideToMove position@Position{P.sideToMove} square =
     isOccupiedByColor position sideToMove square
 
 
 isOccupiedByRival :: Position -> Square -> Bool
-isOccupiedByRival position@(Position _ sideToMove _ _) square =
+isOccupiedByRival position@Position{P.sideToMove} square =
     isOccupiedByColor position (rival sideToMove) square
 
 
 canBeCapturedByPawn :: Position -> Square -> Bool
-canBeCapturedByPawn position@(Position _ _ _ enPassant) square =
+canBeCapturedByPawn position@Position{P.enPassant} square =
     (isOccupiedByRival position square) || (Just square == enPassant)
 
 
 isOccupiedByColor :: Position -> Color -> Square -> Bool
-isOccupiedByColor (Position board _ _ _) color square =
+isOccupiedByColor Position{P.board} color square =
     case board ! square of
         Nothing -> False
         Just piece -> (getColor piece) == color
@@ -367,7 +367,7 @@ bothCastles = S.fromList [LongCastle, ShortCastle]
 
 
 makeUnchecked :: Position -> Move -> Position
-position@(Position board sideToMove castlingRights _) `makeUnchecked` move@(Move from to _) =
+position@Position{P.board, P.sideToMove, P.castlingRights} `makeUnchecked` move@(Move from to _) =
     Position nextBoard (rival sideToMove) nextCastlingRights nextEnPassant
     where nextBoard = getNextBoard position move
           tmpCastlingRights = getNextCastlingRights board sideToMove castlingRights from
@@ -392,7 +392,7 @@ getNextCastlingRights board color castlingRights square
 
 
 getNextEnPassant :: Position -> Move -> Maybe Square
-getNextEnPassant (Position board sideToMove _ _) (Move from@(fromFile, fromRank) (_, toRank) _) =
+getNextEnPassant Position{P.board, P.sideToMove} (Move from@(fromFile, fromRank) (_, toRank) _) =
     if isPawn && doubleMove then Just (fromFile, rank) else Nothing
     where isPawn = board ! from == Just (Pawn sideToMove)
           doubleMove = abs (toRank - fromRank) == 2
