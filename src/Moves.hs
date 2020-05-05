@@ -393,15 +393,22 @@ getNextCastlingRights board color castlingRights square
 
 
 getNextEnPassant :: Position -> Move -> Maybe Square
-getNextEnPassant Position{P.board, P.sideToMove} (Move from@(fromFile, fromRank) (_, toRank) _) =
+getNextEnPassant position move@(Move (fromFile, fromRank) (_, toRank) _) =
     if isPawn && doubleMove then Just (fromFile, rank) else Nothing
-    where isPawn = board ! from == Just (Pawn sideToMove)
+    where isPawn = isPawnMove position move
           doubleMove = abs (toRank - fromRank) == 2
           rank = (fromRank + toRank) `div` 2
 
 
+isPawnMove :: Position -> Move -> Bool
+isPawnMove Position{P.board, P.sideToMove} (Move from _ _) =
+    board ! from == Just (Pawn sideToMove)
+
+
 getNextHalfMoveClock :: Position -> Move -> Int
-getNextHalfMoveClock Position{P.halfMoveClock} _ = halfMoveClock + 1
+getNextHalfMoveClock position@Position{P.halfMoveClock} move = 
+    if isPawn then 0 else halfMoveClock + 1
+    where isPawn = isPawnMove position move
 
 
 getNextBoard :: Position -> Move -> Board
@@ -447,9 +454,8 @@ castleLong Position{P.board, P.sideToMove=Black} =
 
 
 isEnPassant :: Position -> Move -> Bool
-isEnPassant Position{P.board, P.sideToMove, P.enPassant} (Move from to _) =
-    isPawnMove && Just to == enPassant
-    where isPawnMove = board ! from == Just (Pawn sideToMove)
+isEnPassant position@Position{P.enPassant} move@(Move _ to _) =
+    isPawnMove position move && Just to == enPassant
 
 
 takeEnPassant :: Position -> Move -> Board

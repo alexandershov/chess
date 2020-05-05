@@ -288,7 +288,10 @@ describeHalfMoveClock = do
     describe "Half move clock" do
         it "increases with a piece move without capture" do
             clockAfterNf3 `shouldBe` 1
-    where Right Position{P.halfMoveClock=clockAfterNf3} = initialPosition `make` move' g1 f3
+        it "resets after a pawn move" do
+            clockAfterE5 `shouldBe` 0
+    where Right afterNf3@Position{P.halfMoveClock=clockAfterNf3} = initialPosition `make` move' g1 f3
+          Right Position{P.halfMoveClock=clockAfterE5} = afterNf3 `make` move' e7 e5
 
 
 allMovesFrom :: Square -> Position -> [Move]
