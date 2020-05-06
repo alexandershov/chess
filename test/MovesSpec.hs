@@ -314,12 +314,19 @@ describeDraw = do
             isDraw twofold `shouldBe` False
 
         it "can be claimed after threefold repetition" do
-            print $ show $ M.elems $ repetitions threefold
             isDraw threefold `shouldBe` True
 
+        it "can't be claimed if side to move is different" do
+            isDraw wrongThreefold `shouldBe` False
+
     where moves = cycle [move' g1 f3, move' g8 f6, move' f3 g1, move' f6 g8]
+          wrongThreefoldMoves = [move' e2 e3, move' g8 f6, move' f1 e2, move' f6 g8,
+                                 move' e2 f1, move' g8 f6, move' f1 e2, move' f6 g8,
+                                 move' e2 c4, move' g8 f6, move' c4 d3, move' f6 g8,
+                                 move' d3 e2, move' g8 f6]
           twofold = initialPosition `makeUncheckedMoves` (take 4 moves)
           threefold = initialPosition `makeUncheckedMoves` (take 8 moves)
+          wrongThreefold = initialPosition `makeUncheckedMoves` wrongThreefoldMoves
 
           
 allMovesFrom :: Square -> Position -> [Move]
