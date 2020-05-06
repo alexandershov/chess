@@ -15,4 +15,4 @@ data Position = Position {board :: Board,
                           sideToMove :: Color,
                           castlingRights :: CastlingRights,
                           enPassant :: (Maybe Square),
-                          halfMoveClock :: Int} deriving (Eq, Show)
+                          halfMoveClock :: Int} deriving (Eq, Ord, Show)

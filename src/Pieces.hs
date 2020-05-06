@@ -7,7 +7,7 @@ data Piece =
     Bishop { getColor :: Color } |
     Rook { getColor :: Color } | 
     Queen { getColor :: Color } | 
-    King { getColor :: Color } deriving (Eq, Show)
+    King { getColor :: Color } deriving (Eq, Ord, Show)
 
 whitePawn :: Piece
 whitePawn = Pawn White
