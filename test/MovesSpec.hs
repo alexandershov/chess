@@ -310,7 +310,19 @@ describeDraw = do
         it "can be claimed if half move clock is >= 100" do
             isDraw initialPosition{P.halfMoveClock=100} `shouldBe` True
 
+        it "can't be claimed after less than threefold repetition" do
+            isDraw onefold `shouldBe` False
+            isDraw twofold `shouldBe` False
 
+        it "can be claimed after threefold repetition" do
+            isDraw threefold `shouldBe` True
+
+    where halfMoves = cycle [move' g1 f3, move' g8 f6]
+          onefold = initialPosition `makeUncheckedMoves` (take 2 halfMoves)
+          twofold = initialPosition `makeUncheckedMoves` (take 4 halfMoves)
+          threefold = initialPosition `makeUncheckedMoves` (take 6 halfMoves)
+
+          
 allMovesFrom :: Square -> Position -> [Move]
 allMovesFrom square position =
     filter (`isFrom` square) $ allMoves position
