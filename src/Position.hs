@@ -11,7 +11,8 @@ type Board = Array Square (Maybe Piece)
 data Castle = LongCastle | ShortCastle deriving (Eq, Ord, Show)
 type CastlingRights = M.Map Color (S.Set Castle)
 
-data Position = Position {board :: Board, sideToMove :: Color,
+data Position = Position {board :: Board, 
+                          sideToMove :: Color,
                           castlingRights :: CastlingRights,
                           enPassant :: (Maybe Square),
                           halfMoveClock :: Int} deriving (Eq, Show)
