@@ -310,17 +310,16 @@ describeDraw = do
         it "can be claimed if half move clock is >= 100" do
             isDraw initialPosition{P.halfMoveClock=100} `shouldBe` True
 
-        it "can't be claimed after less than threefold repetition" do
-            isDraw onefold `shouldBe` False
+        it "can't be claimed after twofold repetition" do
             isDraw twofold `shouldBe` False
 
         it "can be claimed after threefold repetition" do
+            print $ show $ M.elems $ repetitions threefold
             isDraw threefold `shouldBe` True
 
-    where halfMoves = cycle [move' g1 f3, move' g8 f6]
-          onefold = initialPosition `makeUncheckedMoves` (take 2 halfMoves)
-          twofold = initialPosition `makeUncheckedMoves` (take 4 halfMoves)
-          threefold = initialPosition `makeUncheckedMoves` (take 6 halfMoves)
+    where moves = cycle [move' g1 f3, move' g8 f6, move' f3 g1, move' f6 g8]
+          twofold = initialPosition `makeUncheckedMoves` (take 4 moves)
+          threefold = initialPosition `makeUncheckedMoves` (take 8 moves)
 
           
 allMovesFrom :: Square -> Position -> [Move]
@@ -338,13 +337,13 @@ noCastlingRights = M.fromList [(White, S.empty), (Black, S.empty)]
 
 positionWithCastling :: Color -> Position
 positionWithCastling color =
-    Position board color fullCastlingRights Nothing 0
+    Position board color fullCastlingRights Nothing 0 M.empty
     where board = boardWithKingsAndRooks
 
 
 positionWithoutCastling :: Color -> Position
 positionWithoutCastling color =
-    Position board color noCastlingRights Nothing 0
+    Position board color noCastlingRights Nothing 0 M.empty
     where board = boardWithKingsAndRooks
 
 
@@ -357,7 +356,7 @@ boardWithKingsAndRooks =
 
 positionWithWhitePawn :: Position
 positionWithWhitePawn = 
-    Position board White noCastlingRights Nothing 0
+    Position board White noCastlingRights Nothing 0 M.empty
     where board = put [whitePawn `on` e3, whitePawn `on` d2,
                        whitePawn `on` c4, whitePawn `on` c5,
                        whitePawn `on` f4, blackPawn `on` f5,
@@ -377,7 +376,7 @@ makeUncheckedMoves position moves = foldl makeUnchecked position moves
 
 positionWithBlackPawn :: Position
 positionWithBlackPawn = 
-    Position board Black noCastlingRights Nothing 0
+    Position board Black noCastlingRights Nothing 0 M.empty
     where board = put [blackPawn `on` e6, blackPawn `on` d7,
                        blackPawn `on` c5, blackPawn `on` c4,
                        blackPawn `on` f5, whitePawn `on` f4,
@@ -388,28 +387,28 @@ positionWithBlackPawn =
 
 positionWithKnight :: Position
 positionWithKnight = 
-    Position board White noCastlingRights Nothing 0
+    Position board White noCastlingRights Nothing 0 M.empty
     where board = put [whiteKnight `on` f3, blackPawn `on` e5, 
                        whiteRook `on` e1, whiteBishop `on` f2]
 
 
 positionWithBishop :: Position
 positionWithBishop = 
-    Position board White noCastlingRights Nothing 0
+    Position board White noCastlingRights Nothing 0 M.empty
     where board = put [whiteBishop `on` b2, blackPawn `on` e5, 
                        whiteKnight `on` c1]
 
 
 positionWithRook :: Position
 positionWithRook =
-    Position board White noCastlingRights Nothing 0
+    Position board White noCastlingRights Nothing 0 M.empty
     where board = put [whiteRook `on` b2, whiteKing `on` e2, 
                        blackKnight `on` b5]
 
 
 positionWithQueen :: Position
 positionWithQueen =
-    Position board White noCastlingRights Nothing 0
+    Position board White noCastlingRights Nothing 0 M.empty
     where board = put [whiteQueen `on` b2, whiteKing `on` e2, 
                        blackKnight `on` b5, blackPawn `on` e5,
                        whiteKnight `on` c1]
@@ -417,14 +416,14 @@ positionWithQueen =
 
 positionWithKing :: Position
 positionWithKing =
-    Position board White noCastlingRights Nothing 0
+    Position board White noCastlingRights Nothing 0 M.empty
     where board = put [whiteKing `on` e1, blackPawn `on` e2, 
                        whiteKnight `on` d2]
 
 
 positionWithCheck :: Position
 positionWithCheck = 
-    Position board White noCastlingRights Nothing 0
+    Position board White noCastlingRights Nothing 0 M.empty
     where board = put [whiteKing `on` e1, blackRook `on` e8,
                        whiteBishop `on` b5]
 

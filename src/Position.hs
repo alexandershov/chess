@@ -17,9 +17,12 @@ data Position = Position {board :: Board,
                           sideToMove :: Color,
                           castlingRights :: CastlingRights,
                           enPassant :: (Maybe Square),
-                          halfMoveClock :: Int} deriving (Eq, Ord, Show)
+                          halfMoveClock :: Int,
+                          repetitions :: M.Map Position Int} deriving (Eq, Ord, Show)
 
 
 isDraw :: Position -> Bool
-isDraw Position{halfMoveClock} =
-    halfMoveClock >= 100
+isDraw Position{halfMoveClock, repetitions} =
+    isThreefold || halfMoveClock >= 100
+    where isThreefold = any (>= 3) counts
+          counts = M.elems repetitions

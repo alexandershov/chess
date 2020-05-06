@@ -163,7 +163,7 @@ hasSafeShortCastle position@Position{P.sideToMove=Black} =
 hasThreatTo :: Position -> [Square] -> Bool
 hasThreatTo Position{P.board, P.sideToMove, P.castlingRights} squares =
     or [to `elem` squares | (Move _ to _) <- threats]
-    where threats = allSimpleMoves (Position board (rival sideToMove) castlingRights Nothing 0)
+    where threats = allSimpleMoves (Position board (rival sideToMove) castlingRights Nothing 0 M.empty)
 
 
 createShortCastleMove :: Position -> Move
@@ -342,7 +342,7 @@ put = putOnBoard emptyBoard
 
 initialPosition :: Position
 initialPosition = 
-    Position board White fullCastlingRights Nothing 0
+    position'{P.repetitions=repetitions}
     where 
         board = put $ firstRank ++ secondRank ++ seventhRank ++ eightRank
         firstRank = [whiteRook `on` a1, whiteKnight `on` b1, whiteBishop `on` c1,
@@ -355,6 +355,8 @@ initialPosition =
         eightRank = [blackRook `on` a8, blackKnight `on` b8, blackBishop `on` c8,
                      blackQueen `on` d8, blackKing `on` e8, 
                      blackBishop `on` f8, blackKnight `on` g8, blackRook `on` h8]
+        position' = Position board White fullCastlingRights Nothing 0 M.empty
+        repetitions = getNextRepetitions position'
 
 
 fullCastlingRights :: CastlingRights
@@ -367,13 +369,15 @@ bothCastles = S.fromList [LongCastle, ShortCastle]
 
 
 makeUnchecked :: Position -> Move -> Position
-position@Position{P.board, P.sideToMove, P.castlingRights} `makeUnchecked` move@(Move from to _) =
-    Position nextBoard (rival sideToMove) nextCastlingRights nextEnPassant nextHalfMoveClock
+position@Position{P.board, P.sideToMove, P.castlingRights, P.repetitions} `makeUnchecked` move@(Move from to _) =
+    nextPosition'{P.repetitions=nextRepetitions}
     where nextBoard = getNextBoard position move
           tmpCastlingRights = getNextCastlingRights board sideToMove castlingRights from
           nextCastlingRights = getNextCastlingRights board (rival sideToMove) tmpCastlingRights to
           nextEnPassant = getNextEnPassant position move
           nextHalfMoveClock = getNextHalfMoveClock position move
+          nextPosition' = Position nextBoard (rival sideToMove) nextCastlingRights nextEnPassant nextHalfMoveClock repetitions
+          nextRepetitions = getNextRepetitions nextPosition'
 
 
 make :: Position -> Move -> Either ErrorDesc Position
@@ -414,6 +418,14 @@ getNextHalfMoveClock :: Position -> Move -> Int
 getNextHalfMoveClock position@Position{P.halfMoveClock} move = 
     if isPawn || isCapture position move then 0 else halfMoveClock + 1
     where isPawn = isPawnMove position move
+
+
+getNextRepetitions :: Position -> M.Map Position Int
+getNextRepetitions nextPosition'@Position{P.repetitions} =
+    case M.lookup essence repetitions of
+        Nothing -> M.insert essence 1 repetitions
+        Just n -> M.insert essence (n + 1) repetitions
+    where essence = nextPosition'{P.halfMoveClock=0, P.repetitions=M.empty}
 
 
 getNextBoard :: Position -> Move -> Board
