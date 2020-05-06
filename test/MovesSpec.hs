@@ -29,6 +29,7 @@ describePieces = do
 
     describeLegalMoves
     describeHalfMoveClock
+    describeDraw
 
     describeWhiteCastlingRights
     describeBlackCastlingRights
@@ -297,6 +298,17 @@ describeHalfMoveClock = do
           Right afterE3 = afterE5 `make` move' e2 e3
           Right afterQh4 = afterE3 `make` move' d8 h4
           Right Position{P.halfMoveClock=clockAfterNh4} = afterQh4 `make` move' f3 h4
+
+
+describeDraw :: Spec
+describeDraw = do
+    describe "Draw" do
+        it "can't  be claimed if half move clock is < 100" do
+            isDraw initialPosition `shouldBe` False
+            isDraw initialPosition{P.halfMoveClock=99} `shouldBe` False
+
+        it "can be claimed if half move clock is >= 100" do
+            isDraw initialPosition{P.halfMoveClock=100} `shouldBe` True
 
 
 allMovesFrom :: Square -> Position -> [Move]

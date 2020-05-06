@@ -1,3 +1,5 @@
+{-# LANGUAGE NamedFieldPuns #-}
+
 module Position where
 
 import Data.Array (Array)
@@ -16,3 +18,8 @@ data Position = Position {board :: Board,
                           castlingRights :: CastlingRights,
                           enPassant :: (Maybe Square),
                           halfMoveClock :: Int} deriving (Eq, Ord, Show)
+
+
+isDraw :: Position -> Bool
+isDraw Position{halfMoveClock} =
+    halfMoveClock >= 100
