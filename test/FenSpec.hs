@@ -3,8 +3,10 @@
 module FenSpec where
 
 import Data.Either (isLeft, isRight)
+import qualified Data.Map as M
 
 import Fen
+import Moves
 import Pieces
 import Squares
 
@@ -60,3 +62,12 @@ describeFen = do
             parseRankElement 'x' `shouldSatisfy` isLeft
             parseRankElement '0' `shouldSatisfy` isLeft
             parseRankElement '9' `shouldSatisfy` isLeft
+
+        it "parses castling rights" do
+            parseCastlingRights "KkQq" `shouldBe` Right fullCastlingRights
+
+        it "parses missing castling rights" do
+            parseCastlingRights "-" `shouldBe` Right M.empty
+
+        it "handles errors when parsing castling rights" do
+            parseCastlingRights "X" `shouldSatisfy` isLeft
