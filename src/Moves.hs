@@ -28,7 +28,6 @@ data Move = Move Square Square Promotion deriving (Eq)
 
 type Direction = (File, Rank)
 type Range = Int
-type ErrorDesc = String
 type Promotion = Maybe Piece
 
 data Movement = 
@@ -380,7 +379,7 @@ position@Position{P.board, P.sideToMove, P.castlingRights, P.repetitions} `makeU
           nextRepetitions = getNextRepetitions nextPosition'
 
 
-make :: Position -> Move -> Either ErrorDesc Position
+make :: Position -> Move -> Either String Position
 position `make` move =
     case move `elem` (legalMoves position) of
         True -> do

@@ -17,7 +17,7 @@ data Command =
     Uci |
     IsReady |
     UciNewGame |
-    Position (Either ErrorDesc P.Position) |
+    Position (Either String P.Position) |
     Go |
     Quit |
     Unknown String deriving (Eq, Show)
@@ -159,9 +159,9 @@ parsePosition p =
     Position $ Left $ "should be in the form `startpos moves ...`, got " ++ show p
 
 
-type ParsedPosition = Either ErrorDesc P.Position
+type ParsedPosition = Either String P.Position
 
-makeMoves :: ParsedPosition -> [Either ErrorDesc Move] -> ParsedPosition
+makeMoves :: ParsedPosition -> [Either String Move] -> ParsedPosition
 makeMoves parsedPosition [] = parsedPosition
 makeMoves parsedPosition (parsedMove:parsedMoves) = do
     position <- parsedPosition
@@ -169,7 +169,7 @@ makeMoves parsedPosition (parsedMove:parsedMoves) = do
     makeMoves (position `make` move) parsedMoves
 
 
-parseMove :: (String, Color) -> Either ErrorDesc Move
+parseMove :: (String, Color) -> Either String Move
 parseMove (fromFile:fromRank:toFile:toRank:promotion', sideToMove) = do
     from <- parseSquare fromFile fromRank
     to <- parseSquare toFile toRank
@@ -178,42 +178,7 @@ parseMove (fromFile:fromRank:toFile:toRank:promotion', sideToMove) = do
 parseMove (s, _) = Left $ "move should be in the form `f1f3`, got " ++ s
 
 
-parseSquare :: Char -> Char -> Either ErrorDesc Square
-parseSquare f r = do
-    file <- parseFile f
-    rank <- parseRank r
-    return (file, rank)
-
-
-parseFile :: Char -> Either ErrorDesc Int
-parseFile f =
-    case f of
-        'a' -> Right 1
-        'b' -> Right 2
-        'c' -> Right 3
-        'd' -> Right 4
-        'e' -> Right 5
-        'f' -> Right 6
-        'g' -> Right 7
-        'h' -> Right 8
-        _ -> Left $ "file should be one of `abcdefgh`, got " ++ [f]
-
-
-parseRank :: Char -> Either ErrorDesc Int
-parseRank r =
-    case r of
-        '1' -> Right 1
-        '2' -> Right 2
-        '3' -> Right 3
-        '4' -> Right 4
-        '5' -> Right 5
-        '6' -> Right 6
-        '7' -> Right 7
-        '8' -> Right 8
-        _ -> Left $ "rank should be one of `12345678`, got " ++ [r]
-
-
-parsePromotion :: String -> Color -> Either ErrorDesc (Maybe Piece)
+parsePromotion :: String -> Color -> Either String (Maybe Piece)
 parsePromotion p color = 
     case p of 
         "" -> Right Nothing

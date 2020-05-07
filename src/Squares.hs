@@ -5,6 +5,40 @@ type Rank = Int
 
 type Square = (File, Rank)
 
+parseSquare :: Char -> Char -> Either String Square
+parseSquare f r = do
+    file <- parseFile f
+    rank <- parseRank r
+    return (file, rank)
+
+
+parseFile :: Char -> Either String Int
+parseFile f =
+    case f of
+        'a' -> Right 1
+        'b' -> Right 2
+        'c' -> Right 3
+        'd' -> Right 4
+        'e' -> Right 5
+        'f' -> Right 6
+        'g' -> Right 7
+        'h' -> Right 8
+        _ -> Left $ "file should be one of `abcdefgh`, got " ++ [f]
+
+
+parseRank :: Char -> Either String Int
+parseRank r =
+    case r of
+        '1' -> Right 1
+        '2' -> Right 2
+        '3' -> Right 3
+        '4' -> Right 4
+        '5' -> Right 5
+        '6' -> Right 6
+        '7' -> Right 7
+        '8' -> Right 8
+        _ -> Left $ "rank should be one of `12345678`, got " ++ [r]
+
 a1 :: Square
 a2 :: Square
 a3 :: Square
