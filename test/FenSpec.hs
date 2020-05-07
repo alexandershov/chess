@@ -2,7 +2,7 @@
 
 module FenSpec where
 
-import Data.Either (isLeft)
+import Data.Either (isLeft, isRight)
 
 import Fen
 import Pieces
@@ -52,4 +52,11 @@ describeFen = do
             parseRankElement 'p' `shouldBe` Right [Just blackPawn]
 
         it "parses empty squares" do
+            parseRankElement '1' `shouldBe` Right [Nothing]
             parseRankElement '3' `shouldBe` Right [Nothing, Nothing, Nothing]
+            parseRankElement '8' `shouldSatisfy` isRight
+
+        it "handles errors when parsing rank element" do
+            parseRankElement 'x' `shouldSatisfy` isLeft
+            parseRankElement '0' `shouldSatisfy` isLeft
+            parseRankElement '9' `shouldSatisfy` isLeft

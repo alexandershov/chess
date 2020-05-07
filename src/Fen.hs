@@ -39,4 +39,6 @@ parseRankElement 'p' = Right [Just blackPawn]
 
 parseRankElement s = do
     n <- readEither [s]
-    return $ take n (repeat Nothing) 
+    if n < 1 || n > 8 
+        then Left $ "n should be in [0..8], got " ++ [s]
+        else return $ take n (repeat Nothing) 
