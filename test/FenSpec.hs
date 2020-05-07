@@ -71,3 +71,4 @@ describeFen = do
 
         it "handles errors when parsing castling rights" do
             parseCastlingRights "X" `shouldSatisfy` isLeft
+            parseCastlingRights "kk" `shouldSatisfy` isLeft
