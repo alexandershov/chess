@@ -20,3 +20,23 @@ parseEnPassant [file, rank] = do
     return $ Just square
 parseEnPassant "-" = Right Nothing
 parseEnPassant s = Left $ "en passant should be a valid square, got " ++ s
+
+
+parseRankElement :: Char -> Either String [Maybe Piece]
+parseRankElement 'R' = Right [Just whiteRook]
+parseRankElement 'N' = Right [Just whiteKnight]
+parseRankElement 'B' = Right [Just whiteBishop]
+parseRankElement 'Q' = Right [Just whiteQueen]
+parseRankElement 'K' = Right [Just whiteKing]
+parseRankElement 'P' = Right [Just whitePawn]
+
+parseRankElement 'r' = Right [Just blackRook]
+parseRankElement 'n' = Right [Just blackKnight]
+parseRankElement 'b' = Right [Just blackBishop]
+parseRankElement 'q' = Right [Just blackQueen]
+parseRankElement 'k' = Right [Just blackKing]
+parseRankElement 'p' = Right [Just blackPawn]
+
+parseRankElement s = do
+    n <- readEither [s]
+    return $ take n (repeat Nothing) 
