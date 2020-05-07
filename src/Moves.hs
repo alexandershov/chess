@@ -13,9 +13,6 @@ import Position hiding (board, sideToMove, castlingRights, enPassant, halfMoveCl
 import qualified Position as P
 import Squares
 
-boardSize :: Int
-boardSize = 8
-
 type Line = [Square]
 showSquare :: Square -> String
 showSquare (x, y) = 
@@ -417,14 +414,6 @@ getNextHalfMoveClock :: Position -> Move -> Int
 getNextHalfMoveClock position@Position{P.halfMoveClock} move = 
     if isPawn || isCapture position move then 0 else halfMoveClock + 1
     where isPawn = isPawnMove position move
-
-
-getNextRepetitions :: Position -> M.Map Position Int
-getNextRepetitions nextPosition'@Position{P.repetitions} =
-    case M.lookup essence repetitions of
-        Nothing -> M.insert essence 1 repetitions
-        Just n -> M.insert essence (n + 1) repetitions
-    where essence = nextPosition'{P.halfMoveClock=0, P.repetitions=M.empty}
 
 
 getNextBoard :: Position -> Move -> Board

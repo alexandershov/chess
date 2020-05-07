@@ -72,3 +72,7 @@ describeFen = do
         it "handles errors when parsing castling rights" do
             parseCastlingRights "X" `shouldSatisfy` isLeft
             parseCastlingRights "kk" `shouldSatisfy` isLeft
+
+        it "parses an initial position" do
+            parsePosition initialFen `shouldBe` Right initialPosition
+            where initialFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" 

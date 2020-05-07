@@ -25,6 +25,7 @@ dependencies:
 - containers
 - hspec
 - random
+- split
 - time
 
 library:
