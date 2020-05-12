@@ -7,10 +7,10 @@ import Data.List (nub)
 import Data.List.Split
 import Text.Read (readEither)
 
+import Moves
 import Pieces
 import qualified Position as P
 import Position hiding (board, sideToMove, castlingRights, enPassant, halfMoveClock)
-import Repetition
 import Squares
 
 

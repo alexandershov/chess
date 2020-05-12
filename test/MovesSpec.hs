@@ -11,6 +11,7 @@ import Data.Maybe (isJust)
 
 import Test.Hspec
 
+import Fen
 import Moves
 import Pieces
 import Position hiding (board, sideToMove, castlingRights, enPassant, halfMoveClock)
@@ -30,6 +31,7 @@ describePieces = do
     describeLegalMoves
     describeHalfMoveClock
     describeDraw
+    describeDrawEnPassant
 
     describeWhiteCastlingRights
     describeBlackCastlingRights
@@ -327,6 +329,20 @@ describeDraw = do
           twofold = initialPosition `makeUncheckedMoves` (take 4 moves)
           threefold = initialPosition `makeUncheckedMoves` (take 8 moves)
           wrongThreefold = initialPosition `makeUncheckedMoves` wrongThreefoldMoves
+
+
+describeDrawEnPassant :: Spec
+describeDrawEnPassant = do
+    describe "Draw" do
+        it "by threefold repetition can be claimed if en passant is not possible" do
+            isDraw impossibleThreeFold `shouldBe` True
+        it "by threefold repetition can't be claimed if en passant is possible" do
+            isDraw possibleTwoFold `shouldBe` False
+    where moves = [move' f2 f4] ++ cycle [move' g8 g7, move' g1 f1, move' g7 g8, move' f1 g1]
+          Right impossible = parsePosition "6k1/8/8/8/6p1/8/5PR1/6K1 w - - 0 1"
+          Right possible = parsePosition "6k1/8/8/8/6p1/8/R4P2/6K1 w - - 0 1"
+          impossibleThreeFold = impossible `makeUncheckedMoves` (take 9 moves)
+          possibleTwoFold = possible `makeUncheckedMoves` (take 9 moves)
 
           
 allMovesFrom :: Square -> Position -> [Move]

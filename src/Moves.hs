@@ -11,7 +11,6 @@ import Data.Maybe (isJust, isNothing)
 import Pieces
 import Position hiding (board, sideToMove, castlingRights, enPassant, halfMoveClock)
 import qualified Position as P
-import Repetition
 import Squares
 
 type Line = [Square]
@@ -423,6 +422,22 @@ getNextBoard position move
     | isLongCastle position move = castleLong position
     | isEnPassant position move = takeEnPassant position move
     | otherwise = moveChessman position move
+
+
+getNextRepetitions :: Position -> M.Map Position Int
+getNextRepetitions nextPosition'@Position{P.repetitions} =
+    case M.lookup essence repetitions of
+        Nothing -> M.insert essence 1 repetitions
+        Just n -> M.insert essence (n + 1) repetitions
+    where essence = getEssence nextPosition'
+
+
+getEssence :: Position -> Position
+getEssence position = 
+    position{P.enPassant=enPassant, P.halfMoveClock=0, P.repetitions=M.empty}
+    where moves = legalMoves position
+          enPassantLegal = any (isEnPassant position) moves
+          enPassant = if enPassantLegal then P.enPassant position else Nothing
 
 
 isShortCastle :: Position -> Move -> Bool
