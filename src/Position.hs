@@ -29,3 +29,7 @@ isDraw Position{halfMoveClock, repetitions} =
     isThreefold || halfMoveClock >= 100
     where isThreefold = any (>= 3) counts
           counts = M.elems repetitions
+
+
+noCastlingRights :: CastlingRights
+noCastlingRights = M.fromList [(White, S.empty), (Black, S.empty)]

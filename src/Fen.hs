@@ -84,7 +84,7 @@ parseSideToMove s = Left $ "side to move should either `w` or `b`, got " ++ s
 
 
 parseCastlingRights :: String -> Either String CastlingRights
-parseCastlingRights "-" = Right M.empty
+parseCastlingRights "-" = Right noCastlingRights
 parseCastlingRights s =
     if allUnique 
         then combineRights rights

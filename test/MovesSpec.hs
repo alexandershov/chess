@@ -354,10 +354,6 @@ isFrom :: Move -> Square -> Bool
 (Move from _ _) `isFrom` square = from == square
 
 
-noCastlingRights :: CastlingRights
-noCastlingRights = M.fromList [(White, S.empty), (Black, S.empty)]
-
-
 positionWithCastling :: Color -> Position
 positionWithCastling color =
     Position board color fullCastlingRights Nothing 0 M.empty

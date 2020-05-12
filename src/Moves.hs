@@ -523,7 +523,8 @@ rankWithPieces Black = boardSize
 without :: CastlingRights -> Color -> [Castle] -> CastlingRights
 without castlingRights color castles =
     M.insert color newCastles castlingRights
-    where newCastles = S.difference bothCastles $ S.fromList castles
+    where newCastles = S.difference curCastles $ S.fromList castles
+          curCastles = M.findWithDefault S.empty color castlingRights
 
 
 rival :: Color -> Color
