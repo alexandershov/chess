@@ -11,6 +11,7 @@ import Data.Maybe (isJust, isNothing)
 import Pieces
 import Position hiding (board, sideToMove, castlingRights, enPassant, halfMoveClock)
 import qualified Position as P
+import Repetition
 import Squares
 
 type Line = [Square]

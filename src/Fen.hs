@@ -10,6 +10,7 @@ import Text.Read (readEither)
 import Pieces
 import qualified Position as P
 import Position hiding (board, sideToMove, castlingRights, enPassant, halfMoveClock)
+import Repetition
 import Squares
 
 
@@ -120,7 +121,7 @@ parseEnPassant [file, rank] = do
     square <- parseSquare file rank
     return $ Just square
 parseEnPassant "-" = Right Nothing
-parseEnPassant s = Left $ "en passant should be a valid square, got " ++ s
+parseEnPassant s = Left $ "en passant should be a valid square or -, got " ++ s
 
 
 parseHalfMoveClock :: String -> Either String Int

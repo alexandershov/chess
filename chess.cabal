@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7d0b6b282028234155e729a1f36e2ab4e2c2cd2b4c4a168c0ec52a37ee0c7540
+-- hash: 848536b27d5218e0bcf96b2b88a8895851c7c6396652536b44ddcef81e2a5a0e
 
 name:           chess
 version:        0.1.0.0
@@ -31,6 +31,7 @@ library
       Moves
       Pieces
       Position
+      Repetition
       Squares
       Uci
   other-modules:
