@@ -39,6 +39,40 @@ describePieces = do
     describeLongCastle
     describeCastleMoves
 
+    describePerft
+
+
+describePerft :: Spec
+describePerft = do
+    describe "perft" do
+        it "is correct for initial position" do
+            perft 0 initialPosition `shouldBe` 1
+            perft 1 initialPosition `shouldBe` 20
+            perft 2 initialPosition `shouldBe` 400
+            perft 3 initialPosition `shouldBe` 8902
+            perft 4 initialPosition `shouldBe` 197281
+        it "is correct for kiwepete" do
+            perft 0 kiwepete `shouldBe` 1
+            perft 1 kiwepete `shouldBe` 48
+            perft 2 kiwepete `shouldBe` 2039
+            perft 3 kiwepete `shouldBe` 97862
+        
+        it "is correct for position #5" do
+            perft 0 five `shouldBe` 1
+            perft 1 five `shouldBe` 44
+            perft 2 five `shouldBe` 1486
+            perft 3 five `shouldBe` 62379
+    where Right kiwepete = parsePosition "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"
+          Right five = parsePosition "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8"
+
+
+perft :: Int -> Position -> Integer
+perft 0 _ = 1
+perft depth position = do
+    sum $ map (perft (depth - 1)) positions
+    where moves = legalMoves position
+          positions = map (position `makeUnchecked`) moves
+
 
 describeWhitePawn :: Spec
 describeWhitePawn = do
