@@ -94,7 +94,7 @@ parseCastlingRights s =
 
 
 combineRights :: [Either String (Color, Castle)] -> Either String CastlingRights
-combineRights [] = Right M.empty
+combineRights [] = Right noCastlingRights
 combineRights (x:xs) = do
     (color, castle) <- x
     result <- combineRights xs
