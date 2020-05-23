@@ -45,12 +45,12 @@ describePieces = do
 describePerft :: Spec
 describePerft = do
     mapM_ describePerftPosition cases
-    where cases = [("initialPosition perft", initialPosition, [1, 20, 400, 8902, 197281]),
+    where cases = [("position #1 perft", initialPosition, [1, 20, 400, 8902, 197281]),
                    ("position #2 perft", two, [1, 48, 2039, 97862]),
                    ("position #3 perft", three, [1, 14, 191, 2812, 43238]),
                    ("position #4 perft", four, [1, 6, 264, 9467]),
                    ("position #5 perft", five, [1, 44, 1486, 62379]),
-                   ("position #6 peft", six, [1, 46, 2079, 89890])]
+                   ("position #6 perft", six, [1, 46, 2079, 89890])]
           Right two = parsePosition "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"
           Right three = parsePosition "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1"
           Right four = parsePosition "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1"
@@ -60,7 +60,7 @@ describePerft = do
 
 describePerftPosition :: (String, Position, [Integer]) -> Spec
 describePerftPosition (description, position, expected) = do
-    describe description do
+    xdescribe description do
         mapM_ (describePerftAtDepth position) withIndexes
     where withIndexes = zip [0..] expected 
 

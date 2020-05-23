@@ -38,7 +38,6 @@ parseBoard board' =
           ranksWithIndexes = zip (reverse [1..boardSize]) ranks
           
 
-
 parseRankLine :: (Int, String) -> Either String [(Square, Maybe Piece)]
 parseRankLine (rank, s) = do
     nestedElements <- sequence elements'
