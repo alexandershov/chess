@@ -40,14 +40,19 @@ parseBoard board' =
 
 
 parseRankLine :: (Int, String) -> Either String [(Square, Maybe Piece)]
-parseRankLine (i, s) = do
+parseRankLine (rank, s) = do
     nestedElements <- sequence elements'
     let elements = concat nestedElements in
         if length elements /= boardSize
-            then Left $ "rank " ++ s ++ " should have " ++ (show boardSize) ++ " elements " ++ " got " ++ (show (length elements))
-            else return $ map (\(j, e) -> ((j, i), e)) (zip files elements)
+            then Left $ invalidRankLine s elements
+            else return $ [((file, rank), element) | (file, element) <- (zip files elements)]
     where elements' = map parseRankElement s
           files = [1..boardSize]
+
+
+invalidRankLine :: String -> [Maybe Piece] -> String
+invalidRankLine s elements = 
+    "rank " ++ s ++ " should have " ++ (show boardSize) ++ " elements " ++ " got " ++ (show (length elements))
 
 
 parseRankElement :: Char -> Either String [Maybe Piece]
