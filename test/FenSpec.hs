@@ -2,12 +2,12 @@
 
 module FenSpec where
 
-import Data.Either (isLeft, isRight)
+import Data.Either (isLeft)
 
 import Fen
 import Moves
 import Pieces
-import Position (noCastlingRights)
+import Position (boardSize, noCastlingRights)
 import Squares
 
 import Test.Hspec
@@ -56,7 +56,7 @@ describeFen = do
         it "parses empty squares" do
             parseRankElement '1' `shouldBe` Right [Nothing]
             parseRankElement '3' `shouldBe` Right [Nothing, Nothing, Nothing]
-            parseRankElement '8' `shouldSatisfy` isRight
+            parseRankElement '8' `shouldBe` Right (replicate boardSize Nothing)
 
         it "handles errors when parsing rank element" do
             parseRankElement 'x' `shouldSatisfy` isLeft

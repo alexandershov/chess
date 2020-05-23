@@ -99,15 +99,13 @@ parseCastlingRights s =
 
 
 combineRights :: [Either String (Color, Castle)] -> Either String CastlingRights
-combineRights [] = Right noCastlingRights
-combineRights (x:xs) = do
-    (color, castle) <- x
-    result <- combineRights xs
-    return $ with result color castle
+combineRights xs = do
+    rights <- sequence xs
+    return $ foldl with noCastlingRights rights
 
 
-with :: CastlingRights -> Color -> Castle -> CastlingRights
-with castlingRights color castle =
+with :: CastlingRights -> (Color, Castle) -> CastlingRights
+with castlingRights (color, castle) =
     M.insert color newCastles castlingRights
     where Just curCastles = M.lookup color castlingRights
           newCastles = S.insert castle curCastles
