@@ -60,7 +60,7 @@ describePerft = do
 
 describePerftPosition :: (String, Position, [Integer]) -> Spec
 describePerftPosition (description, position, expected) = do
-    xdescribe description do
+    describe description do
         mapM_ (describePerftAtDepth position) withIndexes
     where withIndexes = zip [0..] expected 
 
