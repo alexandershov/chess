@@ -44,50 +44,37 @@ describePieces = do
 
 describePerft :: Spec
 describePerft = do
-    describe "perft" do
-        it "is correct for initial position" do
-            perft 0 initialPosition `shouldBe` 1
-            perft 1 initialPosition `shouldBe` 20
-            perft 2 initialPosition `shouldBe` 400
-            perft 3 initialPosition `shouldBe` 8902
-            perft 4 initialPosition `shouldBe` 197281
-        it "is correct for position #2" do
-            perft 0 two `shouldBe` 1
-            perft 1 two `shouldBe` 48
-            perft 2 two `shouldBe` 2039
-            perft 3 two `shouldBe` 97862
-        it "is correct for position #3" do
-            perft 0 three `shouldBe` 1
-            perft 1 three `shouldBe` 14
-            perft 2 three `shouldBe` 191
-            perft 3 three `shouldBe` 2812
-            perft 4 three `shouldBe` 43238
-        it "is correct for position #4" do
-            perft 0 four `shouldBe` 1
-            perft 1 four `shouldBe` 6
-            perft 2 four `shouldBe` 264
-            perft 3 four `shouldBe` 9467
-        it "is correct for position #5" do
-            perft 0 five `shouldBe` 1
-            perft 1 five `shouldBe` 44
-            perft 2 five `shouldBe` 1486
-            perft 3 five `shouldBe` 62379
-        it "is correct for position #6" do
-            perft 0 six `shouldBe` 1
-            perft 1 six `shouldBe` 46
-            perft 2 six `shouldBe` 2079
-            perft 3 six `shouldBe` 89890
-    where Right two = parsePosition "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"
+    mapM_ describePerftPosition cases
+    where cases = [("initialPosition perft", initialPosition, [1, 20, 400, 8902, 197281]),
+                   ("position #2 perft", two, [1, 48, 2039, 97862]),
+                   ("position #3 perft", three, [1, 14, 191, 2812, 43238]),
+                   ("position #4 perft", four, [1, 6, 264, 9467]),
+                   ("position #5 perft", five, [1, 44, 1486, 62379]),
+                   ("position #6 peft", six, [1, 46, 2079, 89890])]
+          Right two = parsePosition "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"
           Right three = parsePosition "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1"
           Right four = parsePosition "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1"
           Right five = parsePosition "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8"
           Right six = parsePosition "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10"
 
 
-perft :: Int -> Position -> Integer
-perft 0 _ = 1
-perft depth position = do
-    sum $ map (perft (depth - 1)) positions
+describePerftPosition :: (String, Position, [Integer]) -> Spec
+describePerftPosition (description, position, expected) = do
+    describe description do
+        mapM_ (describePerftAtDepth position) withIndexes
+    where withIndexes = zip [0..] expected 
+
+
+describePerftAtDepth :: Position -> (Integer, Integer) -> Spec
+describePerftAtDepth position (depth, expected) = do
+    it ("is correct at depth " ++ (show depth)) do
+        perft position depth `shouldBe` expected
+
+
+perft :: Position -> Integer -> Integer
+perft _ 0 = 1
+perft position depth = do
+    sum $ [ perft p (depth - 1) | p <- positions ]
     where moves = legalMoves position
           positions = map (position `makeUnchecked`) moves
 
