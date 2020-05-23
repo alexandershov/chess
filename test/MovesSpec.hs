@@ -44,7 +44,7 @@ describePieces = do
 
 describePerft :: Spec
 describePerft = do
-    describe "perft" do
+    xdescribe "perft" do
         it "is correct for initial position" do
             perft 0 initialPosition `shouldBe` 1
             perft 1 initialPosition `shouldBe` 20

@@ -18,7 +18,7 @@ parsePosition :: String -> Either String Position
 parsePosition s = 
     case splitOn " " s of
         [ranks', sideToMove', castlingRights', enPassant', halfMoveClock', _] -> do
-            board <- parseRanks ranks'
+            board <- parseBoard ranks'
             sideToMove <- parseSideToMove sideToMove'
             castlingRights <- parseCastlingRights castlingRights'
             enPassant <- parseEnPassant enPassant'
@@ -27,8 +27,8 @@ parsePosition s =
         parts -> Left $ "fen " ++ s ++ " should have 6 parts, got " ++ (show $ length parts)
 
 
-parseRanks :: String -> Either String Board
-parseRanks ranks' = 
+parseBoard :: String -> Either String Board
+parseBoard ranks' = 
     if length ranks /= boardSize
         then Left $ "there should be " ++ (show boardSize) ++ " ranks, got " ++ ranks'
         else do
