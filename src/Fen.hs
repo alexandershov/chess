@@ -74,7 +74,7 @@ parseRankElement s = do
     n <- readEither [s]
     if n < 1 || n > 8 
         then Left $ "n should be in [1..8], got " ++ [s]
-        else return $ take n (repeat Nothing) 
+        else return $ replicate n Nothing
 
 
 withRepetition :: Position -> Position
@@ -109,7 +109,7 @@ combineRights (x:xs) = do
 with :: CastlingRights -> Color -> Castle -> CastlingRights
 with castlingRights color castle =
     M.insert color newCastles castlingRights
-    where curCastles = maybe S.empty id (M.lookup color castlingRights)
+    where Just curCastles = M.lookup color castlingRights
           newCastles = S.insert castle curCastles
 
 
