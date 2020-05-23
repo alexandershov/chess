@@ -17,8 +17,8 @@ import Squares
 parsePosition :: String -> Either String Position
 parsePosition s = 
     case splitOn " " s of
-        [ranks', sideToMove', castlingRights', enPassant', halfMoveClock', _] -> do
-            board <- parseBoard ranks'
+        [board', sideToMove', castlingRights', enPassant', halfMoveClock', _] -> do
+            board <- parseBoard board'
             sideToMove <- parseSideToMove sideToMove'
             castlingRights <- parseCastlingRights castlingRights'
             enPassant <- parseEnPassant enPassant'
@@ -28,19 +28,19 @@ parsePosition s =
 
 
 parseBoard :: String -> Either String Board
-parseBoard ranks' = 
+parseBoard board' = 
     if length ranks /= boardSize
-        then Left $ "there should be " ++ (show boardSize) ++ " ranks, got " ++ ranks'
+        then Left $ "there should be " ++ (show boardSize) ++ " ranks, got " ++ board'
         else do
-            nested <- sequence $ map (\(i, r) -> parseWholeRank i r) ranksWithIndexes
+            nested <- sequence $ map parseRankLine ranksWithIndexes
             return $ array (a1, h8) (concat nested)
-    where ranks = splitOn "/" ranks'
+    where ranks = splitOn "/" board'
           ranksWithIndexes = zip (reverse [1..boardSize]) ranks
           
 
 
-parseWholeRank :: Int -> String -> Either String [(Square, Maybe Piece)]
-parseWholeRank i s = do
+parseRankLine :: (Int, String) -> Either String [(Square, Maybe Piece)]
+parseRankLine (i, s) = do
     nestedElements <- sequence elements'
     let elements = concat nestedElements in
         if length elements /= boardSize
