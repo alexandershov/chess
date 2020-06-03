@@ -2,6 +2,7 @@
 
 import Test.Hspec
 
+import EvalSpec
 import FenSpec
 import MovesSpec
 import UciSpec
@@ -15,3 +16,5 @@ main = hspec do
 
     describeInitialPosition
     describeMakeMove
+
+    describeEval

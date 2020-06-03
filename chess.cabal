@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7d0b6b282028234155e729a1f36e2ab4e2c2cd2b4c4a168c0ec52a37ee0c7540
+-- hash: 9c21c0088771e1e6519653fb5f6b16bb606624dd728c7c5f3540a8185d1fb0ae
 
 name:           chess
 version:        0.1.0.0
@@ -27,6 +27,7 @@ source-repository head
 
 library
   exposed-modules:
+      Eval
       Fen
       Moves
       Pieces
@@ -69,6 +70,7 @@ test-suite chess-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      EvalSpec
       FenSpec
       MovesSpec
       UciSpec
