@@ -5,12 +5,14 @@ module EvalSpec where
 import Test.Hspec
 
 import Eval
+import Moves
 import Pieces
 
 
 describeEval :: Spec
 describeEval = do
     describePieceValues
+    describeEvalPosition
 
 
 describePieceValues :: Spec
@@ -34,3 +36,10 @@ describePieceValues = do
         it "king is 0 pawns" do
             valueOf whiteKing `shouldBe` 0
             valueOf blackKing `shouldBe` 0
+
+
+describeEvalPosition :: Spec
+describeEvalPosition = do
+    describe "Initial position" do
+        it "is equal material-wise" do
+            eval initialPosition `shouldBe` 0
