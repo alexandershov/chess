@@ -5,6 +5,7 @@ module EvalSpec where
 import Test.Hspec
 
 import Eval
+import Fen
 import Moves
 import Pieces
 
@@ -41,5 +42,10 @@ describePieceValues = do
 describeEvalPosition :: Spec
 describeEvalPosition = do
     describe "Initial position" do
-        it "is equal material-wise" do
+        it "is equal" do
             eval initialPosition `shouldBe` 0
+    describe "Position after e2-e4" do
+        it "is better for white" do
+            let Right positionAfterE2E4 = parsePosition "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1" in
+                eval positionAfterE2E4 `shouldBe` 100
+            
