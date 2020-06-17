@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9c21c0088771e1e6519653fb5f6b16bb606624dd728c7c5f3540a8185d1fb0ae
+-- hash: a3f1cc9b88792bec039c4a361b103afacc5a988cb9e73a61ac203a88d4d55a7c
 
 name:           chess
 version:        0.1.0.0
@@ -27,6 +27,7 @@ source-repository head
 
 library
   exposed-modules:
+      Engine
       Eval
       Fen
       Moves
@@ -44,6 +45,7 @@ library
     , containers
     , hspec
     , random
+    , sort
     , split
     , time
   default-language: Haskell2010
@@ -62,6 +64,7 @@ executable chess-exe
     , containers
     , hspec
     , random
+    , sort
     , split
     , time
   default-language: Haskell2010
@@ -85,6 +88,7 @@ test-suite chess-test
     , containers
     , hspec
     , random
+    , sort
     , split
     , time
   default-language: Haskell2010

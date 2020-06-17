@@ -8,6 +8,7 @@ import Data.Time (getCurrentTime)
 import System.IO
 import System.Random
 
+import Engine
 import Moves
 import Pieces
 import qualified Position as P
@@ -78,7 +79,7 @@ instance Engine Currychnoi where
 
 chooseMoveFrom :: P.Position -> IO Move
 chooseMoveFrom position = do
-    chooseRandomItem $ legalMoves position
+    return $ findBestMove position
 
 
 chooseRandomItem :: [a] -> IO a

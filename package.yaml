@@ -25,6 +25,7 @@ dependencies:
 - containers
 - hspec
 - random
+- sort
 - split
 - time
 

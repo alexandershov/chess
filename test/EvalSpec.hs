@@ -4,16 +4,26 @@ module EvalSpec where
 
 import Test.Hspec
 
+import Engine
 import Eval
 import Fen
 import Moves
 import Pieces
+import Squares
 
 
 describeEval :: Spec
 describeEval = do
     describePieceValues
     describeEvalPosition
+    describeFindBestMove
+
+
+describeFindBestMove :: Spec
+describeFindBestMove = do
+    describe "findBestMove" do
+        it "maximizes piece movement" do
+            findBestMove initialPosition `shouldBe` Move e2 e3 Nothing
 
 
 describePieceValues :: Spec
