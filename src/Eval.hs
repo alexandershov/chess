@@ -53,9 +53,9 @@ makeNullMove position@Position{P.sideToMove} =
 terminalEval :: Position -> Int
 terminalEval position@Position{P.sideToMove} = 
     if sideToMove `isUnderCheckIn` makeNullMove position 
-        then colorizeMateEval sideToMove
+        then evalMateOf sideToMove
         else 0
 
-colorizeMateEval :: Color -> Int
-colorizeMateEval White = minBound
-colorizeMateEval Black = maxBound
+evalMateOf :: Color -> Int
+evalMateOf White = minBound
+evalMateOf Black = maxBound

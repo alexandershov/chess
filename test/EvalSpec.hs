@@ -56,15 +56,16 @@ describeEvalPosition = do
             eval initialPosition `shouldBe` 0
     describe "Position after e2-e4" do
         it "is better for white" do
-            let Right positionAfterE2E4 = parsePosition "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1" in
-                eval positionAfterE2E4 `shouldBe` 100
+            "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1" `evalShouldBe` 100
     describe "Position after mate" do
-        it "is much better for a side who mates" do
-            let Right positionAfterWhiteMates = parsePosition "r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4" in
-                eval positionAfterWhiteMates `shouldBe` maxBound
-            let Right positionAfterBlackMates = parsePosition "rnb1kbnr/pppp1ppp/8/4p3/6Pq/5P2/PPPPP2P/RNBQKBNR w KQkq - 1 3" in 
-                eval positionAfterBlackMates `shouldBe` minBound
+        it "is much better for the side who mates" do
+            "r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4" `evalShouldBe` maxBound
+            "rnb1kbnr/pppp1ppp/8/4p3/6Pq/5P2/PPPPP2P/RNBQKBNR w KQkq - 1 3" `evalShouldBe` minBound
     describe "Position after stalemate" do
         it "is equal" do
-            let Right positionAfterStalemate = parsePosition "5bnr/4p1pq/4Qpkr/7p/7P/4P3/PPPP1PP1/RNB1KBNR b KQ - 2 10" in
-                eval positionAfterStalemate `shouldBe` 0
+            "5bnr/4p1pq/4Qpkr/7p/7P/4P3/PPPP1PP1/RNB1KBNR b KQ - 2 10" `evalShouldBe` 0
+
+evalShouldBe :: String -> Int -> IO ()
+fen `evalShouldBe` score = 
+    let Right position = parsePosition fen in
+        eval position `shouldBe` score
