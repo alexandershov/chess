@@ -58,4 +58,7 @@ describeEvalPosition = do
         it "is better for white" do
             let Right positionAfterE2E4 = parsePosition "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1" in
                 eval positionAfterE2E4 `shouldBe` 100
-            
+    describe "Position after mate" do
+        it "is much better for a side who mates" do
+            let Right positionAfterMate = parsePosition "r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4" in
+                eval positionAfterMate `shouldBe` maxBound
