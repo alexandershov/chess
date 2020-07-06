@@ -27,8 +27,11 @@ colorize value Black = -value
 
 eval :: Position -> Int
 eval position =
-    materialEval position + positionalEval position + positionalEval rivalPosition
-    where rivalPosition = makeNullMove position
+    case moves of
+        [] -> terminalEval position
+        _ -> materialEval position + positionalEval position + positionalEval rivalPosition
+    where moves = legalMoves position
+          rivalPosition = makeNullMove position
 
 
 materialEval :: Position -> Int
@@ -45,3 +48,14 @@ positionalEval position@Position{P.sideToMove} =
 makeNullMove :: Position -> Position
 makeNullMove position@Position{P.sideToMove} = 
     position{P.sideToMove=rival sideToMove, P.enPassant=Nothing}
+
+
+terminalEval :: Position -> Int
+terminalEval position@Position{P.sideToMove} = 
+    if sideToMove `isUnderCheckIn` makeNullMove position 
+        then colorizeMateEval sideToMove
+        else 0
+
+colorizeMateEval :: Color -> Int
+colorizeMateEval White = minBound
+colorizeMateEval Black = maxBound
