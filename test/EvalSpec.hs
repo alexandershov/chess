@@ -64,3 +64,7 @@ describeEvalPosition = do
                 eval positionAfterWhiteMates `shouldBe` maxBound
             let Right positionAfterBlackMates = parsePosition "rnb1kbnr/pppp1ppp/8/4p3/6Pq/5P2/PPPPP2P/RNBQKBNR w KQkq - 1 3" in 
                 eval positionAfterBlackMates `shouldBe` minBound
+    describe "Position after stalemate" do
+        it "is equal" do
+            let Right positionAfterStalemate = parsePosition "5bnr/4p1pq/4Qpkr/7p/7P/4P3/PPPP1PP1/RNB1KBNR b KQ - 2 10" in
+                eval positionAfterStalemate `shouldBe` 0
