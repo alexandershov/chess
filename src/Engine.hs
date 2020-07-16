@@ -10,13 +10,34 @@ import Position hiding (sideToMove)
 import Position as P
 
 
+maxDepth :: Int
+maxDepth = 2
+
+
 findBestMove :: Position -> Move
-findBestMove position@Position{P.sideToMove} = 
+findBestMove position = findBestMoveAtDepth 0 position
+
+
+findBestMoveAtDepth :: Int -> Position -> Move
+findBestMoveAtDepth depth position =
     getMove $ head scoredMoves
     where moves = legalMoves position
-          nextPositions = [ makeUnchecked position move | move <- moves ]
-          scores = [ colorize sideToMove (eval p) | p <- nextPositions ]
+          scores = getNextScores depth moves position
           scoredMoves = sortOn bestScoreFirst $ zip scores moves
+
+
+negaMaxEval :: Int -> Position -> Int
+negaMaxEval depth position@Position{P.sideToMove}
+    | depth == maxDepth = eval position
+    | moves == [] = eval position
+    | otherwise = colorize sideToMove (maximum $ getNextScores depth moves position)
+    where moves = legalMoves position
+
+
+getNextScores :: Int -> [Move] -> Position -> [Int]
+getNextScores depth moves position@Position{P.sideToMove} =
+    [ colorize sideToMove (negaMaxEval (depth + 1) p) | p <- nextPositions ]
+    where nextPositions = [ makeUnchecked position move | move <- moves ]
 
 
 bestScoreFirst :: (Int, Move) -> Int

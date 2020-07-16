@@ -57,5 +57,5 @@ terminalEval position@Position{P.sideToMove} =
         else 0
 
 evalMateOf :: Color -> Int
-evalMateOf White = minBound
-evalMateOf Black = maxBound
+evalMateOf White = -1000000
+evalMateOf Black = 1000000
