@@ -21,15 +21,15 @@ findBestMove position@Position{P.sideToMove} =
 findBestMoveAtDepth :: Color -> Int -> Position -> Move
 findBestMoveAtDepth maximizingPlayer depth position =
     getMove $ head scoredMoves
-    where scoredMoves = getNextScoredMoves (evalMateOf White) maximizingPlayer depth position
+    where scoredMoves = getNextScoredMoves (initAlphaBeta depth) maximizingPlayer depth position
 
 
 miniMaxEval :: Int -> Color -> Int -> Position -> Int
 miniMaxEval alphaBeta maximizingPlayer depth position
-    | depth == maxDepth = colorize maximizingPlayer (eval position)
-    | moves == [] = colorize maximizingPlayer (eval position)
+    | isLeaf = position `evalFor` maximizingPlayer
     | otherwise = head $ map getScore $ getNextScoredMoves alphaBeta maximizingPlayer depth position
     where moves = legalMoves position
+          isLeaf = depth == maxDepth || moves == []
 
 
 getNextScoredMoves :: Int -> Color -> Int -> Position -> [(Int, Move)]
@@ -60,6 +60,7 @@ combineAlphaBeta depth current score
     | isMaximizing depth = max current score
     | otherwise = min current score
 
+
 initAlphaBeta :: Int -> Int
 initAlphaBeta depth
     | isMaximizing depth = evalMateOf White
@@ -76,15 +77,24 @@ isMinimizing depth = not $ isMaximizing depth
 scoreForMaximizing :: (Int, Move) -> Int
 scoreForMaximizing (score, _) = -score
 
+
 scoreForMinimizing :: (Int, Move) -> Int
 scoreForMinimizing (score, _) = score
+
 
 getMove :: (Int, Move) -> Move
 getMove = snd
 
+
 getScore :: (Int, Move) -> Int
 getScore = fst
+
 
 colorize :: Color -> Int -> Int
 colorize White evaluation = evaluation
 colorize Black evaluation = -evaluation
+
+
+evalFor :: Position -> Color -> Int
+position `evalFor` color = 
+    colorize color (eval position) 
