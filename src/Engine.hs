@@ -42,8 +42,12 @@ getNextScoredMoves maximizingPlayer depth position =
 
 applyMiniMax :: Int -> [(Int, Move)] -> [(Int, Move)]
 applyMiniMax depth scoredMoves
-    | even depth = sortOn scoreForMaximizing scoredMoves
+    | isMaximizing depth = sortOn scoreForMaximizing scoredMoves
     | otherwise = sortOn scoreForMinimizing scoredMoves
+
+
+isMaximizing :: Int -> Bool
+isMaximizing depth = even depth
 
 
 scoreForMaximizing :: (Int, Move) -> Int
