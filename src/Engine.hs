@@ -11,7 +11,7 @@ import Position as P
 
 
 maxDepth :: Int
-maxDepth = 2
+maxDepth = 3
 
 
 findBestMove :: Position -> Move
