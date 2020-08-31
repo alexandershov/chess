@@ -11,32 +11,37 @@ import Position as P
 
 
 maxDepth :: Int
-maxDepth = 3
+maxDepth = 2
+
+type Pickers = [[Int] -> Int]
 
 
 findBestMove :: Position -> Move
-findBestMove position = findBestMoveAtDepth 0 position
+findBestMove position@Position{P.sideToMove} = 
+    findBestMoveAtDepth sideToMove 0 position
 
 
-findBestMoveAtDepth :: Int -> Position -> Move
-findBestMoveAtDepth depth position =
+findBestMoveAtDepth :: Color -> Int -> Position -> Move
+findBestMoveAtDepth maximizingPlayer depth position =
     getMove $ head scoredMoves
     where moves = legalMoves position
-          scores = getNextScores depth moves position
+          scores = getNextScores maximizingPlayer depth pickers moves position
           scoredMoves = sortOn bestScoreFirst $ zip scores moves
+          pickers = cycle [minimum, maximum]
 
 
-negaMaxEval :: Int -> Position -> Int
-negaMaxEval depth position@Position{P.sideToMove}
-    | depth == maxDepth = eval position
-    | moves == [] = eval position
-    | otherwise = colorize sideToMove (maximum $ getNextScores depth moves position)
+miniMaxEval :: Color -> Int -> Pickers -> Position -> Int
+miniMaxEval maximizingPlayer depth pickers position
+    | depth == maxDepth = colorize maximizingPlayer (eval position)
+    | moves == [] = colorize maximizingPlayer (eval position)
+    | otherwise = picker $ getNextScores maximizingPlayer depth nextPickers moves position
     where moves = legalMoves position
+          picker:nextPickers = pickers
 
 
-getNextScores :: Int -> [Move] -> Position -> [Int]
-getNextScores depth moves position@Position{P.sideToMove} =
-    [ colorize sideToMove (negaMaxEval (depth + 1) p) | p <- nextPositions ]
+getNextScores :: Color -> Int -> Pickers -> [Move] -> Position -> [Int]
+getNextScores maximizingPlayer depth pickers moves position =
+    [ (miniMaxEval maximizingPlayer (depth + 1) pickers p) | p <- nextPositions ]
     where nextPositions = [ makeUnchecked position move | move <- moves ]
 
 
