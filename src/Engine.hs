@@ -21,23 +21,22 @@ findBestMove position@Position{P.sideToMove} =
 findBestMoveAtDepth :: Color -> Int -> Position -> Move
 findBestMoveAtDepth maximizingPlayer depth position =
     getMove $ head scoredMoves
-    where scoredMoves = getNextScoredMoves maximizingPlayer depth position
+    where scoredMoves = getNextScoredMoves (evalMateOf White) maximizingPlayer depth position
 
 
-miniMaxEval :: Color -> Int -> Position -> Int
-miniMaxEval maximizingPlayer depth position
+miniMaxEval :: Int -> Color -> Int -> Position -> Int
+miniMaxEval alphaBeta maximizingPlayer depth position
     | depth == maxDepth = colorize maximizingPlayer (eval position)
     | moves == [] = colorize maximizingPlayer (eval position)
-    | otherwise = head $ map getScore $ getNextScoredMoves maximizingPlayer depth position
+    | otherwise = head $ map getScore $ getNextScoredMoves alphaBeta maximizingPlayer depth position
     where moves = legalMoves position
 
 
-getNextScoredMoves :: Color -> Int -> Position -> [(Int, Move)]
-getNextScoredMoves maximizingPlayer depth position =
-    applyMiniMax depth scoredMoves
+getNextScoredMoves :: Int -> Color -> Int -> Position -> [(Int, Move)]
+getNextScoredMoves parentAlphaBeta maximizingPlayer depth position =
+    applyMiniMax depth $ alphaBetaReduce parentAlphaBeta maximizingPlayer (initAlphaBeta depth) depth [] nextPositionsWithMoves
     where nextPositionsWithMoves = [ ((makeUnchecked position move), move) | move <- moves ]
           moves = legalMoves position
-          scoredMoves = [ ((miniMaxEval maximizingPlayer (depth + 1) p), m) | (p, m) <- nextPositionsWithMoves ]
 
 
 applyMiniMax :: Int -> [(Int, Move)] -> [(Int, Move)]
@@ -46,8 +45,31 @@ applyMiniMax depth scoredMoves
     | otherwise = sortOn scoreForMinimizing scoredMoves
 
 
+alphaBetaReduce :: Int -> Color -> Int -> Int -> [(Int, Move)] -> [(Position, Move)] -> [(Int, Move)]
+
+alphaBetaReduce _ _ _ _ acc [] = acc
+alphaBetaReduce parent maximizingPlayer current depth acc ((position, move):nextPositionsWithMoves)
+   | isMinimizing depth && current < parent = acc
+   | otherwise = alphaBetaReduce parent maximizingPlayer (combineAlphaBeta depth current score) depth ((score, move):acc) nextPositionsWithMoves
+        where score = (miniMaxEval current maximizingPlayer (depth + 1) position)
+
+
+combineAlphaBeta :: Int -> Int -> Int -> Int
+combineAlphaBeta depth current score
+    | isMaximizing depth = max current score
+    | otherwise = min current score
+
+initAlphaBeta :: Int -> Int
+initAlphaBeta depth
+    | isMaximizing depth = evalMateOf White
+    | otherwise = evalMateOf Black
+
+
 isMaximizing :: Int -> Bool
 isMaximizing depth = even depth
+
+isMinimizing :: Int -> Bool
+isMinimizing depth = not $ isMaximizing depth
 
 
 scoreForMaximizing :: (Int, Move) -> Int
