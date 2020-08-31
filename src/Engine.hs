@@ -11,7 +11,7 @@ import Position as P
 
 
 maxDepth :: Int
-maxDepth = 2
+maxDepth = 3
 
 findBestMove :: Position -> Move
 findBestMove position@Position{P.sideToMove} = 
@@ -47,7 +47,7 @@ applyMiniMax depth scoredMoves
 
 alphaBetaReduce :: Int -> Color -> Int -> Int -> [(Int, Move)] -> [(Position, Move)] -> [(Int, Move)]
 
-alphaBetaReduce _ _ _ _ acc [] = acc
+alphaBetaReduce _ _ _ _ acc [] = reverse acc
 alphaBetaReduce parent maximizingPlayer current depth acc ((position, move):nextPositionsWithMoves)
    | isMinimizing depth && current < parent = acc
    | otherwise = alphaBetaReduce parent maximizingPlayer (combineAlphaBeta depth current score) depth ((score, move):acc) nextPositionsWithMoves
