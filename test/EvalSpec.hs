@@ -27,6 +27,8 @@ describeFindBestMove = do
             findBestMove initialPosition `shouldBe` Move e2 e3 Nothing
         it "mates in one" do
             findBestMove mateInOnePosition `shouldBe` Move d8 h4 Nothing
+        it "mates in two" do
+            findBestMove mateInTwoPosition `shouldBe` Move c4 g8 Nothing
 
 
 mateInOnePosition :: Position
@@ -34,6 +36,11 @@ mateInOnePosition =
     position
     where Right position = parsePosition "rnbqkbnr/pppp1ppp/4p3/8/6P1/5P2/PPPPP2P/RNBQKBNR b KQkq g3 0 2"
 
+
+mateInTwoPosition :: Position
+mateInTwoPosition = 
+    position
+    where Right position = parsePosition "4r2k/2pRP1pp/2p4N/p4p2/2Q3n1/q5P1/P3PP1P/6K1 w - - 7 29"
 
 
 describePieceValues :: Spec
