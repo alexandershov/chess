@@ -23,10 +23,8 @@ findBestMove position@Position{P.sideToMove} =
 
 findBestMoveAtDepth :: Color -> Int -> Position -> Move
 findBestMoveAtDepth maximizingPlayer depth position =
-    getMove $ head scoredMoves
-    where moves = legalMoves position
-          scores = getNextScores maximizingPlayer depth pickers moves position
-          scoredMoves = sortOn bestScoreFirst $ zip scores moves
+    getMove $ head $ sortOn bestScoreFirst scoredMoves
+    where scoredMoves = getNextScoredMoves maximizingPlayer depth pickers position
           pickers = cycle [minimum, maximum]
 
 
@@ -34,15 +32,16 @@ miniMaxEval :: Color -> Int -> Pickers -> Position -> Int
 miniMaxEval maximizingPlayer depth pickers position
     | depth == maxDepth = colorize maximizingPlayer (eval position)
     | moves == [] = colorize maximizingPlayer (eval position)
-    | otherwise = picker $ getNextScores maximizingPlayer depth nextPickers moves position
+    | otherwise = picker $ map getScore $ getNextScoredMoves maximizingPlayer depth nextPickers position
     where moves = legalMoves position
           picker:nextPickers = pickers
 
 
-getNextScores :: Color -> Int -> Pickers -> [Move] -> Position -> [Int]
-getNextScores maximizingPlayer depth pickers moves position =
-    [ (miniMaxEval maximizingPlayer (depth + 1) pickers p) | p <- nextPositions ]
-    where nextPositions = [ makeUnchecked position move | move <- moves ]
+getNextScoredMoves :: Color -> Int -> Pickers -> Position -> [(Int, Move)]
+getNextScoredMoves maximizingPlayer depth pickers position =
+    [ ((miniMaxEval maximizingPlayer (depth + 1) pickers p), m) | (p, m) <- nextPositionsWithMoves ]
+    where nextPositionsWithMoves = [ ((makeUnchecked position move), move) | move <- moves ]
+          moves = legalMoves position
 
 
 bestScoreFirst :: (Int, Move) -> Int
@@ -50,6 +49,9 @@ bestScoreFirst (score, _) = -score
 
 getMove :: (Int, Move) -> Move
 getMove = snd
+
+getScore :: (Int, Move) -> Int
+getScore = fst
 
 colorize :: Color -> Int -> Int
 colorize White evaluation = evaluation
