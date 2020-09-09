@@ -45,11 +45,6 @@ positionalEval position@Position{P.sideToMove} =
     where numMoves = length $ legalMoves position
 
 
-makeNullMove :: Position -> Position
-makeNullMove position@Position{P.sideToMove} = 
-    position{P.sideToMove=rival sideToMove, P.enPassant=Nothing}
-
-
 terminalEval :: Position -> Int
 terminalEval position@Position{P.sideToMove} = 
     if sideToMove `isUnderCheckIn` makeNullMove position 

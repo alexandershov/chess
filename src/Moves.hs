@@ -83,6 +83,27 @@ color `isUnderCheckIn` position =
           king = King color
 
 
+forcingMoves :: Position -> [Move]
+forcingMoves position = 
+    filter (isForcingMove position) (legalMoves position)
+
+
+isForcingMove :: Position -> Move -> Bool
+isForcingMove position move =
+    isCapture position move || isCheck position move
+
+
+makeNullMove :: Position -> Position
+makeNullMove position@Position{P.sideToMove} = 
+    position{P.sideToMove=rival sideToMove, P.enPassant=Nothing}
+
+
+isCheck :: Position -> Move -> Bool
+isCheck position@Position{P.sideToMove} move =
+    isUnderCheckIn (rival sideToMove) (makeNullMove nextPosition)
+    where nextPosition = position `makeUnchecked` move
+
+
 threatens :: Position -> Piece -> Move -> Bool
 threatens Position{P.board} piece (Move _ to _) =
     board ! to == Just piece

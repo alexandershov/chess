@@ -29,6 +29,7 @@ describePieces = do
     describeKing
 
     describeLegalMoves
+    describeForcingMoves
     describeHalfMoveClock
     describeDraw
     describeDrawEnPassant
@@ -325,6 +326,14 @@ describeLegalMoves = do
                 move' b5 e8, move' b5 e2]
 
 
+describeForcingMoves :: Spec
+describeForcingMoves = do
+    describe "Forcing moves" do
+        it "include captures and checks" do
+            forcingMoves positionSicilianInvitation `shouldMatchList` [
+                move' c5 d4, move' d8 a5]
+
+
 describeHalfMoveClock :: Spec
 describeHalfMoveClock = do
     describe "Half move clock" do
@@ -515,3 +524,9 @@ position@Position{P.board} `changeBoard` piecesOnSquares =
 
 move' :: Square -> Square -> Move
 move' from to = Move from to Nothing
+
+
+positionSicilianInvitation :: Position
+positionSicilianInvitation =
+    position
+    where Right position = parsePosition "rnbqkbnr/pp1ppppp/8/2p5/3P4/5N2/PPP1PPPP/RNBQKB1R b KQkq - 1 2"
