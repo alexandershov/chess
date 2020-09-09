@@ -332,6 +332,10 @@ describeForcingMoves = do
         it "include captures and checks" do
             forcingMoves positionSicilianInvitation `shouldMatchList` [
                 move' c5 d4, move' d8 a5]
+        it "include moves after check" do
+            forcingMoves positionWithCheck `shouldMatchList` [
+                move' e1 f1, move' e1 f2, move' e1 d1, move' e1 d2,
+                move' b5 e8, move' b5 e2]
 
 
 describeHalfMoveClock :: Spec

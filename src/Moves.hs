@@ -90,7 +90,7 @@ forcingMoves position =
 
 isForcingMove :: Position -> Move -> Bool
 isForcingMove position move =
-    isCapture position move || isCheck position move
+    isCapture position move || isCheck position move || isUnderCheckIn position
 
 
 makeNullMove :: Position -> Position
