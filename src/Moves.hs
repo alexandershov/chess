@@ -71,16 +71,16 @@ legalMoves position =
 
 
 isLegalIn :: Move -> Position -> Bool
-move `isLegalIn` position@Position{P.sideToMove} = 
-    not $ sideToMove `isUnderCheckIn` nextPosition
+move `isLegalIn` position =
+    not $ isUnderCheckIn (makeNullMove nextPosition)
     where nextPosition = position `makeUnchecked` move
 
 
-isUnderCheckIn :: Color -> Position -> Bool
-color `isUnderCheckIn` position =
+isUnderCheckIn :: Position -> Bool
+isUnderCheckIn position@Position{P.sideToMove} =
     any (threatens position king) moves
-    where moves = allSimpleMoves position
-          king = King color
+    where moves = allSimpleMoves (makeNullMove position)
+          king = King sideToMove
 
 
 forcingMoves :: Position -> [Move]
@@ -99,8 +99,8 @@ makeNullMove position@Position{P.sideToMove} =
 
 
 isCheck :: Position -> Move -> Bool
-isCheck position@Position{P.sideToMove} move =
-    isUnderCheckIn (rival sideToMove) (makeNullMove nextPosition)
+isCheck position move =
+    isUnderCheckIn nextPosition
     where nextPosition = position `makeUnchecked` move
 
 

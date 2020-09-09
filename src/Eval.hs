@@ -47,7 +47,7 @@ positionalEval position@Position{P.sideToMove} =
 
 terminalEval :: Position -> Int
 terminalEval position@Position{P.sideToMove} = 
-    if sideToMove `isUnderCheckIn` makeNullMove position 
+    if isUnderCheckIn position 
         then evalMateOf sideToMove
         else 0
 
