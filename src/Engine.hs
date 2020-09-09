@@ -11,7 +11,9 @@ import Position as P
 
 
 maxDepth :: Int
-maxDepth = 3
+maxDepth = 4
+forcingDepth :: Int
+forcingDepth = 1
 
 findBestMove :: Position -> Move
 findBestMove position@Position{P.sideToMove} = 
@@ -28,17 +30,23 @@ miniMaxEval :: Int -> Color -> Int -> Position -> Int
 miniMaxEval alphaBeta maximizingPlayer depth position
     | isLeaf = position `evalFor` maximizingPlayer
     | otherwise = head $ map getScore $ getNextScoredMoves alphaBeta maximizingPlayer depth position
-    where isLeaf = depth == maxDepth || legalMoves position == []
+    where isLeaf = depth == maxDepth || getCandidateMoves depth position == []
 
 
 getNextScoredMoves :: Int -> Color -> Int -> Position -> [(Int, Move)]
 getNextScoredMoves parentAlphaBeta maximizingPlayer depth position =
     applyMiniMax depth scoredMoves
     where nextPositionsWithMoves = [ ((makeUnchecked position move), move) | move <- moves ]
-          moves = legalMoves position
+          moves = getCandidateMoves depth position
           scoredMoves = alphaBetaReduce parentAlphaBeta maximizingPlayer 
                                         (initAlphaBeta depth) depth [] nextPositionsWithMoves
 
+
+getCandidateMoves :: Int -> Position -> [Move]
+getCandidateMoves depth position
+    | depth >= maxDepth - forcingDepth = forcingMoves position
+    | otherwise = legalMoves position
+    
 
 applyMiniMax :: Int -> [(Int, Move)] -> [(Int, Move)]
 applyMiniMax depth scoredMoves
