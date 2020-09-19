@@ -11,9 +11,9 @@ import Position as P
 
 
 maxDepth :: Int
-maxDepth = 5
+maxDepth = 6
 forcingDepth :: Int
-forcingDepth = 3
+forcingDepth = 4
 
 findBestMove :: Position -> Move
 findBestMove position =
@@ -66,7 +66,7 @@ alphaBetaReduce parent maximizingPlayer current depth acc isForcingLine ((positi
    | isMinimizing depth && current < parent = reverse acc
    | otherwise = alphaBetaReduce parent maximizingPlayer (combineAlphaBeta depth current score)
                                  depth ((score, move):acc) isForcingLine nextPositionsWithMoves
-        where score = (miniMaxEval current maximizingPlayer (depth + 1) (isForcingLine || isForcingMove') position)
+        where score = (miniMaxEval current maximizingPlayer (depth + 1) isForcingMove' position)
 
 
 combineAlphaBeta :: Int -> Int -> Int -> Int
