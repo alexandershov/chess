@@ -30,7 +30,7 @@ describeFindBestMove = do
         it "mates in two" do
             findBestMove mateInTwoPosition `shouldBe` Move c4 g8 Nothing
         it "mates in three" do
-            findBestMove mateInThreePosition `shouldBe` Move f5 e7 Nothing
+            findBestScoredMove mateInThreePosition `shouldBe` (1000000, Move f5 e7 Nothing)
 
 
 mateInOnePosition :: Position
