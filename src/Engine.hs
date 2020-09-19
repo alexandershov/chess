@@ -17,17 +17,16 @@ forcingDepth = 3
 
 findBestMove :: Position -> Move
 findBestMove position =
-    getMove $ findBestScoredMove position
+    getMove $ head $ findBestScoredMoves position
 
 
-findBestScoredMove :: Position -> (Int, Move)
-findBestScoredMove position@Position{P.sideToMove} = 
-    findBestScoredMoveAtDepth sideToMove 0 position
+findBestScoredMoves :: Position -> [(Int, Move)]
+findBestScoredMoves position@Position{P.sideToMove} = 
+    findBestScoredMovesAtDepth sideToMove 0 position
 
-
-findBestScoredMoveAtDepth :: Color -> Int -> Position -> (Int, Move)
-findBestScoredMoveAtDepth maximizingPlayer depth position =
-    head scoredMoves
+findBestScoredMovesAtDepth :: Color -> Int -> Position -> [(Int, Move)]
+findBestScoredMovesAtDepth maximizingPlayer depth position =
+    scoredMoves
     where scoredMoves = getNextScoredMoves (initAlphaBeta depth) maximizingPlayer depth position
 
 
