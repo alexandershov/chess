@@ -27,28 +27,29 @@ findBestScoredMoves position@Position{P.sideToMove} =
 findBestScoredMovesAtDepth :: Color -> Int -> Position -> [(Int, Move)]
 findBestScoredMovesAtDepth maximizingPlayer depth position =
     scoredMoves
-    where scoredMoves = getNextScoredMoves (initAlphaBeta depth) maximizingPlayer depth position
+    where scoredMoves = getNextScoredMoves (initAlphaBeta depth) maximizingPlayer depth False position
 
 
-miniMaxEval :: Int -> Color -> Int -> Position -> Int
-miniMaxEval alphaBeta maximizingPlayer depth position
+miniMaxEval :: Int -> Color -> Int -> Bool -> Position -> Int
+miniMaxEval alphaBeta maximizingPlayer depth isForcingLine position
     | isLeaf = position `evalFor` maximizingPlayer
-    | otherwise = head $ map getScore $ getNextScoredMoves alphaBeta maximizingPlayer depth position
-    where isLeaf = depth == maxDepth || getCandidateMoves depth position == []
+    | otherwise = head $ map getScore $ getNextScoredMoves alphaBeta maximizingPlayer depth isForcingLine position
+    where isLeaf = depth == maxDepth || getCandidateMoves depth isForcingLine position == []
 
 
-getNextScoredMoves :: Int -> Color -> Int -> Position -> [(Int, Move)]
-getNextScoredMoves parentAlphaBeta maximizingPlayer depth position =
+getNextScoredMoves :: Int -> Color -> Int -> Bool -> Position -> [(Int, Move)]
+getNextScoredMoves parentAlphaBeta maximizingPlayer depth isForcingLine position =
     applyMiniMax depth scoredMoves
-    where nextPositionsWithMoves = [ ((makeUnchecked position move), move) | move <- moves ]
-          moves = getCandidateMoves depth position
+    where nextPositionsWithMoves = [ ((makeUnchecked position move), (isForcingMove position move), move) | move <- moves ]
+          moves = getCandidateMoves depth isForcingLine position
           scoredMoves = alphaBetaReduce parentAlphaBeta maximizingPlayer 
-                                        (initAlphaBeta depth) depth [] nextPositionsWithMoves
+                                        (initAlphaBeta depth) depth [] isForcingLine nextPositionsWithMoves
 
 
-getCandidateMoves :: Int -> Position -> [Move]
-getCandidateMoves depth position
-    | depth >= maxDepth - forcingDepth = forcingMoves position
+getCandidateMoves :: Int -> Bool -> Position -> [Move]
+getCandidateMoves depth isForcingLine position
+    | depth >= maxDepth - forcingDepth && isForcingLine = forcingMoves position
+    | depth >= maxDepth - forcingDepth = []
     | otherwise = legalMoves position
     
 
@@ -58,14 +59,14 @@ applyMiniMax depth scoredMoves
     | otherwise = sortOn minFirst scoredMoves
 
 
-alphaBetaReduce :: Int -> Color -> Int -> Int -> [(Int, Move)] -> [(Position, Move)] -> [(Int, Move)]
+alphaBetaReduce :: Int -> Color -> Int -> Int -> [(Int, Move)] -> Bool -> [(Position, Bool, Move)] -> [(Int, Move)]
 
-alphaBetaReduce _ _ _ _ acc [] = reverse acc
-alphaBetaReduce parent maximizingPlayer current depth acc ((position, move):nextPositionsWithMoves)
+alphaBetaReduce _ _ _ _ acc _ [] = reverse acc
+alphaBetaReduce parent maximizingPlayer current depth acc isForcingLine ((position, isForcingMove', move):nextPositionsWithMoves)
    | isMinimizing depth && current < parent = reverse acc
    | otherwise = alphaBetaReduce parent maximizingPlayer (combineAlphaBeta depth current score)
-                                 depth ((score, move):acc) nextPositionsWithMoves
-        where score = (miniMaxEval current maximizingPlayer (depth + 1) position)
+                                 depth ((score, move):acc) isForcingLine nextPositionsWithMoves
+        where score = (miniMaxEval current maximizingPlayer (depth + 1) (isForcingLine || isForcingMove') position)
 
 
 combineAlphaBeta :: Int -> Int -> Int -> Int
