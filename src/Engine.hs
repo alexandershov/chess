@@ -34,7 +34,7 @@ miniMaxEval :: Int -> Color -> Int -> Bool -> Position -> Int
 miniMaxEval alphaBeta maximizingPlayer depth isForcingLine position
     | isLeaf = position `evalFor` maximizingPlayer
     | otherwise = head $ map getScore $ getNextScoredMoves alphaBeta maximizingPlayer depth isForcingLine position
-    where isLeaf = depth == maxDepth || getCandidateMoves depth isForcingLine position == []
+    where isLeaf = isAtMaxDepth depth || getCandidateMoves depth isForcingLine position == []
 
 
 getNextScoredMoves :: Int -> Color -> Int -> Bool -> Position -> [(Int, Move)]
@@ -52,6 +52,10 @@ getCandidateMoves depth isForcingLine position
     | isAtForcingDepth depth = []
     | otherwise = legalMoves position
 
+
+isAtMaxDepth :: Int -> Bool
+isAtMaxDepth depth =
+    depth == maxDepth
 
 isAtForcingDepth :: Int -> Bool
 isAtForcingDepth depth = 
