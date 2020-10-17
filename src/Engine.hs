@@ -48,9 +48,14 @@ getNextScoredMoves parentAlphaBeta maximizingPlayer depth isForcingLine position
 
 getCandidateMoves :: Int -> Bool -> Position -> [Move]
 getCandidateMoves depth isForcingLine position
-    | depth >= maxDepth - forcingDepth && isForcingLine = forcingMoves position
-    | depth >= maxDepth - forcingDepth = []
+    | isAtForcingDepth depth && isForcingLine = forcingMoves position
+    | isAtForcingDepth depth = []
     | otherwise = legalMoves position
+
+
+isAtForcingDepth :: Int -> Bool
+isAtForcingDepth depth = 
+    depth >= maxDepth - forcingDepth
     
 
 applyMiniMax :: Int -> [(Int, Move)] -> [(Int, Move)]
