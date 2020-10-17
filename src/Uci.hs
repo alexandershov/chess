@@ -8,7 +8,7 @@ import Data.Time (getCurrentTime)
 import System.IO
 import System.Random
 
-import Engine
+import Engine hiding (position)
 import Moves
 import Pieces
 import qualified Position as P

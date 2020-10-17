@@ -4,7 +4,7 @@ module EvalSpec where
 
 import Test.Hspec
 
-import Engine
+import Engine hiding (position)
 import Eval
 import Fen
 import Moves
